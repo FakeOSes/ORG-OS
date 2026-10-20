@@ -3,339 +3,134 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Desktop</title>
 <style>
-:root {
-  --accent: #60a5fa;
-  --accent-dark: #2563eb;
-  --text: #f8fafc;
-  --muted: #aab6c8;
-  --panel: rgba(25, 34, 49, .92);
-  --panel-light: rgba(45, 57, 76, .92);
-  --border: rgba(255,255,255,.12);
-  --shadow: 0 18px 60px rgba(0,0,0,.35);
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  font-family:"Segoe UI",system-ui,sans-serif;
-  color:var(--text);
-  overflow:hidden;
-  background:#101b35;
-  user-select:none;
-}
-button,input,textarea,select { font:inherit; }
-button { cursor:pointer; color:inherit; }
-button:focus-visible,input:focus-visible,textarea:focus-visible {
-  outline:2px solid var(--accent);
-  outline-offset:2px;
-}
-#desktop {
-  position:fixed; inset:0 0 52px;
-  overflow:hidden;
-  background:
-    radial-gradient(ellipse at 75% 38%,rgba(65,130,255,.7),transparent 38%),
-    radial-gradient(ellipse at 68% 45%,rgba(27,80,180,.8),transparent 45%),
-    linear-gradient(135deg,#081226,#152a50 55%,#071020);
-  transition:background .2s;
-}
-#desktop:before {
-  content:"";
-  position:absolute; width:65vw;height:65vw;
-  max-width:850px;max-height:850px;
-  right:8%;top:50%;
-  transform:translateY(-50%) rotate(-30deg);
-  border:1px solid rgba(147,197,253,.15);
-  border-radius:42%;
-  box-shadow:0 0 0 65px rgba(96,165,250,.035),
-             0 0 0 130px rgba(96,165,250,.025);
-  pointer-events:none;
-}
-.desktop-icons {
-  position:relative; z-index:1;
-  display:flex;flex-direction:column;flex-wrap:wrap;
-  align-content:flex-start;gap:6px;
-  padding:12px;width:100%;height:100%;
-}
-.desktop-icon {
-  width:82px;min-height:82px;
-  padding:8px 3px;border:1px solid transparent;
-  background:transparent;border-radius:5px;
-  display:flex;align-items:center;justify-content:flex-start;
-  flex-direction:column;gap:7px;
-  font-size:12px;text-align:center;
-  text-shadow:0 1px 3px #000;
-}
-.desktop-icon:hover,.desktop-icon:focus {
-  background:rgba(255,255,255,.12);
-  border-color:rgba(255,255,255,.18);
-}
-.icon { font-size:29px;line-height:34px; }
-#taskbar {
-  position:fixed;bottom:0;left:0;right:0;height:52px;
-  display:flex;align-items:center;justify-content:center;
-  gap:5px;padding:5px 12px;
-  background:rgba(18,25,38,.85);
-  backdrop-filter:blur(24px);
-  border-top:1px solid rgba(255,255,255,.12);
-  z-index:9000;
-}
-.task-apps { display:flex;align-items:center;gap:4px; }
-.task-button {
-  min-width:42px;height:40px;padding:0 11px;
-  border:1px solid transparent;border-radius:5px;
-  background:transparent;font-size:20px;
-}
-.task-button:hover,.task-button.active {
-  background:rgba(255,255,255,.12);
-}
-.task-button.active:after {
-  content:"";display:block;height:3px;width:17px;
-  border-radius:5px;background:var(--accent);
-  margin:1px auto -4px;
-}
-#start-button { font-size:24px; }
-#task-search {
-  height:36px;width:190px;border-radius:5px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.09);
-  color:white;padding:0 12px;
-}
-#task-search::placeholder { color:#cbd5e1; }
-.tray {
-  position:absolute;right:12px;display:flex;
-  align-items:center;gap:12px;font-size:12px;
-}
-.tray button {
-  border:0;background:transparent;border-radius:4px;
-  padding:5px;font-size:14px;
-}
-#clock { text-align:center;line-height:17px;min-width:75px; }
-.panel {
-  background:var(--panel);
-  backdrop-filter:blur(30px) saturate(150%);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  border-radius:9px;
-  color:var(--text);
-}
-#start-menu {
-  display:none;position:fixed;z-index:8000;
-  width:min(530px,calc(100vw - 20px));
-  height:min(600px,calc(100vh - 75px));
-  bottom:60px;left:50%;transform:translateX(-50%);
-  padding:23px;overflow:auto;
-}
-#start-menu.open { display:block; }
-.panel-heading {font-size:17px;font-weight:600;margin-bottom:15px;}
-.search-box {
-  width:100%;padding:11px 13px;border-radius:5px;
-  color:white;background:rgba(255,255,255,.08);
-  border:1px solid var(--border);margin-bottom:20px;
-}
-.app-grid {
-  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
-}
-.app-tile {
-  display:flex;align-items:center;flex-direction:column;
-  justify-content:center;gap:9px;min-height:90px;
-  background:transparent;border:1px solid transparent;
-  border-radius:6px;font-size:12px;
-}
-.app-tile:hover { background:rgba(255,255,255,.1); }
-.app-tile .icon {font-size:28px;}
-.start-bottom {
-  display:flex;justify-content:space-between;align-items:center;
-  border-top:1px solid var(--border);margin-top:22px;padding-top:16px;
-}
-.start-bottom button,.soft-button {
-  background:rgba(255,255,255,.08);
-  border:1px solid var(--border);border-radius:5px;padding:8px 12px;
-}
-#notifications {
-  display:none;position:fixed;z-index:8100;
-  right:12px;bottom:60px;width:min(330px,calc(100vw - 24px));
-  padding:20px;
-}
-#notifications.open {display:block;}
-.window {
-  position:absolute;z-index:100;
-  width:650px;height:450px;
-  max-width:calc(100vw - 16px);
-  max-height:calc(100% - 12px);
-  min-width:300px;min-height:210px;
-  display:flex;flex-direction:column;
-  overflow:hidden;
-  background:rgba(28,37,52,.97);
-  border:1px solid rgba(255,255,255,.17);
-  border-radius:8px;
-  box-shadow:0 24px 70px rgba(0,0,0,.45);
-  resize:both;
-}
-.window.hidden {display:none;}
-.window.maximized {
-  inset:0 0 0 0!important;
-  width:100%!important;height:100%!important;
-  max-width:100%;max-height:100%;
-  resize:none;border-radius:0;
-}
-.titlebar {
-  height:43px;min-height:43px;
-  display:flex;align-items:center;gap:9px;
-  padding-left:13px;background:rgba(255,255,255,.035);
-  border-bottom:1px solid var(--border);
-  cursor:grab;touch-action:none;
-}
-.titlebar:active {cursor:grabbing;}
-.title-icon {font-size:18px;}
-.window-title {font-size:13px;flex:1;}
-.window-controls {display:flex;height:100%;}
-.window-controls button {
-  width:43px;border:0;background:transparent;font-size:14px;
-}
-.window-controls button:hover {background:rgba(255,255,255,.13);}
-.window-controls .close:hover {background:#c42b1c;}
-.window-body {flex:1;min-height:0;overflow:auto;}
-.toolbar {
-  display:flex;align-items:center;gap:8px;padding:10px 14px;
-  border-bottom:1px solid var(--border);
-}
-.toolbar button,.primary {
-  border:1px solid var(--border);border-radius:5px;
-  padding:7px 12px;background:rgba(255,255,255,.08);
-}
-.primary {background:var(--accent-dark);border-color:transparent;}
-.primary:hover {filter:brightness(1.15);}
-.field {
-  width:100%;padding:10px;border:1px solid var(--border);
-  border-radius:5px;background:rgba(0,0,0,.2);color:white;
-}
-.note-layout {display:flex;height:100%;min-height:0;}
-.note-sidebar {
-  width:175px;min-width:135px;border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:10px;gap:7px;
-}
-.note-list {overflow:auto;flex:1;}
-.note-item {
-  padding:10px;border-radius:5px;margin-bottom:4px;
-  cursor:pointer;font-size:12px;overflow:hidden;
-}
-.note-item.selected,.note-item:hover {background:rgba(255,255,255,.1);}
-.note-editor {display:flex;flex-direction:column;flex:1;min-width:0;padding:15px;gap:10px;}
-.note-editor input {
-  font-size:20px;font-weight:600;background:transparent;
-  color:white;border:0;outline:none;padding:4px 0;
-}
-.note-editor textarea {
-  flex:1;min-height:0;resize:none;background:transparent;
-  color:#e5edf8;border:0;outline:none;
-  font:14px/1.65 "Segoe UI",sans-serif;
-}
-.status {font-size:11px;color:var(--muted);}
-.terminal {
-  height:100%;padding:15px;overflow:auto;
-  background:#090d12;color:#d1fae5;
-  font:13px/1.6 Consolas,monospace;
-}
-.terminal-output {white-space:pre-wrap;overflow-wrap:anywhere;}
-.terminal-line {display:flex;gap:8px;margin-top:5px;}
-.terminal-line span {color:#86efac;}
-.terminal-line input {
-  flex:1;min-width:0;border:0;outline:0;
-  background:transparent;color:#d1fae5;
-  font:inherit;
-}
-.settings-content {padding:20px;}
-.setting {
-  display:flex;align-items:center;justify-content:space-between;
-  gap:15px;padding:15px 0;border-bottom:1px solid var(--border);
-}
-.setting small {display:block;color:var(--muted);margin-top:5px;}
-.setting select,.setting input[type=checkbox] {accent-color:var(--accent);}
-.setting select {background:#263449;color:white;border:1px solid var(--border);padding:8px;border-radius:5px;}
-.colors {display:flex;gap:9px;flex-wrap:wrap;}
-.color-dot {
-  width:29px;height:29px;border-radius:50%;
-  border:2px solid rgba(255,255,255,.4);
-}
-.color-dot:hover {outline:2px solid white;outline-offset:2px;}
-.welcome-content {padding:35px;display:flex;flex-direction:column;gap:17px;}
-.welcome-mark {
-  width:65px;height:65px;display:grid;place-items:center;
-  border-radius:15px;background:var(--accent-dark);font-size:32px;
-}
-.welcome-content h1 {font-size:28px;margin:0;}
-.welcome-content p {color:#c5d0df;line-height:1.6;max-width:440px;}
-.welcome-actions {display:flex;gap:10px;margin-top:8px;}
-.apps-content {padding:15px;}
-.apps-tabs {display:flex;gap:5px;flex-wrap:wrap;margin-bottom:15px;}
-.apps-tabs button {
-  border:1px solid var(--border);background:transparent;
-  border-radius:5px;padding:7px 12px;
-}
-.apps-tabs button.selected {background:var(--accent-dark);}
-.apps-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;}
-.store-card {
-  padding:13px;border:1px solid var(--border);border-radius:7px;
-  background:rgba(255,255,255,.035);min-width:0;
-}
-.store-card h3 {font-size:14px;margin:0 0 7px;overflow-wrap:anywhere;}
-.store-card p {font-size:12px;line-height:1.5;color:var(--muted);min-height:35px;}
-.store-card button {width:100%;}
-.store-icon {font-size:25px;margin-bottom:9px;}
-.empty {color:var(--muted);font-size:13px;padding:15px 0;}
-#context-menu {
-  display:none;position:fixed;z-index:9999;padding:6px;min-width:175px;
-}
-#context-menu button {
-  display:block;width:100%;text-align:left;border:0;
-  background:transparent;padding:9px;border-radius:4px;font-size:13px;
-}
-#context-menu button:hover {background:rgba(255,255,255,.12);}
-#toast {
-  position:fixed;right:18px;bottom:67px;z-index:10000;
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:7px;padding:12px 16px;
-  opacity:0;transform:translateY(8px);transition:.2s;
-  pointer-events:none;font-size:13px;
-}
-#toast.show {opacity:1;transform:translateY(0);}
-@media(max-width:560px) {
-  #task-search {display:none;}
-  .tray {right:5px;gap:4px;}
-  .task-button {min-width:35px;padding:0 7px;}
-  .task-apps {margin-right:auto;}
-  .window {min-width:0;resize:none;}
-  .note-sidebar {width:105px;min-width:105px;}
-  .note-editor {padding:9px;}
-  .app-grid {grid-template-columns:repeat(3,1fr);}
-}
+:root{--accent:#60a5fa;--dark:#2563eb;--panel:rgba(25,34,49,.94);--border:rgba(255,255,255,.13);--muted:#aab6c8}
+*{box-sizing:border-box}
+body{margin:0;font:14px "Segoe UI",system-ui,sans-serif;color:#f8fafc;overflow:hidden;background:#101b35;user-select:none}
+button,input,textarea,select{font:inherit}
+button{color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#desktop{position:fixed;inset:0 0 52px;overflow:hidden;background:radial-gradient(ellipse at 75% 38%,rgba(65,130,255,.7),transparent 38%),radial-gradient(ellipse at 68% 45%,rgba(27,80,180,.8),transparent 45%),linear-gradient(135deg,#081226,#152a50 55%,#071020)}
+#desktop:before{content:"";position:absolute;width:65vw;height:65vw;max-width:850px;max-height:850px;right:8%;top:50%;transform:translateY(-50%) rotate(-30deg);border:1px solid #93c5fd24;border-radius:42%;box-shadow:0 0 0 65px #60a5fa09,0 0 0 130px #60a5fa06;pointer-events:none}
+.desktop-icons{position:relative;z-index:1;display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-start;gap:5px;padding:12px;width:100%;height:100%}
+.desktop-icon{position:relative;width:82px;min-height:82px;padding:8px 3px;border:1px solid transparent;background:transparent;border-radius:5px;display:flex;align-items:center;flex-direction:column;gap:7px;font-size:12px;text-align:center;text-shadow:0 1px 3px #000}
+.desktop-icon:hover{background:#ffffff1f;border-color:#ffffff2b}
+.icon{font-size:29px;line-height:34px}
+#taskbar{position:fixed;bottom:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 12px;background:#121926db;backdrop-filter:blur(24px);border-top:1px solid #ffffff1f;z-index:9000}
+.task-apps{display:flex;align-items:center;gap:4px}
+.task-button{min-width:42px;height:40px;padding:0 11px;border:1px solid transparent;border-radius:5px;background:transparent;font-size:20px}
+.task-button:hover,.task-button.active{background:#ffffff1f}
+.task-button.active:after{content:"";display:block;height:3px;width:17px;border-radius:5px;background:var(--accent);margin:1px auto -4px}
+#start-button{width:42px;min-width:42px;display:grid;place-items:center;padding:0}
+.start-logo{width:22px;height:22px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;transform:perspective(35px) rotateY(-9deg)}
+.start-logo span{background:#60a5fa;border-radius:1px}
+#start-button:hover .start-logo span{background:#93c5fd}
+#task-search{height:36px;width:190px;border-radius:5px;border:1px solid var(--border);background:#ffffff17;color:white;padding:0 12px}
+#task-search::placeholder{color:#cbd5e1}
+.tray{position:absolute;right:12px;display:flex;align-items:center;gap:12px;font-size:12px}
+.tray button{border:0;background:transparent;border-radius:4px;padding:5px;font-size:15px}
+#clock{text-align:center;line-height:17px;min-width:75px}
+.panel{background:var(--panel);backdrop-filter:blur(30px) saturate(150%);border:1px solid var(--border);box-shadow:0 18px 60px #0006;border-radius:9px}
+#start-menu{display:none;position:fixed;z-index:8000;width:min(530px,calc(100vw - 20px));height:min(600px,calc(100vh - 75px));bottom:60px;left:50%;transform:translateX(-50%);padding:23px;overflow:auto}
+#start-menu.open{display:block}
+.search-box,.field{width:100%;padding:11px 13px;border-radius:5px;color:white;background:#ffffff0d;border:1px solid var(--border)}
+.search-box{margin-bottom:20px}
+.panel-heading{font-size:17px;font-weight:600;margin-bottom:15px}
+.app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.app-tile{display:flex;align-items:center;flex-direction:column;justify-content:center;gap:9px;min-height:90px;background:transparent;border:1px solid transparent;border-radius:6px;font-size:12px}
+.app-tile:hover{background:#ffffff19}
+.app-tile .icon{font-size:28px}
+.start-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:22px;padding-top:16px}
+.start-bottom button,.soft-button{background:#ffffff0d;border:1px solid var(--border);border-radius:5px;padding:8px 12px}
+#notifications{display:none;position:fixed;z-index:8100;right:12px;bottom:60px;width:min(330px,calc(100vw - 24px));padding:20px}
+#notifications.open{display:block}
+.window{position:absolute;z-index:100;width:650px;height:450px;max-width:calc(100vw - 16px);max-height:calc(100% - 12px);min-width:290px;min-height:210px;display:flex;flex-direction:column;overflow:hidden;background:#1c2534f7;border:1px solid #ffffff2b;border-radius:8px;box-shadow:0 24px 70px #0007;resize:both}
+.window.hidden{display:none}
+.window.maximized{inset:0!important;width:100%!important;height:100%!important;max-width:100%;max-height:100%;resize:none;border-radius:0}
+.titlebar{height:43px;min-height:43px;display:flex;align-items:center;gap:9px;padding-left:13px;background:#ffffff09;border-bottom:1px solid var(--border);cursor:grab;touch-action:none}
+.titlebar:active{cursor:grabbing}
+.title-icon{font-size:18px}
+.window-title{font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.window-controls{display:flex;height:100%;flex-shrink:0}
+.window-controls button{width:43px;border:0;background:transparent;font-size:14px}
+.window-controls button:hover{background:#ffffff20}
+.window-controls .close:hover{background:#c42b1c}
+.window-body{flex:1;min-height:0;overflow:auto}
+.toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.toolbar button,.primary{border:1px solid var(--border);border-radius:5px;padding:7px 12px;background:#ffffff0d}
+.primary{background:var(--dark);border-color:transparent}
+.primary:hover{filter:brightness(1.15)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.note-layout{display:flex;height:100%;min-height:0}
+.note-sidebar{width:175px;min-width:125px;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:10px;gap:7px}
+.note-list{overflow:auto;flex:1}
+.note-item{padding:10px;border-radius:5px;margin-bottom:4px;cursor:pointer;font-size:12px;overflow:hidden}
+.note-item.selected,.note-item:hover{background:#ffffff19}
+.note-editor{display:flex;flex-direction:column;flex:1;min-width:0;padding:15px;gap:10px}
+.note-editor input{font-size:20px;font-weight:600;background:transparent;color:white;border:0;outline:none;padding:4px 0}
+.note-editor textarea{flex:1;min-height:0;resize:none;background:transparent;color:#e5edf8;border:0;outline:none;font:14px/1.65 "Segoe UI",sans-serif}
+.status{font-size:11px;color:var(--muted)}
+.terminal{height:100%;padding:15px;overflow:auto;background:#090d12;color:#d1fae5;font:13px/1.6 Consolas,monospace}
+.terminal-output{white-space:pre-wrap;overflow-wrap:anywhere}
+.terminal-line{display:flex;gap:8px;margin-top:5px}
+.terminal-line span{color:#86efac}
+.terminal-line input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#d1fae5;font:inherit}
+.settings-content{padding:20px}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid var(--border)}
+.setting small{display:block;color:var(--muted);margin-top:5px}
+.setting select{background:#263449;color:white;border:1px solid var(--border);padding:8px;border-radius:5px}
+.setting input[type=checkbox]{accent-color:var(--accent)}
+.colors{display:flex;gap:9px;flex-wrap:wrap}
+.color-dot{width:29px;height:29px;border-radius:50%;border:2px solid #ffffff66}
+.color-dot:hover{outline:2px solid white;outline-offset:2px}
+.welcome-content{padding:35px;display:flex;flex-direction:column;gap:17px}
+.welcome-mark{width:65px;height:65px;display:grid;place-items:center;border-radius:15px;background:var(--dark);font-size:32px}
+.welcome-content h1{font-size:28px;margin:0}
+.welcome-content p{color:#c5d0df;line-height:1.6;max-width:440px}
+.welcome-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+.apps-content{padding:15px}
+.apps-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:15px}
+.apps-tabs button{border:1px solid var(--border);background:transparent;border-radius:5px;padding:7px 12px}
+.apps-tabs button.selected{background:var(--dark)}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
+.store-card{padding:13px;border:1px solid var(--border);border-radius:7px;background:#ffffff08;min-width:0}
+.store-card h3{font-size:14px;margin:0 0 7px;overflow-wrap:anywhere}
+.store-card p{font-size:12px;line-height:1.5;color:var(--muted);min-height:35px}
+.store-card .install-actions{display:flex;gap:6px;margin-top:10px}
+.store-card .install-actions button{flex:1;min-width:0;padding:7px 5px;font-size:12px}
+.installed-label{color:#86efac;font-size:12px;margin-top:8px}
+.installed-app-window .window-body{display:flex;flex-direction:column;min-height:0;background:white}
+.installed-app-window iframe{width:100%;height:100%;flex:1;border:0;background:white}
+.app-loading{padding:8px 12px;background:#202938;color:white;font-size:12px}
+.empty{color:var(--muted);font-size:13px;padding:15px 0}
+#context-menu{display:none;position:fixed;z-index:9999;padding:6px;min-width:175px}
+#context-menu button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:9px;border-radius:4px;font-size:13px}
+#context-menu button:hover{background:#ffffff1f}
+#toast{position:fixed;right:18px;bottom:67px;z-index:10000;background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:12px 16px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;font-size:13px}
+#toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:105px;min-width:105px}.note-editor{padding:9px}.app-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
+
 <div id="desktop">
   <div class="desktop-icons">
-    <button class="desktop-icon" data-open="welcome">
-      <span class="icon">👋</span>Welcome
-    </button>
-    <button class="desktop-icon" data-open="notes">
-      <span class="icon">📝</span>Notes
-    </button>
-    <button class="desktop-icon" data-open="terminal">
-      <span class="icon">⌨️</span>Terminal
-    </button>
-    <button class="desktop-icon" data-open="settings">
-      <span class="icon">⚙️</span>Settings
-    </button>
-    <button class="desktop-icon" data-open="store">
-      <span class="icon">🛍️</span>VUS Apps
-    </button>
+    <button class="desktop-icon" data-open="welcome"><span class="icon">👋</span>Welcome</button>
+    <button class="desktop-icon" data-open="notes"><span class="icon">📝</span>Notes</button>
+    <button class="desktop-icon" data-open="terminal"><span class="icon">⌨️</span>Terminal</button>
+    <button class="desktop-icon" data-open="settings"><span class="icon">⚙️</span>Settings</button>
+    <button class="desktop-icon" data-open="store"><span class="icon">🛍️</span>VUS Apps</button>
   </div>
 </div>
 
 <div id="taskbar">
-  <button class="task-button" id="start-button" title="Start">⊞</button>
+  <button class="task-button" id="start-button" title="Start" aria-label="Start menu">
+    <span class="start-logo" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </span>
+  </button>
   <input id="task-search" placeholder="Search apps..." aria-label="Search apps">
   <div class="task-apps" id="task-apps"></div>
   <div class="tray">
@@ -349,26 +144,25 @@ button:focus-visible,input:focus-visible,textarea:focus-visible {
   <div class="panel-heading">Pinned</div>
   <div class="app-grid" id="pinned-apps"></div>
   <div class="start-bottom">
-    <span style="font-size:13px">Desktop</span>
+    <span>Desktop</span>
     <button onclick="openApp('settings')">⚙ Settings</button>
   </div>
 </div>
 
 <div id="notifications" class="panel">
   <div class="panel-heading">Notifications</div>
-  <p style="font-size:13px;color:var(--muted)">You're all caught up.</p>
+  <p style="color:var(--muted)">You're all caught up.</p>
   <button class="soft-button" onclick="toggleNotifications()">Close</button>
 </div>
 
 <div id="context-menu" class="panel">
   <button onclick="openApp('settings');hideContext()">⚙ Personalize</button>
-  <button onclick="openApp('notes');hideContext()">📝 New note</button>
+  <button onclick="openApp('notes');newNote();hideContext()">📝 New note</button>
   <button onclick="openApp('terminal');hideContext()">⌨ Open terminal</button>
   <button onclick="refreshDesktop()">↻ Refresh</button>
 </div>
 <div id="toast"></div>
 
-<!-- Welcome -->
 <section class="window" id="win-welcome" style="left:calc(50% - 300px);top:calc(50% - 200px);width:600px;height:400px">
   <header class="titlebar">
     <span class="title-icon">👋</span><span class="window-title">Welcome</span>
@@ -381,10 +175,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible {
   <div class="window-body welcome-content">
     <div class="welcome-mark">✦</div>
     <h1>Welcome to your desktop</h1>
-    <p>A simple browser-based desktop environment. Open your apps from the desktop or Start menu. Your notes and preferences stay saved in this browser.</p>
+    <p>Your own browser-based desktop. Open apps, write notes, customize your workspace, or install web apps from the catalog.</p>
     <div class="welcome-actions">
-      <button class="primary" onclick="openApp('notes');closeApp('welcome')">Open Notes →</button>
-      <button class="soft-button" onclick="openApp('store');closeApp('welcome')">Explore apps</button>
+      <button class="primary" onclick="safeSet('desktop.welcomed',true);openApp('notes');closeApp('welcome')">Open Notes →</button>
+      <button class="soft-button" onclick="safeSet('desktop.welcomed',true);openApp('store');closeApp('welcome')">Explore apps</button>
     </div>
     <label style="font-size:12px;color:var(--muted)">
       <input type="checkbox" id="dont-show"> Don't show this again at startup
@@ -392,7 +186,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible {
   </div>
 </section>
 
-<!-- Notes -->
 <section class="window hidden" id="win-notes" style="left:calc(50% - 350px);top:calc(50% - 250px)">
   <header class="titlebar">
     <span class="title-icon">📝</span><span class="window-title">Notes</span>
@@ -417,7 +210,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible {
   </div>
 </section>
 
-<!-- Terminal -->
 <section class="window hidden" id="win-terminal" style="left:calc(50% - 325px);top:calc(50% - 220px);width:650px;height:440px">
   <header class="titlebar">
     <span class="title-icon">⌨️</span><span class="window-title">Terminal</span>
@@ -428,7 +220,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible {
     </div>
   </header>
   <div class="window-body terminal" id="terminal">
-    <div class="terminal-output" id="terminal-output">Browser Desktop [Version 1.0]
+    <div class="terminal-output" id="terminal-output">Desktop Shell [Version 1.1]
 Type "help" to see available commands.
 
 </div>
@@ -436,7 +228,6 @@ Type "help" to see available commands.
   </div>
 </section>
 
-<!-- Settings -->
 <section class="window hidden" id="win-settings" style="left:calc(50% - 300px);top:calc(50% - 235px);width:600px;height:470px">
   <header class="titlebar">
     <span class="title-icon">⚙️</span><span class="window-title">Settings</span>
@@ -448,9 +239,9 @@ Type "help" to see available commands.
   </header>
   <div class="window-body settings-content">
     <h2 style="margin-top:0">Personalization</h2>
-    <p style="color:var(--muted);font-size:13px">Customize the look and behavior of your desktop.</p>
+    <p style="color:var(--muted)">Customize your desktop.</p>
     <div class="setting">
-      <div><strong>Accent color</strong><small>Choose the interface highlight color.</small></div>
+      <div><strong>Accent color</strong><small>Choose an interface highlight.</small></div>
       <div class="colors">
         <button class="color-dot" style="background:#60a5fa" onclick="setAccent('#60a5fa','#2563eb')" aria-label="Blue"></button>
         <button class="color-dot" style="background:#a78bfa" onclick="setAccent('#a78bfa','#6d28d9')" aria-label="Purple"></button>
@@ -469,18 +260,17 @@ Type "help" to see available commands.
       </select>
     </div>
     <div class="setting">
-      <div><strong>Show welcome at startup</strong><small>Show the welcome window on the next launch.</small></div>
+      <div><strong>Show welcome at startup</strong><small>Show Welcome on the next launch.</small></div>
       <input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)">
     </div>
     <div class="setting">
-      <div><strong>Reset preferences</strong><small>Restore the default appearance.</small></div>
+      <div><strong>Reset preferences</strong><small>Restore default appearance.</small></div>
       <button class="soft-button" onclick="resetSettings()">Reset</button>
     </div>
     <p class="status">Preferences are saved in your browser.</p>
   </div>
 </section>
 
-<!-- App library -->
 <section class="window hidden" id="win-store" style="left:calc(50% - 360px);top:calc(50% - 255px);width:720px;height:510px">
   <header class="titlebar">
     <span class="title-icon">🛍️</span><span class="window-title">VUS Apps</span>
@@ -505,261 +295,220 @@ Type "help" to see available commands.
 </section>
 
 <script>
-const $ = id => document.getElementById(id);
-const APP_NAMES = {
+const $=id=>document.getElementById(id);
+const APP_NAMES={
   welcome:{title:"Welcome",icon:"👋"},
   notes:{title:"Notes",icon:"📝"},
   terminal:{title:"Terminal",icon:"⌨️"},
   settings:{title:"Settings",icon:"⚙️"},
   store:{title:"VUS Apps",icon:"🛍️"}
 };
-let zIndex = 200;
-let activeNoteId = null;
-let noteTimer;
-let storeCategory = "all";
-let storeItems = [];
-let terminalHistory = [];
-let terminalHistoryIndex = 0;
+let zIndex=200,activeNoteId=null,noteTimer;
+let storeCategory="all",storeItems=[],terminalHistory=[],terminalHistoryIndex=0;
 
-function safeGet(key,fallback) {
-  try {
-    const value = localStorage.getItem(key);
-    return value === null ? fallback : JSON.parse(value);
-  } catch { return fallback; }
+function safeGet(key,fallback){
+  try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}
+  catch{return fallback}
 }
-function safeSet(key,value) {
-  try { localStorage.setItem(key,JSON.stringify(value)); }
-  catch { toast("Browser storage is unavailable."); }
+function safeSet(key,value){
+  try{localStorage.setItem(key,JSON.stringify(value))}
+  catch{toast("Browser storage is unavailable.")}
 }
-function toast(message) {
-  $("toast").textContent = message;
+function toast(message){
+  $("toast").textContent=message;
   $("toast").classList.add("show");
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(()=>$("toast").classList.remove("show"),2400);
+  toast.timer=setTimeout(()=>$("toast").classList.remove("show"),2400);
 }
 
-function openApp(name) {
-  const win = $("win-"+name);
-  if (!win) return;
+function openApp(name){
+  const win=$("win-"+name);
+  if(!win)return;
   $("start-menu").classList.remove("open");
   $("notifications").classList.remove("open");
   win.classList.remove("hidden");
-  win.style.zIndex = ++zIndex;
-  document.querySelectorAll(".task-button[data-app]").forEach(b=>{
-    b.classList.toggle("active",b.dataset.app===name);
-  });
-  if (name==="notes") renderNotes();
-  if (name==="store" && !storeItems.length) loadStore();
-  if (name==="terminal") setTimeout(()=>$("terminal-input").focus(),50);
+  win.style.zIndex=++zIndex;
+  document.querySelectorAll(".task-button[data-app]").forEach(b=>b.classList.toggle("active",b.dataset.app===name));
+  if(name==="notes")renderNotes();
+  if(name==="store"&&!storeItems.length)loadStore();
+  if(name==="terminal")setTimeout(()=>$("terminal-input").focus(),50);
 }
-function closeApp(name) {
-  $("win-"+name).classList.add("hidden");
-  document.querySelectorAll(".task-button[data-app]").forEach(b=>{
-    b.classList.toggle("active",false);
-  });
-}
-function minimizeApp(name) { $("win-"+name).classList.add("hidden"); }
-function maximizeApp(name) {
+function closeApp(name){$("win-"+name).classList.add("hidden")}
+function minimizeApp(name){$("win-"+name).classList.add("hidden")}
+function maximizeApp(name){
   const w=$("win-"+name);
-  if (!w.classList.contains("maximized")) {
-    w.dataset.oldStyle = JSON.stringify({
-      left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height
-    });
+  if(!w.classList.contains("maximized")){
+    w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});
     w.classList.add("maximized");
-  } else {
+  }else{
     w.classList.remove("maximized");
-    try {
-      const s=JSON.parse(w.dataset.oldStyle||"{}");
-      Object.assign(w.style,s);
-    } catch {}
+    try{Object.assign(w.style,JSON.parse(w.dataset.oldStyle||"{}"))}catch{}
   }
 }
-function toggleStart() {
+function toggleStart(){
   $("notifications").classList.remove("open");
   $("start-menu").classList.toggle("open");
-  if ($("start-menu").classList.contains("open")) {
+  if($("start-menu").classList.contains("open")){
     $("start-search").value="";
     renderPinned("");
     $("start-search").focus();
   }
 }
-function toggleNotifications() {
+function toggleNotifications(){
   $("start-menu").classList.remove("open");
   $("notifications").classList.toggle("open");
 }
-$("start-button").addEventListener("click",toggleStart);
-$("notify-button").addEventListener("click",toggleNotifications);
+$("start-button").onclick=toggleStart;
+$("notify-button").onclick=toggleNotifications;
 
-function makeTaskButton(name) {
-  if (document.querySelector('.task-button[data-app="'+name+'"]')) return;
+function makeTaskButton(name){
+  if(document.querySelector('.task-button[data-app="'+name+'"]'))return;
   const b=document.createElement("button");
-  b.className="task-button";
-  b.dataset.app=name;
-  b.title=APP_NAMES[name].title;
-  b.textContent=APP_NAMES[name].icon;
-  b.addEventListener("click",()=>{
+  b.className="task-button";b.dataset.app=name;b.title=APP_NAMES[name].title;b.textContent=APP_NAMES[name].icon;
+  b.onclick=()=>{
     const win=$("win-"+name);
-    if (win.classList.contains("hidden")) openApp(name);
-    else if (Number(win.style.zIndex)===zIndex) minimizeApp(name);
+    if(win.classList.contains("hidden"))openApp(name);
+    else if(Number(win.style.zIndex)===zIndex)minimizeApp(name);
     else openApp(name);
-  });
+  };
   $("task-apps").appendChild(b);
 }
 Object.keys(APP_NAMES).forEach(makeTaskButton);
 document.querySelectorAll("[data-open]").forEach(b=>{
   b.addEventListener("dblclick",()=>openApp(b.dataset.open));
-  b.addEventListener("click",()=>{
-    if (window.matchMedia("(pointer: coarse)").matches) openApp(b.dataset.open);
-  });
+  b.addEventListener("click",()=>{if(matchMedia("(pointer: coarse)").matches)openApp(b.dataset.open)});
 });
 
-function renderPinned(query="") {
-  const host=$("pinned-apps");
-  host.replaceChildren();
-  Object.entries(APP_NAMES).filter(([key,a])=>
-    (a.title+" "+key).toLowerCase().includes(query.toLowerCase())
-  ).forEach(([key,a])=>{
-    const b=document.createElement("button");
-    b.className="app-tile";
-    const icon=document.createElement("span");
-    icon.className="icon";icon.textContent=a.icon;
+function renderPinned(query=""){
+  const host=$("pinned-apps");host.replaceChildren();
+  Object.entries(APP_NAMES).filter(([key,a])=>(a.title+" "+key).toLowerCase().includes(query.toLowerCase())).forEach(([key,a])=>{
+    const b=document.createElement("button");b.className="app-tile";
+    const icon=document.createElement("span");icon.className="icon";icon.textContent=a.icon;
     const label=document.createElement("span");label.textContent=a.title;
     b.append(icon,label);b.onclick=()=>openApp(key);host.appendChild(b);
   });
-  if (!host.children.length) host.textContent="No apps found.";
+  getInstalledApps().filter(a=>(a.name+" "+a.key).toLowerCase().includes(query.toLowerCase())).forEach(app=>{
+    const b=document.createElement("button");b.className="app-tile";
+    const icon=document.createElement("span");icon.className="icon";icon.textContent=app.icon||"🌐";
+    const label=document.createElement("span");label.textContent=app.name;
+    b.append(icon,label);b.onclick=()=>openInstalledApp(app.key);host.appendChild(b);
+  });
+  if(!host.children.length)host.textContent="No apps found.";
 }
-$("start-search").addEventListener("input",e=>renderPinned(e.target.value));
+$("start-search").oninput=e=>renderPinned(e.target.value);
 $("task-search").addEventListener("keydown",e=>{
-  if(e.key==="Enter") {toggleStart();$("start-search").value=e.target.value;renderPinned(e.target.value);}
+  if(e.key==="Enter"){
+    $("start-menu").classList.add("open");
+    $("start-search").value=e.target.value;
+    renderPinned(e.target.value);
+    $("start-search").focus();
+  }
 });
-$("task-search").addEventListener("focus",()=>{});
 renderPinned("");
 
-/* Window dragging */
+/* Draggable windows */
+document.querySelectorAll(".window").forEach(win=>{
+  win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex);
+});
 document.querySelectorAll(".titlebar").forEach(bar=>{
-  let startX=0,startY=0,origX=0,origY=0,dragging=false;
+  let sx=0,sy=0,ox=0,oy=0,dragging=false;
   bar.addEventListener("pointerdown",e=>{
-    if(e.target.closest(".window-controls")) return;
+    if(e.target.closest(".window-controls"))return;
     const win=bar.closest(".window");
-    if(win.classList.contains("maximized")) return;
-    dragging=true;
-    startX=e.clientX;startY=e.clientY;
-    origX=win.offsetLeft;origY=win.offsetTop;
+    if(win.classList.contains("maximized"))return;
+    dragging=true;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;
     win.style.zIndex=++zIndex;
     bar.setPointerCapture(e.pointerId);
   });
   bar.addEventListener("pointermove",e=>{
     if(!dragging)return;
     const win=bar.closest(".window");
-    win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,origX+e.clientX-startX))+"px";
-    win.style.top=Math.max(0,Math.min(innerHeight-60,origY+e.clientY-startY))+"px";
+    win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+e.clientX-sx))+"px";
+    win.style.top=Math.max(0,Math.min(innerHeight-60,oy+e.clientY-sy))+"px";
   });
   bar.addEventListener("pointerup",()=>dragging=false);
   bar.addEventListener("pointercancel",()=>dragging=false);
 });
-document.querySelectorAll(".window").forEach(win=>{
-  win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex);
-});
 
 $("desktop").addEventListener("contextmenu",e=>{
   e.preventDefault();
-  const menu=$("context-menu");
-  menu.style.display="block";
-  menu.style.left=Math.min(e.clientX,innerWidth-190)+"px";
-  menu.style.top=Math.min(e.clientY,innerHeight-150)+"px";
+  const m=$("context-menu");m.style.display="block";
+  m.style.left=Math.min(e.clientX,innerWidth-190)+"px";
+  m.style.top=Math.min(e.clientY,innerHeight-150)+"px";
 });
-function hideContext() {$("context-menu").style.display="none";}
+function hideContext(){$("context-menu").style.display="none"}
+function refreshDesktop(){hideContext();renderInstalledShortcuts();toast("Desktop refreshed.")}
 document.addEventListener("click",e=>{
   if(!e.target.closest("#context-menu"))hideContext();
   if(!e.target.closest("#start-menu")&&!e.target.closest("#start-button")&&!e.target.closest("#task-search"))$("start-menu").classList.remove("open");
   if(!e.target.closest("#notifications")&&!e.target.closest("#notify-button"))$("notifications").classList.remove("open");
 });
-function refreshDesktop() {hideContext();toast("Desktop refreshed.");}
 
 /* Clock */
-function updateClock() {
+function updateClock(){
   const d=new Date();
-  $("clock").innerHTML=d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})+
-    "<br>"+d.toLocaleDateString([], {month:"numeric",day:"numeric",year:"numeric"});
+  $("clock").innerHTML=d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+"<br>"+d.toLocaleDateString([],{month:"numeric",day:"numeric",year:"numeric"});
 }
 updateClock();setInterval(updateClock,15000);
 
 /* Notes */
-function getNotes() {return safeGet("desktop.notes",[]);}
-function saveNotes(notes) {safeSet("desktop.notes",notes);}
-function renderNotes() {
-  const notes=getNotes(),host=$("note-list");
-  host.replaceChildren();
-  if(!notes.length) {
+function getNotes(){return safeGet("desktop.notes",[])}
+function saveNotes(notes){safeSet("desktop.notes",notes)}
+function renderNotes(){
+  const notes=getNotes(),host=$("note-list");host.replaceChildren();
+  if(!notes.length){
     const p=document.createElement("div");p.className="empty";p.textContent="No notes yet.";host.appendChild(p);
     activeNoteId=null;$("note-title").value="";$("note-text").value="";
-    $("note-status").textContent="Create a note to get started.";
-    return;
+    $("note-status").textContent="Create a note to get started.";return;
   }
   if(!notes.some(n=>n.id===activeNoteId))activeNoteId=notes[0].id;
   notes.forEach(n=>{
-    const b=document.createElement("div");
-    b.className="note-item"+(n.id===activeNoteId?" selected":"");
-    const title=document.createElement("div");
-    title.style.fontWeight="600";title.textContent=n.title||"Untitled note";
-    const preview=document.createElement("div");
-    preview.style.color="var(--muted)";
-    preview.style.marginTop="5px";
-    preview.textContent=(n.text||"").slice(0,42)||"Empty note";
-    b.append(title,preview);
-    b.onclick=()=>{saveActiveNote();activeNoteId=n.id;renderNotes();};
-    host.appendChild(b);
+    const b=document.createElement("div");b.className="note-item"+(n.id===activeNoteId?" selected":"");
+    const title=document.createElement("div");title.style.fontWeight="600";title.textContent=n.title||"Untitled note";
+    const preview=document.createElement("div");preview.style.color="var(--muted)";preview.style.marginTop="5px";preview.textContent=(n.text||"").slice(0,42)||"Empty note";
+    b.append(title,preview);b.onclick=()=>{saveActiveNote();activeNoteId=n.id;renderNotes()};host.appendChild(b);
   });
   const active=notes.find(n=>n.id===activeNoteId);
-  $("note-title").value=active.title||"";
-  $("note-text").value=active.text||"";
-  $("note-status").textContent="Saved locally";
+  $("note-title").value=active.title||"";$("note-text").value=active.text||"";$("note-status").textContent="Saved locally";
 }
-function saveActiveNote() {
+function saveActiveNote(){
   if(!activeNoteId)return;
-  const notes=getNotes(),n=notes.find(x=>x.id===activeNoteId);
-  if(!n)return;
-  n.title=$("note-title").value;
-  n.text=$("note-text").value;
-  n.updated=Date.now();
-  saveNotes(notes);
-  $("note-status").textContent="Saved at "+new Date().toLocaleTimeString();
+  const notes=getNotes(),n=notes.find(x=>x.id===activeNoteId);if(!n)return;
+  n.title=$("note-title").value;n.text=$("note-text").value;n.updated=Date.now();
+  saveNotes(notes);$("note-status").textContent="Saved at "+new Date().toLocaleTimeString();
 }
-function scheduleNoteSave() {
-  $("note-status").textContent="Saving…";
-  clearTimeout(noteTimer);
-  noteTimer=setTimeout(()=>{saveActiveNote();renderNotes();},300);
+function scheduleNoteSave(){
+  $("note-status").textContent="Saving…";clearTimeout(noteTimer);
+  noteTimer=setTimeout(()=>{saveActiveNote();renderNotes()},300);
 }
-function newNote() {
-  const notes=getNotes();
-  const n={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:"",text:"",updated:Date.now()};
-  notes.unshift(n);saveNotes(notes);activeNoteId=n.id;renderNotes();
-  $("note-title").focus();
+function newNote(){
+  const notes=getNotes(),n={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:"",text:"",updated:Date.now()};
+  notes.unshift(n);saveNotes(notes);activeNoteId=n.id;renderNotes();$("note-title").focus();
 }
-function deleteNote() {
+function deleteNote(){
   if(!activeNoteId)return toast("Select a note first.");
-  const notes=getNotes().filter(n=>n.id!==activeNoteId);
-  saveNotes(notes);activeNoteId=notes[0]?.id||null;renderNotes();toast("Note deleted.");
+  saveNotes(getNotes().filter(n=>n.id!==activeNoteId));
+  activeNoteId=null;renderNotes();toast("Note deleted.");
 }
-function exportNote() {
+function exportNote(){
   if(!activeNoteId)return toast("Select a note first.");
   saveActiveNote();
   const n=getNotes().find(x=>x.id===activeNoteId);
   const blob=new Blob([n.title+"\n\n"+n.text],{type:"text/plain;charset=utf-8"});
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download=(n.title||"note").replace(/[\\/:*?"<>|]/g,"_")+".txt";
-  a.click();URL.revokeObjectURL(url);
+  a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 $("note-title").addEventListener("input",scheduleNoteSave);
 $("note-text").addEventListener("input",scheduleNoteSave);
 
 /* Settings */
-function setAccent(color,dark) {
+function setAccent(color,dark){
   document.documentElement.style.setProperty("--accent",color);
-  document.documentElement.style.setProperty("--accent-dark",dark);
+  document.documentElement.style.setProperty("--dark",dark);
   safeSet("desktop.accent",{color,dark});
 }
-function setWallpaper(value) {
+function setWallpaper(value){
   const backgrounds={
     blue:"radial-gradient(ellipse at 75% 38%,rgba(65,130,255,.7),transparent 38%),radial-gradient(ellipse at 68% 45%,rgba(27,80,180,.8),transparent 45%),linear-gradient(135deg,#081226,#152a50 55%,#071020)",
     purple:"radial-gradient(ellipse at 70% 40%,#7245b9,transparent 45%),linear-gradient(135deg,#130c28,#37204f,#101020)",
@@ -769,192 +518,261 @@ function setWallpaper(value) {
   $("desktop").style.background=backgrounds[value]||backgrounds.blue;
   safeSet("desktop.wallpaper",value);
 }
-function saveWelcomeSetting(enabled) {safeSet("desktop.showWelcome",enabled);}
-function resetSettings() {
-  localStorage.removeItem("desktop.accent");
-  localStorage.removeItem("desktop.wallpaper");
-  localStorage.removeItem("desktop.showWelcome");
-  setAccent("#60a5fa","#2563eb");setWallpaper("blue");
-  $("welcome-setting").checked=true;
-  toast("Preferences restored.");
+function saveWelcomeSetting(enabled){safeSet("desktop.showWelcome",enabled)}
+function resetSettings(){
+  localStorage.removeItem("desktop.accent");localStorage.removeItem("desktop.wallpaper");localStorage.removeItem("desktop.showWelcome");
+  setAccent("#60a5fa","#2563eb");setWallpaper("blue");$("welcome-setting").checked=true;toast("Preferences restored.");
 }
-function loadSettings() {
-  const accent=safeGet("desktop.accent",null);
-  if(accent)setAccent(accent.color,accent.dark);
+function loadSettings(){
+  const a=safeGet("desktop.accent",null);if(a)setAccent(a.color,a.dark);
   setWallpaper(safeGet("desktop.wallpaper","blue"));
   $("welcome-setting").checked=safeGet("desktop.showWelcome",true);
 }
 loadSettings();
 
-/* Terminal: a simulated shell, not the real operating system terminal */
-function printTerminal(text="") {
-  const out=$("terminal-output");
-  out.textContent+=String(text)+"\n";
-  $("terminal").scrollTop=$("terminal").scrollHeight;
+/* Installed web apps */
+function getInstalledApps(){return safeGet("desktop.installedApps",[])}
+function saveInstalledApps(apps){safeSet("desktop.installedApps",apps)}
+function appKey(name){
+  return String(name).toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,55);
 }
-function runCommand(raw) {
-  const parts=raw.trim().split(/\s+/);
-  const cmd=(parts.shift()||"").toLowerCase();
-  const arg=parts.join(" ");
-  printTerminal("desktop> "+raw);
-  switch(cmd) {
-    case "":
-      break;
-    case "help":
-      printTerminal("Available commands:\nhelp, date, time, apps, notes, settings, store, clear, echo <text>, about, version, whoami, open <app>");
-      break;
-    case "date": case "time":
-      printTerminal(new Date().toString());break;
-    case "apps":
-      printTerminal(Object.entries(APP_NAMES).map(([k,v])=>k+" — "+v.title).join("\n"));break;
-    case "notes":
-      printTerminal(getNotes().length+" saved note(s).");break;
-    case "settings":openApp("settings");printTerminal("Opening Settings.");break;
-    case "store":openApp("store");printTerminal("Opening VUS Apps.");break;
-    case "clear":$("terminal-output").textContent="";break;
-    case "echo":printTerminal(arg);break;
-    case "about":printTerminal("Browser desktop environment.\nRuns inside your web browser.");break;
-    case "version":printTerminal("Desktop version 1.0");break;
-    case "whoami":printTerminal("local-user");break;
-    case "open":
-      if(APP_NAMES[arg]) {openApp(arg);printTerminal("Opening "+arg+".");}
-      else printTerminal("App not found. Type apps to list available apps.");
-      break;
-    default:printTerminal("Command not found: "+cmd+". Type help.");
+function findCatalogApp(name){
+  const q=String(name).trim().toLowerCase();
+  return storeItems.find(a=>a.name.trim().toLowerCase()===q)||storeItems.find(a=>appKey(a.name)===appKey(name))||null;
+}
+function installApp(app){
+  if(!app||!app.url||app.url==="#"){toast("This app has no launch URL configured.");return false}
+  let url;
+  try{url=new URL(app.url,location.href)}catch{toast("Invalid app URL.");return false}
+  if(!["http:","https:"].includes(url.protocol)){toast("Only web URLs can be installed.");return false}
+  const installed=getInstalledApps(),key=appKey(app.name);
+  if(installed.some(a=>a.key===key)){toast(app.name+" is already installed.");return true}
+  installed.push({key,name:app.name,url:url.href,icon:app.icon||"🌐",desc:app.desc||"",category:app.category||"apps",installedAt:Date.now()});
+  saveInstalledApps(installed);renderInstalledShortcuts();renderPinned($("start-search").value);renderStore();
+  toast(app.name+" installed successfully.");return true;
+}
+function uninstallApp(key){
+  const app=getInstalledApps().find(a=>a.key===key);if(!app)return;
+  if(!confirm("Uninstall "+app.name+"?"))return;
+  saveInstalledApps(getInstalledApps().filter(a=>a.key!==key));
+  $("installed-window-"+key)?.remove();$("installed-task-"+key)?.remove();
+  renderInstalledShortcuts();renderPinned($("start-search").value);renderStore();toast(app.name+" uninstalled.");
+}
+function renderInstalledShortcuts(){
+  document.querySelectorAll(".installed-desktop-icon").forEach(el=>el.remove());
+  const host=document.querySelector(".desktop-icons");
+  getInstalledApps().forEach(app=>{
+    const b=document.createElement("button");b.className="desktop-icon installed-desktop-icon";
+    const icon=document.createElement("span");icon.className="icon";icon.textContent=app.icon||"🌐";
+    const label=document.createElement("span");label.textContent=app.name;
+    const remove=document.createElement("span");remove.className="uninstall-shortcut";remove.textContent="×";remove.title="Uninstall";
+    remove.style.cssText="position:absolute;right:0;top:0;width:21px;height:21px;display:none;border:0;border-radius:50%;background:#b91c1c;color:white";
+    b.onmouseenter=()=>remove.style.display="block";b.onmouseleave=()=>remove.style.display="none";
+    remove.onclick=e=>{e.stopPropagation();uninstallApp(app.key)};
+    b.append(icon,label,remove);
+    b.ondblclick=()=>openInstalledApp(app.key);
+    b.onclick=()=>{if(matchMedia("(pointer:coarse)").matches)openInstalledApp(app.key)};
+    host.appendChild(b);
+  });
+}
+function makeInstalledTaskButton(app){
+  let b=$("installed-task-"+app.key);if(b)return b;
+  b=document.createElement("button");b.id="installed-task-"+app.key;b.className="task-button";b.title=app.name;b.textContent=app.icon||"🌐";
+  b.onclick=()=>{
+    const win=$("installed-window-"+app.key);
+    if(!win)openInstalledApp(app.key);
+    else if(win.classList.contains("hidden")){win.classList.remove("hidden");win.style.zIndex=++zIndex}
+    else win.classList.add("hidden");
+  };
+  $("task-apps").appendChild(b);return b;
+}
+function openInstalledApp(key){
+  const app=getInstalledApps().find(a=>a.key===key);if(!app){toast("This app is not installed.");return}
+  let url;try{url=new URL(app.url)}catch{toast("Invalid app URL.");return}
+  if(!["http:","https:"].includes(url.protocol)){toast("Unsupported URL.");return}
+  let win=$("installed-window-"+key);
+  if(win){win.classList.remove("hidden");win.style.zIndex=++zIndex;makeInstalledTaskButton(app).classList.add("active");return}
+  win=document.createElement("section");win.id="installed-window-"+key;win.className="window installed-app-window";
+  win.style.cssText="left:calc(50% - 325px);top:calc(50% - 220px);width:650px;height:440px;z-index:"+(++zIndex);
+  const bar=document.createElement("header");bar.className="titlebar";
+  const icon=document.createElement("span");icon.className="title-icon";icon.textContent=app.icon||"🌐";
+  const title=document.createElement("span");title.className="window-title";title.textContent=app.name;
+  const controls=document.createElement("div");controls.className="window-controls";
+  const min=document.createElement("button");min.textContent="—";min.onclick=()=>win.classList.add("hidden");
+  const max=document.createElement("button");max.textContent="□";max.onclick=()=>maximizeInstalledWindow(win);
+  const close=document.createElement("button");close.className="close";close.textContent="×";
+  close.onclick=()=>{win.remove();const b=$("installed-task-"+key);if(b)b.classList.remove("active")};
+  controls.append(min,max,close);bar.append(icon,title,controls);
+  const body=document.createElement("div");body.className="window-body";
+  const loading=document.createElement("div");loading.className="app-loading";loading.textContent="Loading "+app.name+"…";
+  const frame=document.createElement("iframe");frame.title=app.name;frame.referrerPolicy="strict-origin-when-cross-origin";
+  frame.setAttribute("sandbox","allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox");
+  frame.src=url.href;frame.onload=()=>loading.remove();
+  body.append(loading,frame);win.append(bar,body);$("desktop").appendChild(win);
+  makeInstalledTaskButton(app).classList.add("active");
+  attachDragging(bar,win);
+  win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex);
+}
+function maximizeInstalledWindow(win){
+  if(!win.classList.contains("maximized")){
+    win.dataset.oldStyle=JSON.stringify({left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height});
+    win.classList.add("maximized");
+  }else{
+    win.classList.remove("maximized");
+    try{Object.assign(win.style,JSON.parse(win.dataset.oldStyle||"{}"))}catch{}
   }
 }
-$("terminal-input").addEventListener("keydown",e=>{
-  if(e.key==="Enter") {
-    const value=e.target.value;e.target.value="";
-    if(value.trim()) {terminalHistory.push(value);terminalHistoryIndex=terminalHistory.length;}
-    runCommand(value);
-  } else if(e.key==="ArrowUp") {
-    e.preventDefault();
-    if(terminalHistoryIndex>0)e.target.value=terminalHistory[--terminalHistoryIndex];
-  } else if(e.key==="ArrowDown") {
-    e.preventDefault();
-    if(terminalHistoryIndex<terminalHistory.length)e.target.value=terminalHistory[++terminalHistoryIndex]||"";
-  }
-});
+function attachDragging(bar,win){
+  let sx=0,sy=0,ox=0,oy=0,drag=false;
+  bar.addEventListener("pointerdown",e=>{
+    if(e.target.closest(".window-controls")||win.classList.contains("maximized"))return;
+    drag=true;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;win.style.zIndex=++zIndex;
+    bar.setPointerCapture(e.pointerId);
+  });
+  bar.addEventListener("pointermove",e=>{
+    if(!drag)return;
+    win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+e.clientX-sx))+"px";
+    win.style.top=Math.max(0,Math.min(innerHeight-60,oy+e.clientY-sy))+"px";
+  });
+  bar.addEventListener("pointerup",()=>drag=false);
+  bar.addEventListener("pointercancel",()=>drag=false);
+}
 
-/* VUS apps catalog */
+/* VUS catalog */
 const VUS_URL="https://raw.githubusercontent.com/Cra-Z-Gaming/VUS/refs/heads/main/apps.json";
-function normalizeCatalog(data) {
+function normalizeCatalog(data){
   const output=[];
-  const groups=[
-    ["apps",data.apps||[]],["tools",data.tools||[]],
-    ["hubs",data.hubs||[]],["links",data.links||[]]
-  ];
-  groups.forEach(([category,items])=>{
+  [["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{
     if(!Array.isArray(items))return;
     items.forEach(item=>{
-      if(typeof item==="string") {
-        output.push({name:item,url:"#",desc:"VUS "+category,icon:"🌐",category});
-      } else if(item&&typeof item==="object") {
-        output.push({
-          name:item.name||item.title||"Untitled",
-          url:item.url||item.href||"#",
-          desc:item.desc||item.description||"Open this VUS resource.",
-          icon:item.icon||"🌐",
-          color:item.color||"",
-          category
-        });
-      }
-    });
-  });
-  if(!output.length&&Array.isArray(data)) {
-    data.forEach(item=>{
-      if(item&&typeof item==="object")output.push({
-        name:item.name||item.title||"Untitled",
-        url:item.url||item.href||"#",
-        desc:item.desc||item.description||"",
-        icon:item.icon||"🌐",
-        color:item.color||"",
-        category:"apps"
+      if(typeof item==="string")output.push({name:item,url:"#",desc:"VUS "+category,icon:"🌐",category});
+      else if(item&&typeof item==="object")output.push({
+        name:item.name||item.title||"Untitled",url:item.url||item.href||"#",
+        desc:item.desc||item.description||"Open this VUS resource.",
+        icon:item.icon||"🌐",category
       });
     });
-  }
+  });
+  if(!output.length&&Array.isArray(data))data.forEach(item=>{
+    if(item&&typeof item==="object")output.push({
+      name:item.name||item.title||"Untitled",url:item.url||item.href||"#",
+      desc:item.desc||item.description||"",icon:item.icon||"🌐",category:"apps"
+    });
+  });
   return output;
 }
-async function loadStore() {
+async function loadStore(){
   $("store-status").textContent="Loading the repository catalog…";
-  try {
+  try{
     const response=await fetch(VUS_URL,{cache:"no-store"});
-    if(!response.ok)throw new Error("Catalog request failed");
-    const data=await response.json();
-    storeItems=normalizeCatalog(data);
-    if(!storeItems.length)throw new Error("No catalog entries found");
+    if(!response.ok)throw Error("Catalog request failed");
+    const data=await response.json();storeItems=normalizeCatalog(data);
+    if(!storeItems.length)throw Error("No catalog entries");
     $("store-status").textContent="Loaded from the VUS repository.";
-  } catch(error) {
+  }catch{
     storeItems=[
       {name:"VUS Repository",url:"https://github.com/Cra-Z-Gaming/VUS",desc:"Browse the source repository.",icon:"💻",category:"links"},
       {name:"GitHub",url:"https://github.com",desc:"Explore projects and code.",icon:"🐙",category:"links"}
     ];
-    $("store-status").textContent="Could not load apps.json. Showing fallback links. A local file may block cross-origin requests.";
+    $("store-status").textContent="Catalog unavailable. Showing fallback links. Try hosting this HTML on GitHub Pages.";
   }
   renderStore();
 }
-function renderStore() {
-  const host=$("store-grid");
-  host.replaceChildren();
-  const q=$("store-search").value.trim().toLowerCase();
-  const items=storeItems.filter(item=>
-    (storeCategory==="all"||item.category===storeCategory)&&
-    (item.name+" "+item.desc+" "+item.category).toLowerCase().includes(q)
-  );
-  if(!items.length) {
-    const p=document.createElement("div");p.className="empty";
-    p.textContent="No matching items found.";host.appendChild(p);return;
-  }
-  items.forEach(item=>{
+function renderStore(){
+  const host=$("store-grid");host.replaceChildren();
+  const q=$("store-search").value.trim().toLowerCase(),installed=getInstalledApps();
+  const items=storeItems.filter(a=>(storeCategory==="all"||a.category===storeCategory)&&(a.name+" "+a.desc+" "+a.category).toLowerCase().includes(q));
+  if(!items.length){const e=document.createElement("div");e.className="empty";e.textContent="No matching apps found.";host.appendChild(e);return}
+  items.forEach(app=>{
+    const key=appKey(app.name),isInstalled=installed.some(a=>a.key===key);
     const card=document.createElement("article");card.className="store-card";
-    const icon=document.createElement("div");icon.className="store-icon";
-    icon.textContent=item.icon||"🌐";
-    const title=document.createElement("h3");title.textContent=item.name;
-    const desc=document.createElement("p");desc.textContent=item.desc||"";
-    const button=document.createElement("button");
-    button.className="primary";button.textContent="Open";
-    button.addEventListener("click",()=>{
-      if(!item.url||item.url==="#")return toast("This item has no link configured.");
-      let url;
-      try {url=new URL(item.url,location.href);} catch {return toast("Invalid app URL.");}
-      if(!["http:","https:"].includes(url.protocol))return toast("This link type is not supported.");
-      window.open(url.href,"_blank","noopener,noreferrer");
-    });
-    card.append(icon,title,desc,button);host.appendChild(card);
+    const icon=document.createElement("div");icon.className="store-icon";icon.textContent=app.icon||"🌐";
+    const title=document.createElement("h3");title.textContent=app.name;
+    const desc=document.createElement("p");desc.textContent=app.desc||"Web application";
+    const actions=document.createElement("div");actions.className="install-actions";
+    const install=document.createElement("button");install.className="primary";install.textContent=isInstalled?"Installed ✓":"Install";install.disabled=isInstalled;install.onclick=()=>installApp(app);
+    const open=document.createElement("button");open.className="soft-button";open.textContent="Open";open.disabled=!isInstalled;open.onclick=()=>openInstalledApp(key);
+    actions.append(install,open);card.append(icon,title,desc,actions);
+    if(isInstalled){const label=document.createElement("div");label.className="installed-label";label.textContent="✓ Installed";card.appendChild(label)}
+    host.appendChild(card);
   });
 }
 $("store-search").addEventListener("input",renderStore);
-$("apps-tabs").querySelectorAll("button").forEach(button=>{
-  button.addEventListener("click",()=>{
-    storeCategory=button.dataset.category;
-    $("apps-tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("selected",b===button));
-    renderStore();
-  });
+$("apps-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  storeCategory=b.dataset.category;
+  $("apps-tabs").querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b));
+  renderStore();
 });
 
-/* Startup */
-function initialize() {
-  if(safeGet("desktop.showWelcome",true) && !safeGet("desktop.welcomed",false)) {
-    openApp("welcome");
-  } else {
-    closeApp("welcome");
+/* Terminal commands */
+function printTerminal(text=""){
+  $("terminal-output").textContent+=String(text)+"\n";
+  $("terminal").scrollTop=$("terminal").scrollHeight;
+}
+function runCommand(raw){
+  const command=raw.trim();printTerminal("desktop> "+raw);if(!command)return;
+  const installer=command.match(/^execute\s+installer\s+--(.+)$/i);
+  if(installer){
+    const app=findCatalogApp(installer[1].trim());
+    if(!app){printTerminal('Installer: "'+installer[1]+'" was not found. Open VUS Apps to load the catalog.');return}
+    if(installApp(app))printTerminal("Installer: "+app.name+" installed.");return;
   }
+  const execute=command.match(/^execute\s+(.+)$/i);
+  if(execute){
+    const name=execute[1].trim();
+    const app=getInstalledApps().find(a=>a.name.toLowerCase()===name.toLowerCase()||a.key===appKey(name));
+    if(!app){printTerminal('App "'+name+'" is not installed. Use execute installer --'+name);return}
+    openInstalledApp(app.key);printTerminal("Launching "+app.name+"…");return;
+  }
+  const parts=command.split(/\s+/),cmd=parts.shift().toLowerCase(),arg=parts.join(" ");
+  switch(cmd){
+    case "help":printTerminal("help\ndate\ntime\napps\ninstalled\nnotes\nsettings\nstore\nexecute installer --AppName\nexecute AppName\nuninstall AppName\necho <text>\nclear\nabout\nversion\nwhoami");break;
+    case "date":case "time":printTerminal(new Date().toString());break;
+    case "apps":printTerminal(storeItems.map(a=>a.name).join("\n")||"No catalog loaded. Open VUS Apps.");break;
+    case "installed":printTerminal(getInstalledApps().map(a=>a.name).join("\n")||"No apps installed.");break;
+    case "notes":printTerminal(getNotes().length+" saved note(s).");break;
+    case "settings":openApp("settings");break;
+    case "store":openApp("store");break;
+    case "clear":$("terminal-output").textContent="";break;
+    case "echo":printTerminal(arg);break;
+    case "about":printTerminal("Browser-based desktop environment. Web apps run inside browser windows.");break;
+    case "version":printTerminal("Desktop version 1.1");break;
+    case "whoami":printTerminal("local-user");break;
+    case "uninstall":{
+      const app=getInstalledApps().find(a=>a.name.toLowerCase()===arg.toLowerCase()||a.key===appKey(arg));
+      if(app)uninstallApp(app.key);else printTerminal("Installed app not found.");break;
+    }
+    default:printTerminal("Command not found: "+cmd+'. Type "help".');
+  }
+}
+$("terminal-input").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const value=e.target.value;e.target.value="";
+    if(value.trim()){terminalHistory.push(value);terminalHistoryIndex=terminalHistory.length}
+    runCommand(value);
+  }else if(e.key==="ArrowUp"){
+    e.preventDefault();if(terminalHistoryIndex>0)e.target.value=terminalHistory[--terminalHistoryIndex];
+  }else if(e.key==="ArrowDown"){
+    e.preventDefault();if(terminalHistoryIndex<terminalHistory.length)e.target.value=terminalHistory[++terminalHistoryIndex]||"";
+  }
+});
+
+/* First launch */
+function initialize(){
+  const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);
+  if(show)openApp("welcome");else closeApp("welcome");
   $("dont-show").addEventListener("change",e=>{
-    if(e.target.checked) {
-      safeSet("desktop.showWelcome",false);
-      safeSet("desktop.welcomed",true);
+    if(e.target.checked){
+      safeSet("desktop.showWelcome",false);safeSet("desktop.welcomed",true);
       $("welcome-setting").checked=false;
     }
   });
-  $("win-welcome").querySelector(".primary").addEventListener("click",()=>{
-    safeSet("desktop.welcomed",true);
-  });
-  $("win-welcome").querySelector(".welcome-actions .soft-button").addEventListener("click",()=>{
-    safeSet("desktop.welcomed",true);
+  $("welcome-setting").addEventListener("change",()=>{
+    if($("welcome-setting").checked)safeSet("desktop.welcomed",false);
   });
 }
 initialize();
+renderInstalledShortcuts();
 </script>
 </body>
 </html>
