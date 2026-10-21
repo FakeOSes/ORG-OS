@@ -579,7 +579,7 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
 #win-orgstore .window-body{background:#f5f5f7}
 .org-store-body .store-hero{position:relative;display:block;padding:26px 30px 24px;background:linear-gradient(110deg,#fff 0%,#f2f4ff 55%,#e7edff 100%);border-bottom:1px solid #e1e1e5}
 .org-store-body .store-eyebrow{display:inline-flex;align-items:center;gap:7px;color:#505b83;font-size:10px;letter-spacing:.13em}
-.org-store-body .store-eyebrow:after{content:"BETA";display:inline-block;border-radius:5px;background:#e5e7eb;color:#555d6b;padding:3px 6px;font-size:9px;letter-spacing:.08em}
+.org-store-body .store-eyebrow:after{content:none;display:none}
 .org-store-body .store-hero h2{color:#17171a;font-size:clamp(28px,3vw,38px);letter-spacing:-.045em;margin:10px 0 7px}
 .org-store-body .store-hero p{color:#62626b;font-size:14px}
 .org-store-body .store-hero-mark{position:absolute;right:35px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:90px;height:90px;border-radius:24px;background:linear-gradient(145deg,#5c7cfa,#8b5cf6);color:white;font-size:47px;box-shadow:0 12px 30px #6c63d933}
@@ -819,7 +819,7 @@ Type "help" to see available commands.
 </div></div></section>
 <section class="window hidden" id="win-orgstore" style="left:calc(50% - min(560px, 50vw - 6px));top:calc(50% - min(390px, 50vh - 34px));width:1120px;height:780px">
   <header class="titlebar">
-    <span class="title-icon">▦</span><span class="window-title">ORG Store 2.1 · Beta</span>
+    <span class="title-icon">▦</span><span class="window-title">ORG Store 2.1</span>
     <div class="window-controls">
       <button onclick="minimizeApp('orgstore')">—</button>
       <button onclick="maximizeApp('orgstore')">□</button>
@@ -829,19 +829,19 @@ Type "help" to see available commands.
   <div class="window-body apps-content org-store-body">
 <aside class="org-store-sidebar" aria-label="Store navigation">
 <button class="org-store-nav active" data-store-page="discover" onclick="showOrgStorePage('discover')"><span>▦</span> Discover</button>
-<button class="org-store-nav" data-store-page="updates" onclick="showOrgStorePage('updates')"><span>↻</span> Updates <span class="org-beta-pill">BETA</span></button>
-<div class="org-store-sidebar-note"><span class="org-store-mini-mark">▦</span><strong>ORG Store</strong><small>Version 2.1 · Beta</small><small>Built for ORG-OS</small></div>
+<button class="org-store-nav" data-store-page="updates" onclick="showOrgStorePage('updates')"><span>↻</span> Updates</button>
+<div class="org-store-sidebar-note"><span class="org-store-mini-mark">▦</span><strong>ORG Store</strong><small>Version 2.1</small><small>Built for ORG-OS</small></div>
 </aside>
 <main class="org-store-main" id="org-store-discover-page">
-<div class="store-hero"><div><span class="store-eyebrow">ORG STORE 2.1</span><h2>Discover something great.</h2><p>Explore apps for your ORG-OS desktop. We’re still in beta.</p></div><div class="store-hero-mark">▦</div></div>
-<section class="org-featured-app"><div class="org-featured-copy"><span class="org-featured-eyebrow">FEATURED · INCLUDED APP</span><h2>Everything starts with Notes.</h2><p>Capture ideas, save quick thoughts, and keep them close while you work.</p><div class="org-featured-meta"><span>✦ ORG-OS</span><span>Built-in</span><span>Beta</span></div><button class="org-featured-button" onclick="openApp('notes')">Open Notes <span>→</span></button></div><div class="org-featured-art" aria-hidden="true"><div class="org-featured-paper"><span>✎</span><i></i><i></i><i></i></div></div></section>
+<div class="store-hero"><div><span class="store-eyebrow">ORG STORE 2.1</span><h2>Discover something great.</h2><p>Explore apps built for ORG OS 1 and later.</p></div><div class="store-hero-mark">▦</div></div>
+<section class="org-featured-app"><div class="org-featured-copy"><span class="org-featured-eyebrow">FEATURED · INCLUDED APP</span><h2>Everything starts with Notes.</h2><p>Capture ideas, save quick thoughts, and keep them close while you work.</p><div class="org-featured-meta"><span>✦ ORG-OS</span><span>Built-in</span><span>ORG OS 1+</span></div><button class="org-featured-button" onclick="openApp('notes')">Open Notes <span>→</span></button></div><div class="org-featured-art" aria-hidden="true"><div class="org-featured-paper"><span>✎</span><i></i><i></i><i></i></div></div></section>
 <div class="store-toolbar"><input id="org-store-search" class="field" placeholder="Search apps..." aria-label="Search apps"><select id="org-store-category" class="field" aria-label="Filter by category"><option value="all">All categories</option><option value="productivity">Productivity</option><option value="creative">Creative</option><option value="media">Media</option><option value="utilities">Utilities</option><option value="system">System</option></select></div>
-<div class="store-status-row"><strong>Apps to explore</strong><span class="status" id="org-store-status">Beta · ORG-OS applications</span></div>
+<div class="store-status-row"><strong>Apps to explore</strong><span class="status" id="org-store-status">ORG OS 1+ compatible apps</span></div>
 <div id="org-store-grid" class="apps-grid org-store-grid"></div>
 </main>
 <main class="org-store-main org-store-updates hidden" id="org-store-updates-page">
-<div class="org-updates-heading"><span class="store-eyebrow">ORG STORE · BETA</span><h2>Updates</h2><p>Keep track of the apps included with your ORG-OS desktop.</p></div>
-<section class="org-update-card"><div class="org-update-icon">▦</div><div class="org-update-info"><strong>ORG Store 2.1 Beta</strong><p>Store updates and app version reporting are still being developed.</p><small>Current channel · Beta</small></div><span class="org-update-state">Beta release</span></section>
+<div class="org-updates-heading"><span class="store-eyebrow">ORG STORE · UPDATES</span><h2>Updates</h2><p>Keep track of the apps included with your ORG-OS desktop.</p></div>
+<section class="org-update-card"><div class="org-update-icon">▦</div><div class="org-update-info"><strong>ORG Store 2.1</strong><p>App catalog and version information for ORG OS 1 and later.</p><small>Compatibility · ORG OS 1+</small></div><span class="org-update-state">Current release</span></section>
 <section class="org-update-card"><div class="org-update-icon">📝</div><div class="org-update-info"><strong>Notes</strong><p>Included with ORG-OS. App update delivery is not available in this beta yet.</p><small>Source · ORG-OS built-in</small></div><span class="org-update-state">Included</span></section>
 <p class="org-updates-footnote">This page is informational for now. Automatic app updates will arrive in a future beta.</p>
 </main>
@@ -1289,7 +1289,7 @@ body.taskbar-revealed #taskbar{pointer-events:auto}
 .org-store-sidebar-note{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-top:auto;padding:12px 8px;color:#29292f}.org-store-mini-mark{display:grid;place-items:center;width:35px;height:35px;margin-bottom:4px;border-radius:10px;background:linear-gradient(145deg,#4d73ee,#8b5cf6);color:#fff;font-size:22px}.org-store-sidebar-note strong{font-size:12px}.org-store-sidebar-note small{font-size:10px;color:#777780}
 .org-store-main{min-width:0;overflow:auto;background:#f7f7f9}
 .org-store-body .store-hero{position:relative;display:block;padding:25px 30px 22px;background:linear-gradient(110deg,#fff 0%,#f0f3ff 58%,#e4eaff 100%);border-bottom:1px solid #e3e4e9}
-.org-store-body .store-eyebrow{display:inline-flex;align-items:center;gap:7px;color:#4e5f9c;font-size:10px;letter-spacing:.13em;font-weight:800}.org-store-body .store-eyebrow:after{content:"BETA";display:inline-block;border-radius:5px;background:#e5e7ed;color:#596071;padding:3px 6px;font-size:9px;letter-spacing:.08em}
+.org-store-body .store-eyebrow{display:inline-flex;align-items:center;gap:7px;color:#4e5f9c;font-size:10px;letter-spacing:.13em;font-weight:800}.org-store-body .store-eyebrow:after{content:none;display:none}
 .org-store-body .store-hero h2{color:#17171b;font-size:clamp(27px,3vw,36px);letter-spacing:-.045em;margin:10px 0 7px}.org-store-body .store-hero p{color:#686872;font-size:13px}
 .org-store-body .store-hero-mark{position:absolute;right:30px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:72px;height:72px;border-radius:21px;background:linear-gradient(145deg,#5278f4,#9060ed);color:white;font-size:38px;box-shadow:0 12px 30px #6c63d933}
 .org-featured-app{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:20px 24px 4px;padding:21px 24px;border:1px solid #e2e4ef;border-radius:18px;overflow:hidden;background:linear-gradient(115deg,#fff,#f0f2ff);min-height:190px}
