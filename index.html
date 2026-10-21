@@ -128,7 +128,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #splash-screen{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:99999;transition:opacity .7s ease,visibility .7s ease}
 #splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .splash-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 30px 20px;border-radius:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,.1);box-shadow:0 18px 60px rgba(0,0,0,.3)}
-.splash-logo{width:min(34vmin,280px);height:min(34vmin,280px);display:grid;place-items:center;background:transparent;filter:grayscale(1) contrast(1.2) brightness(1.1)}
+.splash-logo{width:min(34vmin,280px);height:min(34vmin,280px);display:grid;place-items:center;background:transparent;filter:none}.splash-logo.logo-fallback{font-size:clamp(48px,12vmin,110px);font-weight:800;letter-spacing:-.08em;color:#fff;text-shadow:0 0 28px rgba(255,255,255,.35)}
 .splash-logo img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto}
 .splash-title{font-size:clamp(1.7rem,3vw,2.4rem);letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:#fff;text-shadow:0 0 20px rgba(255,255,255,.25)}
 .splash-subtitle{font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:#e5e7eb}
@@ -142,7 +142,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <div id="splash-screen" aria-live="polite" aria-label="ORG OS loading screen">
   <div class="splash-panel">
     <div class="splash-logo">
-      <img src="./images.png" alt="ORG OS logo" />
+      <img src="./images.png" alt="ORG OS logo" onerror="this.onerror=null;this.style.display='none';this.parentElement.classList.add('logo-fallback');this.parentElement.textContent='ORG';" />
     </div>
     <div class="splash-title">ORG OS</div>
     <div class="splash-subtitle">Starting system</div>
@@ -460,8 +460,8 @@ function loadSettings(){const accentName=safeGet("desktop.accentName","blue");se
 Array.from(document.querySelectorAll(".color-dot")).forEach(dot=>dot.addEventListener("click",()=>setAccent(dot.dataset.accent)));
 
 const VUS_URL="https://raw.githubusercontent.com/Cra-Z-Gaming/VUS/refs/heads/main/apps.json";
-function normalizeGitHubUrl(value){if(typeof value!=="string")return value;const trimmed=value.trim();if(!trimmed)return trimmed;if(/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed))return trimmed.replace(/^https?:\/\/raw\.githubusercontent\.com\//i,"https://github.com/").replace(/\/refs\/heads\//,"/").replace(/\/raw\//,"/");return trimmed;}
-function normalizeCatalog(data){const output=[];[["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{if(!Array.isArray(items))return;items.forEach(item=>{if(!item||!item.name)return;output.push({category,name:item.name,description:item.description||"",icon:item.icon||"🔧",url:normalizeGitHubUrl(item.url)||"#",installed:false})})});return output;}
+function normalizeGitHubUrl(value){if(typeof value!=="string")return value;const trimmed=value.trim();if(!trimmed)return trimmed;if(/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed))return trimmed;if(/^https?:\/\/github\.com\//i.test(trimmed)){const match=trimmed.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i);if(match)return "https://raw.githubusercontent.com/"+match[1]+"/"+match[2]+"/"+match[3]+"/"+match[4];}return trimmed;}
+function normalizeCatalog(data){const output=[];[["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{if(!Array.isArray(items))return;items.forEach(item=>{if(!item||!item.name)return;output.push({category,name:item.name.trim(),description:item.description||item.desc||"",icon:item.icon||"🔧",url:normalizeGitHubUrl(item.url)||"#",installed:false})})});return output;}
 async function loadStore(){$("store-status").textContent="Loading the repository catalog…";try{const response=await fetch(VUS_URL,{cache:"no-store"});if(!response.ok)throw Error("Catalog request failed");const data=await response.json();storeItems=normalizeCatalog(data);renderStore();$("store-status").textContent=`Loaded ${storeItems.length} items`;toast("Catalog loaded.");}catch(err){console.error(err);$("store-status").textContent="Could not load catalog.";toast("Catalog unavailable.");}}
 function renderStore(){const host=$("store-grid");host.replaceChildren();const q=$("store-search").value.trim().toLowerCase();const items=storeItems.filter(a=>(storeCategory==="all"||a.category===storeCategory)&&(`${a.name} ${a.description}`.toLowerCase().includes(q)));if(!items.length){host.innerHTML='<div class="empty">No apps match your search.</div>';return;}items.forEach(app=>{const card=document.createElement("div");card.className="store-card";card.innerHTML=`<h3>${app.name}</h3><p>${app.description||"No description available."}</p><div class="install-actions"><button onclick="installApp(${JSON.stringify(app)})">Install</button><button onclick="window.open(${JSON.stringify(app.url)},'_blank')">Open</button></div>`;host.appendChild(card);});}
 $("store-search").addEventListener("input",renderStore);$("apps-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{storeCategory=b.dataset.category;$("apps-tabs").querySelectorAll("button").forEach(btn=>btn.classList.toggle("selected",btn===b));renderStore();});
