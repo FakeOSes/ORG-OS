@@ -652,6 +652,7 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
     <div id="clock"></div>
   </div>
 </div>
+<div id="taskbar-edge" aria-label="Show taskbar" role="button" tabindex="0"></div>
 
 <div id="start-menu" class="panel">
   <div class="start-topbar"><button class="start-user profile-trigger" onclick="openProfileManager()" title="Manage profiles"><span class="start-user-avatar">👤</span><div><strong>User</strong><small>ORG-OS profile</small></div><span class="profile-trigger-mark">⌄</span></button><div class="start-top-actions"><span class="start-online-dot"></span><span>Desktop ready</span><button class="start-lock-button" onclick="requestLock()" title="Lock ORG-OS">🔒</button><button class="start-close" onclick="toggleStart()" aria-label="Close Start menu">×</button></div></div>
@@ -946,6 +947,19 @@ bar.addEventListener("pointerdown",e=>{if(e.target.closest(".window-controls")||
 bar.addEventListener("pointermove",e=>{if(!dragging||e.pointerId!==pointerId)return;const nextLeft=ox+e.clientX-sx,nextTop=oy+e.clientY-sy;win.style.left=Math.max(0,Math.min(nextLeft,innerWidth-Math.min(win.offsetWidth,innerWidth)))+"px";win.style.top=Math.max(0,Math.min(nextTop,innerHeight-Math.min(win.offsetHeight,innerHeight)))+"px";});
 const stop=e=>{if(pointerId!==null&&e&&e.pointerId!==pointerId)return;dragging=false;pointerId=null;};bar.addEventListener("pointerup",stop);bar.addEventListener("pointercancel",stop);bar.addEventListener("lostpointercapture",stop);
 }
+
+const taskbarEdge=$("taskbar-edge"),taskbar=$("taskbar");
+function revealTaskbar(){document.body.classList.add("taskbar-revealed");}
+function hideTaskbar(){if(taskbar&&!taskbar.matches(":hover")&&!taskbar.contains(document.activeElement))document.body.classList.remove("taskbar-revealed");}
+if(taskbarEdge&&taskbar){
+ taskbarEdge.addEventListener("pointerenter",revealTaskbar);
+ taskbarEdge.addEventListener("pointerdown",e=>{e.preventDefault();if(document.body.classList.contains("taskbar-revealed"))document.body.classList.remove("taskbar-revealed");else revealTaskbar();});
+ taskbarEdge.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();document.body.classList.toggle("taskbar-revealed");}});
+ taskbar.addEventListener("pointerleave",e=>{if(e.clientY<innerHeight-10)hideTaskbar();});
+ taskbar.addEventListener("focusout",()=>setTimeout(hideTaskbar,80));
+ document.addEventListener("pointermove",e=>{if(e.clientY>=innerHeight-3)revealTaskbar();});
+}
+
 document.querySelectorAll(".window").forEach(enableWindowDragging);
 $("desktop").addEventListener("contextmenu",e=>{e.preventDefault();const m=$("context-menu");m.style.display="block";m.style.left=Math.min(e.clientX,innerWidth-190)+"px";m.style.top=Math.min(e.clientY,innerHeight-190)+"px";});
 function hideContext(){$("context-menu").style.display="none"}
@@ -1138,6 +1152,45 @@ body>.org-lock-screen,#org-lock-screen.org-lock-screen{position:fixed!important;
 #org-lock-screen .org-lock-shell{position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;inset:0!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;border:0!important;border-radius:0!important;box-sizing:border-box!important}
 
 /* ORG Store 2.1: native storefront layout; intentionally after legacy CSS. */
+
+/* V1 polish: OS-wide auto-hide dock and consistent Store pages */
+#desktop{bottom:0;transition:bottom .18s ease}
+#taskbar{transform:translateY(calc(100% - 4px));transition:transform .2s ease;will-change:transform}
+body.taskbar-revealed #taskbar,#taskbar:hover,#taskbar:focus-within{transform:translateY(0)}
+#taskbar-edge{position:fixed;z-index:7002;left:0;right:0;bottom:0;height:9px;touch-action:manipulation;background:transparent}
+body.taskbar-revealed #taskbar-edge{height:3px}
+#taskbar{z-index:7001}
+.window.maximized{bottom:0!important}
+#win-orgstore{max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);min-width:0;min-height:0}
+#win-orgstore.maximized{max-width:100%;max-height:100%;border-radius:0}
+#win-orgstore .window-body.org-store-body{display:grid;grid-template-columns:176px minmax(0,1fr);gap:0;padding:0!important;overflow:hidden!important;background:#f6f7fb!important;color:#20212a!important}
+#win-orgstore .org-store-sidebar{box-sizing:border-box;min-height:0;padding:20px 12px;background:#f0f1f6;border-right:1px solid #e0e2ea;overflow-y:auto}
+#win-orgstore .org-store-main{min-width:0;min-height:0;height:100%;overflow:auto;background:#f8f9fc;overscroll-behavior:contain}
+#win-orgstore .store-hero{padding:26px 30px;background:linear-gradient(115deg,#fff 0%,#f0f3ff 100%);border-bottom:1px solid #e8eaf1}
+#win-orgstore .org-featured-app{margin:20px 24px 8px;min-height:160px}
+#win-orgstore .store-toolbar{display:flex;align-items:center}
+#win-orgstore .store-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#win-orgstore .org-store-grid{align-content:start}
+#win-orgstore .org-store-updates{box-sizing:border-box;padding:28px!important;display:flex;flex-direction:column;gap:14px}
+#win-orgstore .org-store-updates.hidden{display:none!important}
+#win-orgstore .org-updates-heading{padding:0 0 18px;margin:0 0 4px;border-bottom:1px solid #e5e7ef}
+#win-orgstore .org-updates-heading .store-eyebrow{display:inline-flex;margin-bottom:4px}
+#win-orgstore .org-update-card{box-sizing:border-box;width:100%;margin:0;padding:17px 18px;display:flex;align-items:center;gap:14px;border:1px solid #e1e4ed;border-radius:14px;background:#fff;box-shadow:0 2px 5px #1b23400a}
+#win-orgstore .org-update-info{flex:1;min-width:0}
+#win-orgstore .org-update-state{flex-shrink:0}
+#win-orgstore .org-updates-footnote{margin:0;padding:13px 15px;border-radius:10px;background:#eef1f8;color:#626979}
+#win-orgstore .org-store-nav{flex-shrink:0}
+@media(max-width:760px){
+ #win-orgstore{max-width:calc(100vw - 12px);max-height:calc(100vh - 18px)}
+ #win-orgstore .window-body.org-store-body{grid-template-columns:54px minmax(0,1fr)}
+ #win-orgstore .org-store-sidebar{padding:12px 5px}
+ #win-orgstore .org-store-main{width:100%}
+ #win-orgstore .org-store-updates{padding:17px 12px!important}
+ #win-orgstore .org-update-card{align-items:flex-start;flex-wrap:wrap;padding:13px}
+ #win-orgstore .org-update-state{margin-left:57px}
+ #win-orgstore .org-featured-app{margin:12px;padding:14px}
+}
+
 #win-orgstore{max-width:calc(100vw - 28px);max-height:calc(100vh - 70px)}
 #win-orgstore .titlebar{background:#f5f5f7;color:#252529;border-bottom:1px solid #dedee3}
 #win-orgstore .titlebar .window-controls button{color:#414149;background:#e7e7eb;border-color:#d7d7dc}
