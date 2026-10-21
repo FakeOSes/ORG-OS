@@ -129,7 +129,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
     <button class="desktop-icon" data-open="notes"><span class="icon">📝</span>Notes</button>
     <button class="desktop-icon" data-open="terminal"><span class="icon">⌨️</span>Terminal</button>
     <button class="desktop-icon" data-open="settings"><span class="icon">⚙️</span>Settings</button>
-    <button class="desktop-icon" data-open="store"><span class="icon">🛍️</span>App Store</button>
+    <button class="desktop-icon" data-open="store"><span class="icon">🧭</span>VUS</button>
   </div>
 </div>
 
@@ -161,7 +161,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="start-section-head"><strong>Pinned apps</strong><span>UP TO 3</span></div>
       <div id="start-pinned-apps" class="start-pinned-list"></div>
       <div class="start-widget"><div class="start-widget-heading"><span>◷</span><strong>Today</strong></div><div id="start-date" class="start-widget-date">Loading date…</div><div id="start-time" class="start-widget-time">--:--</div><small>Local desktop time</small></div>
-      <div class="start-widget start-status-widget"><div class="start-widget-heading"><span>◈</span><strong>System status</strong></div><div class="start-status-row"><span class="start-status-dot"></span> ORG OS is running</div><div class="start-status-row"><span>▣</span><span id="start-installed-count">5 built-in apps</span></div><button onclick="openApp('orgstore')" class="start-store-link">ORG App Store <span>↗</span></button><button onclick="openApp('store')" class="start-store-link">VUS App Store <span>↗</span></button></div>
+      <div class="start-widget start-status-widget"><div class="start-widget-heading"><span>◈</span><strong>System status</strong></div><div class="start-status-row"><span class="start-status-dot"></span> ORG OS is running</div><div class="start-status-row"><span>▣</span><span id="start-installed-count">5 built-in apps</span></div><button onclick="openApp('orgstore')" class="start-store-link">ORG App Store <span>↗</span></button><button onclick="openApp('store')" class="start-store-link">VUS <span>↗</span></button></div>
     </aside>
   </div>
   <div class="start-bottom"><button class="start-settings" onclick="openApp('settings')"><span>⚙</span> Settings</button><span class="start-footer-version">ORG OS · 1.2</span><button class="start-power" onclick="closeAllWindows()" title="Close all windows" aria-label="Close all windows">⏻</button></div>
@@ -252,7 +252,7 @@ Type "help" to see available commands.
 <div class="settings-main">
 <div id="settings-pane-general" class="settings-pane active"><div class="settings-page-head"><div class="settings-eyebrow">SYSTEM</div><h2>Welcome to Settings</h2><p>Manage your desktop and make it yours.</p></div>
 <div class="settings-card settings-device"><div class="settings-device-icon">▦</div><div class="settings-device-copy"><strong>ORG OS Desktop</strong><small>Browser-based desktop environment</small><span class="mini-tag">Version 1.1</span></div><span class="settings-online">● Running</span></div>
-<div class="settings-section-title">Quick settings</div><div class="settings-quick-grid"><button class="settings-quick-card" onclick="selectSettingsTab('personalize')"><span>🖼</span><strong>Wallpaper</strong><small>Change your background</small></button><button class="settings-quick-card" onclick="selectSettingsTab('appearance')"><span>🎨</span><strong>Appearance</strong><small>Accent and shell style</small></button><button class="settings-quick-card" onclick="openApp('notes')"><span>📝</span><strong>Open Notes</strong><small>Write something down</small></button><button class="settings-quick-card" onclick="openApp('store')"><span>▦</span><strong>App Store</strong><small>Browse available apps</small></button></div></div>
+<div class="settings-section-title">Quick settings</div><div class="settings-quick-grid"><button class="settings-quick-card" onclick="selectSettingsTab('personalize')"><span>🖼</span><strong>Wallpaper</strong><small>Change your background</small></button><button class="settings-quick-card" onclick="selectSettingsTab('appearance')"><span>🎨</span><strong>Appearance</strong><small>Accent and shell style</small></button><button class="settings-quick-card" onclick="openApp('notes')"><span>📝</span><strong>Open Notes</strong><small>Write something down</small></button><button class="settings-quick-card" onclick="openApp('store')"><span>▦</span><strong>VUS</strong><small>Open VUS Hub and VUS-OS</small></button></div></div>
 <div id="settings-pane-personalize" class="settings-pane"><div class="settings-page-head"><div class="settings-eyebrow">DESKTOP</div><h2>Personalization</h2><p>Pick a wallpaper or use an image URL from the web.</p></div>
 <div class="settings-card settings-wallpaper-card"><div class="settings-card-heading"><div><strong>Background</strong><small>Wallpaper is loaded directly from its image link.</small></div><span class="mini-tag">Live</span></div><div class="wallpaper-preview" id="wallpaper-preview"><div class="wallpaper-preview-label">Desktop preview</div><span id="wallpaper-preview-name">Purple drop</span></div><label class="settings-field-label" for="wallpaper">Choose a wallpaper</label><select id="wallpaper" class="settings-select" onchange="setWallpaper(this.value)"><option value="purple-drop">Purple drop</option><option value="purple-waves">Purple waves</option><option value="moon">Moon</option><option value="mountain-view">Mountain view</option><option value="custom" disabled>Custom image URL</option></select>
 <div class="settings-divider"></div><label class="settings-field-label" for="wallpaper-url">Custom wallpaper URL</label><div class="settings-url-row"><input id="wallpaper-url" type="url" placeholder="https://example.com/wallpaper.png" autocomplete="url"><button class="primary" onclick="applyWallpaperUrl()">Apply</button></div><small class="settings-help">Use a direct image link (PNG, JPG, WEBP, or GIF). GitHub file links are converted to raw image links when possible.</small></div>
@@ -268,24 +268,15 @@ Type "help" to see available commands.
 
 <section class="window hidden" id="win-store" style="left:calc(50% - 360px);top:calc(50% - 255px);width:720px;height:510px">
   <header class="titlebar">
-    <span class="title-icon">🛍️</span><span class="window-title">VUS App Store</span>
+    <span class="title-icon">🧭</span><span class="window-title">VUS</span>
     <div class="window-controls">
       <button onclick="minimizeApp('store')">—</button>
       <button onclick="maximizeApp('store')">□</button>
       <button class="close" onclick="closeApp('store')">×</button>
     </div>
   </header>
-  <div class="window-body apps-content">
-    <input id="store-search" class="field" placeholder="Search VUS apps, tools, hubs and links..." style="margin-bottom:14px">
-    <div class="apps-tabs" id="apps-tabs" aria-label="VUS category filters">
-      <button class="selected" data-category="all">All</button>
-      <button data-category="apps">Apps</button>
-      <button data-category="tools">Tools</button>
-      <button data-category="hubs">Hubs</button>
-      <button data-category="links">Links</button>
-    </div>
-    <div id="store-status" class="status" style="margin-bottom:12px">Loading VUS catalog…</div>
-    <div id="store-grid" class="apps-grid"></div>
+  <div class="window-body" style="padding:0;overflow:hidden;background:#000">
+    <iframe id="vus-launcher-frame" title="VUS" src="others/VUS.html" style="display:block;width:100%;height:100%;border:0;background:#000" sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin"></iframe>
   </div>
 </section>
 
@@ -307,7 +298,7 @@ Type "help" to see available commands.
 
 <script>
 const $=id=>document.getElementById(id);
-const APP_NAMES={welcome:{title:"Welcome",icon:"👋"},notes:{title:"Notes",icon:"📝"},terminal:{title:"Terminal",icon:"⌨️"},settings:{title:"Settings",icon:"⚙️"},store:{title:"VUS App Store",icon:"🛍️"},orgstore:{title:"ORG App Store",icon:"🏢"}};
+const APP_NAMES={welcome:{title:"Welcome",icon:"👋"},notes:{title:"Notes",icon:"📝"},terminal:{title:"Terminal",icon:"⌨️"},settings:{title:"Settings",icon:"⚙️"},store:{title:"VUS",icon:"🧭"},orgstore:{title:"ORG App Store",icon:"🏢"}};
 const ACCENT_MAP={blue:{accent:'#60a5fa',dark:'#2563eb'},purple:{accent:'#a78bfa',dark:'#6d28d9'},green:{accent:'#34d399',dark:'#047857'},pink:{accent:'#fb7185',dark:'#be123c'},amber:{accent:'#fbbf24',dark:'#b45309'},red:{accent:'#f87171',dark:'#b91c1c'},teal:{accent:'#2dd4bf',dark:'#0f766e'},slate:{accent:'#94a3b8',dark:'#334155'},black:{accent:'#111827',dark:'#020617'},white:{accent:'#f8fafc',dark:'#e2e8f0'}};
 const WALLPAPER_DEFAULT="purple-drop";
 const WALLPAPERS={
@@ -323,7 +314,7 @@ const ORG_APPS=[
 {name:"Notes",description:"Write and save notes on this desktop.",icon:"📝",builtin:"notes"},
 {name:"Terminal",description:"Run ORG Shell commands and manage apps.",icon:"⌨️",builtin:"terminal"},
 {name:"Settings",description:"Customize your desktop, accent color and wallpaper.",icon:"⚙️",builtin:"settings"},
-{name:"VUS App Store",description:"Browse and install applications from the VUS catalog.",icon:"🛍️",builtin:"store"}
+{name:"VUS",description:"Open the VUS launcher for VUS Hub and VUS-OS.",icon:"🧭",builtin:"store"}
 ];
 
 function safeGet(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}catch{return fallback}}
@@ -335,7 +326,7 @@ window.addEventListener("load",()=>setTimeout(hideSplash,1650));
 function getTopVisibleApp(){let topName="",topZ=-Infinity;document.querySelectorAll(".window").forEach(win=>{if(win.classList.contains("hidden"))return;const z=Number.parseInt(win.style.zIndex||"0",10)||0;if(z>=topZ){topZ=z;topName=win.id.replace(/^win-/,"");}});return topName;}
 function syncTaskbar(activeName){const visibleTop=getTopVisibleApp();if(!activeName||!$("win-"+activeName)||$("win-"+activeName).classList.contains("hidden"))activeName=visibleTop;else if(visibleTop&&Number.parseInt($("win-"+activeName).style.zIndex||"0",10)<Number.parseInt($("win-"+visibleTop).style.zIndex||"0",10))activeName=visibleTop;document.querySelectorAll(".task-button[data-app]").forEach(item=>{const name=item.dataset.app,win=$("win-"+name),visible=!!win&&!win.classList.contains("hidden"),running=!!win&&(visible||win.dataset.launched==="true");item.classList.toggle("running",running);item.classList.toggle("active",visible&&name===activeName);item.setAttribute("aria-label",APP_NAMES[name].title+(running?", running":""));item.title=APP_NAMES[name].title+(running?" — running":"");});}
 function focusApp(name){const win=$("win-"+name);if(!win||win.classList.contains("hidden"))return;win.style.zIndex=++zIndex;syncTaskbar(name);}
-function openApp(name){let win=$("win-"+name);if(!win){const installed=getInstalledApps().find(app=>app.appKey===name||app.key===name);if(installed){openInstalledApp(installed.key);return;}return;}if(name==="orgstore")renderOrgStore();if(name==="store")renderStore();win.dataset.launched="true";$("start-menu").classList.remove("open");$("notifications").classList.remove("open");win.classList.remove("hidden");win.style.zIndex=++zIndex;syncTaskbar(name);}
+function openApp(name){let win=$("win-"+name);if(!win){const installed=getInstalledApps().find(app=>app.appKey===name||app.key===name);if(installed){openInstalledApp(installed.key);return;}return;}if(name==="orgstore")renderOrgStore();if(name==="store"){const frame=$("vus-launcher-frame");if(frame&&frame.dataset.loaded!=="true"){frame.src="others/VUS.html";frame.dataset.loaded="true";}}win.dataset.launched="true";$("start-menu").classList.remove("open");$("notifications").classList.remove("open");win.classList.remove("hidden");win.style.zIndex=++zIndex;syncTaskbar(name);}
 function closeApp(name){const win=$("win-"+name);if(win){win.classList.add("hidden");win.dataset.launched="false";}syncTaskbar("");}
 function minimizeApp(name){const win=$("win-"+name);if(win)win.classList.add("hidden");syncTaskbar("");}
 function maximizeApp(name){const w=$("win-"+name);if(!w)return;if(!w.classList.contains("maximized")){w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});w.classList.add("maximized");w.style.left="0";w.style.top="0";w.style.width="100%";w.style.height="100%"}else{w.classList.remove("maximized");const prev=JSON.parse(w.dataset.oldStyle||"{}" );w.style.left=prev.left||"";w.style.top=prev.top||"";w.style.width=prev.width||"";w.style.height=prev.height||""}focusApp(w.id.replace("win-",""))}
@@ -431,7 +422,7 @@ if(lower.startsWith("wallpaper ")){const value=line.slice(9).trim().toLowerCase(
 if(lower.startsWith("calc ")){const expression=line.slice(5).trim();if(!/^[\d\s()+\-*/%.]+$/.test(expression)){printTerminal("Only numbers and basic arithmetic operators are allowed.");return;}try{const result=Function('"use strict";return ('+expression+')')();printTerminal(Number.isFinite(result)?String(result):"Result is not a finite number.");}catch{printTerminal("Invalid arithmetic expression.");}return;}
 printTerminal("Command not found. Type 'help' to see commands.");}
 $("terminal-input").addEventListener("keydown",e=>{if(e.key==="Enter"){const value=e.target.value;e.target.value="";if(value.trim()){terminalHistory.push(value);terminalHistoryIndex=terminalHistory.length;runCommand(value);}}if(e.key==="ArrowUp"){if(terminalHistory.length){terminalHistoryIndex=Math.max(0,terminalHistoryIndex-1);e.target.value=terminalHistory[terminalHistoryIndex]||"";}}if(e.key==="ArrowDown"){if(terminalHistory.length){terminalHistoryIndex=Math.min(terminalHistory.length,terminalHistoryIndex+1);e.target.value=terminalHistory[terminalHistoryIndex]||"";}}});
-function initialize(){registerInstalledApps();loadSettings();renderPinned();renderRecentSearches();updateStartClock();setInterval(updateStartClock,30000);const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);if(show)openApp("welcome");else closeApp("welcome");$("dont-show").checked=!show;loadStore();renderNotes();}
+function initialize(){registerInstalledApps();loadSettings();renderPinned();renderRecentSearches();updateStartClock();setInterval(updateStartClock,30000);const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);if(show)openApp("welcome");else closeApp("welcome");$("dont-show").checked=!show;renderNotes();}
 initialize();
 openApp('welcome');
 </script>
