@@ -2,6 +2,8 @@
   "id": "monitor",
   "name": "System Monitor",
   "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
   "description": "Inspect browser capabilities, open app windows, and runtime status.",
   "entry": "index.html",
   "category": "System",
