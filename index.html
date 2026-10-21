@@ -113,21 +113,21 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #splash-screen{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(96,165,250,.25),transparent 22%),linear-gradient(135deg,#06111d,#0f1d36 45%,#0b1531);z-index:99999;transition:opacity .75s ease,visibility .75s ease}
 #splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .splash-panel{display:flex;flex-direction:column;align-items:center;gap:18px;padding:38px 42px 30px;border:1px solid rgba(148,163,184,.2);background:rgba(15,23,42,.72);backdrop-filter:blur(6px);border-radius:22px;box-shadow:0 25px 70px rgba(2,6,23,.8)}
-.splash-mark{width:88px;height:88px;border-radius:22px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);display:grid;place-items:center;font-size:38px;font-weight:900;color:#eff6ff;box-shadow:0 12px 30px rgba(59,130,246,.45)}
+.splash-mark{width:104px;height:104px;border-radius:24px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);display:grid;place-items:center;font-size:25px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#eff6ff;box-shadow:0 12px 30px rgba(59,130,246,.45);padding-left:4px}
 .splash-title{font-size:clamp(2rem,4vw,3.2rem);letter-spacing:.26em;text-transform:uppercase;font-weight:800;color:#f8fbff}
 .splash-subtitle{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#bfdbfe;opacity:.9}
 .splash-bar{width:min(300px,70vw);height:8px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden;position:relative}
 .splash-progress{display:block;width:42%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#93c5fd,#60a5fa,#2563eb);box-shadow:0 0 18px rgba(96,165,250,.8);animation:splash-load 1.8s ease-in-out infinite alternate}
 @keyframes splash-load{0%{transform:translateX(-8%) scaleX(.75)}100%{transform:translateX(120%) scaleX(1)}}
 
-@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:130px}.splash-panel{padding:30px 22px 24px}.splash-title{letter-spacing:.12em}.splash-subtitle{letter-spacing:.12em}}
+@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:130px}.splash-panel{padding:30px 22px 24px}.splash-title{letter-spacing:.12em}.splash-subtitle{letter-spacing:.12em}.splash-mark{width:88px;height:88px;font-size:20px;letter-spacing:.09em;padding-left:2px}}
 </style>
 </head>
 <body>
 
 <div id="splash-screen" aria-live="polite" aria-label="ORG OS loading screen">
   <div class="splash-panel">
-    <div class="splash-mark">O</div>
+    <div class="splash-mark">ORG</div>
     <div class="splash-title">ORG OS</div>
     <div class="splash-subtitle">Starting system</div>
     <div class="splash-bar"><span class="splash-progress"></span></div>
