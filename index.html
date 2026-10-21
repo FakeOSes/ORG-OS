@@ -17,7 +17,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 #desktop:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.06) 50%,transparent 65%)}
 .desktop-icons{position:relative;z-index:1;display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-start;gap:5px;padding:12px;width:100%;height:100%}
 .desktop-icon{position:relative;width:82px;min-height:82px;padding:8px 3px;border:1px solid transparent;background:transparent;border-radius:5px;display:flex;align-items:center;flex-direction:column;justify-content:center;gap:6px;transition:transform .15s ease,background .15s ease,border-color .15s ease}
-.desktop-icon span:first-child{font-size:29px;line-height:34px}
 .desktop-icon:hover{background:#ffffff1f;border-color:#ffffff2b;transform:translateY(-1px)}
 .icon{font-size:29px;line-height:34px}
 #taskbar{position:fixed;bottom:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 12px;background:#121926db;backdrop-filter:blur(24px);border-top:1px solid var(--border);z-index:10000}
@@ -137,7 +136,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .splash-bar{width:min(260px,70vw);height:5px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;position:relative}
 .splash-progress{display:block;width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#fff,#d1d5db,#fff);box-shadow:0 0 18px rgba(255,255,255,.6);animation:splash-load 1.8s ease-in-out infinite alternate}
 @keyframes splash-load{0%{transform:translateX(-10%)}100%{transform:translateX(185%)}}
-
 @media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:135px;min-width:135px}}
 </style>
 </head>
@@ -219,9 +217,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <button class="primary" onclick="safeSet('desktop.welcomed',true);openApp('notes');closeApp('welcome')">Open Notes →</button>
       <button class="soft-button" onclick="safeSet('desktop.welcomed',true);openApp('store');closeApp('welcome')">Explore apps</button>
     </div>
-    <label style="font-size:12px;color:var(--muted)">
-      <input type="checkbox" id="dont-show"> Don't show this again at startup
-    </label>
+    <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="dont-show"> Don't show this again at startup</label>
   </div>
 </section>
 
@@ -288,28 +284,11 @@ Type "help" to see available commands.
       <div class="settings-main">
         <div id="settings-pane-general" class="settings-pane active">
           <div class="settings-grid">
-            <div class="setting full">
-              <div><strong>System</strong><small>Overview of the desktop environment.</small></div>
-              <span class="mini-tag">ORG OS</span>
-            </div>
-            <div class="setting">
-              <div><strong>Desktop version</strong><small>Current interface build.</small></div>
-              <div class="status">1.1</div>
-            </div>
-            <div class="setting">
-              <div><strong>Theme mode</strong><small>Current desktop styling.</small></div>
-              <div class="status">Dark</div>
-            </div>
-            <div class="setting full">
-              <div><strong>Quick actions</strong><small>Common system controls.</small></div>
-            </div>
-            <div class="setting full">
-              <ul class="panel-list">
-                <li>Open welcome screen</li>
-                <li>Open notes</li>
-                <li>Launch app store</li>
-              </ul>
-            </div>
+            <div class="setting full"><div><strong>System</strong><small>Overview of the desktop environment.</small></div><span class="mini-tag">ORG OS</span></div>
+            <div class="setting"><div><strong>Desktop version</strong><small>Current interface build.</small></div><div class="status">1.1</div></div>
+            <div class="setting"><div><strong>Theme mode</strong><small>Current desktop styling.</small></div><div class="status">Dark</div></div>
+            <div class="setting full"><div><strong>Quick actions</strong><small>Common system controls.</small></div></div>
+            <div class="setting full"><ul class="panel-list"><li>Open welcome screen</li><li>Open notes</li><li>Launch app store</li></ul></div>
           </div>
         </div>
 
@@ -333,11 +312,10 @@ Type "help" to see available commands.
             <div class="setting full">
               <div><strong>Desktop background</strong><small>Choose a desktop wallpaper.</small></div>
               <select id="wallpaper" onchange="setWallpaper(this.value)">
-                <option value="purple-drop">Purple drop</option>
-                <option value="purple-waves">Purple waves</option>
                 <option value="moon">Moon</option>
                 <option value="mountain-view">Mountain view</option>
-                <option value="mine">Mine</option>
+                <option value="purple-drop">Purple drop</option>
+                <option value="purple-waves">Purple waves</option>
               </select>
             </div>
           </div>
@@ -345,60 +323,27 @@ Type "help" to see available commands.
 
         <div id="settings-pane-appearance" class="settings-pane">
           <div class="settings-grid">
-            <div class="setting full">
-              <div><strong>Taskbar</strong><small>Control how the shell looks and behaves.</small></div>
-            </div>
-            <div class="setting">
-              <div><strong>Transparency</strong><small>Glass effect intensity.</small></div>
-              <div class="status">Enabled</div>
-            </div>
-            <div class="setting">
-              <div><strong>Icon sizes</strong><small>Desktop item size preference.</small></div>
-              <div class="status">Standard</div>
-            </div>
-            <div class="setting full">
-              <div><strong>Display</strong><small>Use the current launch visual style.</small></div>
-              <span class="mini-tag">Adaptive</span>
-            </div>
+            <div class="setting full"><div><strong>Taskbar</strong><small>Control how the shell looks and behaves.</small></div></div>
+            <div class="setting"><div><strong>Transparency</strong><small>Glass effect intensity.</small></div><div class="status">Enabled</div></div>
+            <div class="setting"><div><strong>Icon sizes</strong><small>Desktop item size preference.</small></div><div class="status">Standard</div></div>
+            <div class="setting full"><div><strong>Display</strong><small>Use the current launch visual style.</small></div><span class="mini-tag">Adaptive</span></div>
           </div>
         </div>
 
         <div id="settings-pane-startup" class="settings-pane">
           <div class="settings-grid">
-            <div class="setting full">
-              <div><strong>Welcome screen</strong><small>Show the intro on next startup.</small></div>
-              <input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)">
-            </div>
-            <div class="setting full">
-              <div><strong>Startup actions</strong><small>Items that appear when your desktop loads.</small></div>
-            </div>
-            <div class="setting full">
-              <ul class="panel-list">
-                <li>Welcome screen</li>
-                <li>Desktop icons</li>
-                <li>App store catalog</li>
-              </ul>
-            </div>
+            <div class="setting full"><div><strong>Welcome screen</strong><small>Show the intro on next startup.</small></div><input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)"></div>
+            <div class="setting full"><div><strong>Startup actions</strong><small>Items that appear when your desktop loads.</small></div></div>
+            <div class="setting full"><ul class="panel-list"><li>Welcome screen</li><li>Desktop icons</li><li>App store catalog</li></ul></div>
           </div>
         </div>
 
         <div id="settings-pane-privacy" class="settings-pane">
           <div class="settings-grid">
-            <div class="setting full">
-              <div><strong>Privacy & storage</strong><small>Preferences saved locally in your browser.</small></div>
-            </div>
-            <div class="setting">
-              <div><strong>Saved state</strong><small>Notes and desktop preferences.</small></div>
-              <div class="status">Local</div>
-            </div>
-            <div class="setting">
-              <div><strong>Reset settings</strong><small>Restore default appearance.</small></div>
-              <button class="soft-button" onclick="resetSettings()">Reset</button>
-            </div>
-            <div class="setting full">
-              <div><strong>Storage status</strong><small>Files saved in browser local storage.</small></div>
-              <span class="mini-tag">Enabled</span>
-            </div>
+            <div class="setting full"><div><strong>Privacy & storage</strong><small>Preferences saved locally in your browser.</small></div></div>
+            <div class="setting"><div><strong>Saved state</strong><small>Notes and desktop preferences.</small></div><div class="status">Local</div></div>
+            <div class="setting"><div><strong>Reset settings</strong><small>Restore default appearance.</small></div><button class="soft-button" onclick="resetSettings()">Reset</button></div>
+            <div class="setting full"><div><strong>Storage status</strong><small>Files saved in browser local storage.</small></div><span class="mini-tag">Enabled</span></div>
           </div>
         </div>
       </div>
@@ -431,544 +376,77 @@ Type "help" to see available commands.
 
 <script>
 const $=id=>document.getElementById(id);
-const APP_NAMES={
-  welcome:{title:"Welcome",icon:"👋"},
-  notes:{title:"Notes",icon:"📝"},
-  terminal:{title:"Terminal",icon:"⌨️"},
-  settings:{title:"Settings",icon:"⚙️"},
-  store:{title:"App Store",icon:"🛍️"}
-};
-const ACCENT_MAP={
-  blue:{accent:'#60a5fa',dark:'#2563eb'},
-  purple:{accent:'#a78bfa',dark:'#6d28d9'},
-  green:{accent:'#34d399',dark:'#047857'},
-  pink:{accent:'#fb7185',dark:'#be123c'},
-  amber:{accent:'#fbbf24',dark:'#b45309'},
-  red:{accent:'#f87171',dark:'#b91c1c'},
-  teal:{accent:'#2dd4bf',dark:'#0f766e'},
-  slate:{accent:'#94a3b8',dark:'#475569'},
-  black:{accent:'#111827',dark:'#020617'},
-  white:{accent:'#f8fafc',dark:'#e2e8f0'}
-};
-const WALLPAPER_DIR="./Wallpaper/";
+const APP_NAMES={welcome:{title:"Welcome",icon:"👋"},notes:{title:"Notes",icon:"📝"},terminal:{title:"Terminal",icon:"⌨️"},settings:{title:"Settings",icon:"⚙️"},store:{title:"App Store",icon:"🛍️"}};
+const ACCENT_MAP={blue:{accent:'#60a5fa',dark:'#2563eb'},purple:{accent:'#a78bfa',dark:'#6d28d9'},green:{accent:'#34d399',dark:'#047857'},pink:{accent:'#fb7185',dark:'#be123c'},amber:{accent:'#fbbf24',dark:'#b45309'},red:{accent:'#f87171',dark:'#b91c1c'},teal:{accent:'#2dd4bf',dark:'#0f766e'},slate:{accent:'#94a3b8',dark:'#475569'},black:{accent:'#111827',dark:'#020617'},white:{accent:'#f8fafc',dark:'#e2e8f0'}};
 const WALLPAPERS={
-  "purple-drop":{src:WALLPAPER_DIR+"Purple-drop.png",label:"Purple drop"},
-  "purple-waves":{src:WALLPAPER_DIR+"Purple-waves.png",label:"Purple waves"},
-  moon:{src:WALLPAPER_DIR+"Moon.png",label:"Moon"},
-  "mountain-view":{src:WALLPAPER_DIR+"MountainView.png",label:"Mountain view"},
-  mine:{src:WALLPAPER_DIR+"Mine.png",label:"Mine"}
+  "purple-drop":{src:"./Wallpaper/Purple-drop.png",label:"Purple drop"},
+  "purple-waves":{src:"./Wallpaper/Purple-waves.png",label:"Purple waves"},
+  moon:{src:"./Wallpaper/Moon.png",label:"Moon"},
+  "mountain-view":{src:"./Wallpaper/MountainView.png",label:"Mountain view"}
 };
 let zIndex=200,activeNoteId=null,noteTimer;
 let storeCategory="all",storeItems=[],terminalHistory=[],terminalHistoryIndex=0;
 
-function safeGet(key,fallback){
-  try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}
-  catch{return fallback}
-}
-function safeSet(key,value){
-  try{localStorage.setItem(key,JSON.stringify(value))}
-  catch{toast("Browser storage is unavailable.")}
-}
-function toast(message){
-  $("toast").textContent=message;
-  $("toast").classList.add("show");
-  clearTimeout(toast.timer);
-  toast.timer=setTimeout(()=>$("toast").classList.remove("show"),2400);
-}
-
-function hideSplash(){
-  const splash=$("splash-screen");
-  if(!splash)return;
-  splash.classList.add("hidden");
-  setTimeout(()=>splash.remove(),800);
-}
+function safeGet(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}catch{return fallback}}
+function safeSet(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch{toast("Browser storage is unavailable.")}}
+function toast(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2400)}
+function hideSplash(){const splash=$("splash-screen");if(!splash)return;splash.classList.add("hidden");setTimeout(()=>splash.remove(),800)}
 window.addEventListener("load",()=>setTimeout(hideSplash,1650));
 
-function normalizeGitHubUrl(value){
-  if(typeof value!=="string")return value;
-  const trimmed=value.trim();
-  if(!trimmed)return trimmed;
-  if(/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed))return trimmed;
-  if(/^https?:\/\/github\.com\//i.test(trimmed)===false)return trimmed;
-  const githubBlob=/^https?:\/\/github\.com\/(.+?)\/([^/]+)\/blob\/(.+?)\/(.+)$/i;
-  const githubRaw=/^https?:\/\/github\.com\/(.+?)\/([^/]+)\/raw\/(.+)$/i;
-  const m=trimmed.match(githubBlob) || trimmed.match(githubRaw);
-  if(m){
-    const [, owner, repo, extraPath]=m;
-    return `https://raw.githubusercontent.com/${owner}/${repo}/${extraPath}`;
-  }
-  return trimmed;
-}
-
-function openApp(name){
-  const win=$("win-"+name);
-  if(!win)return;
-  $("start-menu").classList.remove("open");
-  $("notifications").classList.remove("open");
-  win.classList.remove("hidden");
-  win.style.zIndex=++zIndex;
-  document.querySelectorAll(".task-button[data-app]").forEach(b=>b.classList.toggle("active",b.dataset.app===name));
-  if(name==="notes")renderNotes();
-  if(name==="store"&&!storeItems.length)loadStore();
-  if(name==="terminal")setTimeout(()=>$("terminal-input").focus(),50);
-}
+function openApp(name){const win=$("win-"+name);if(!win)return;$("start-menu").classList.remove("open");$("notifications").classList.remove("open");win.classList.remove("hidden");win.style.zIndex=++zIndex;document.querySelectorAll(".task-button[data-app]").forEach(b=>b.classList.toggle("active",b.dataset.app===name));if(name==="notes")renderNotes();if(name==="store"&&!storeItems.length)loadStore();if(name==="terminal")setTimeout(()=>$("terminal-input").focus(),50)}
 function closeApp(name){$("win-"+name).classList.add("hidden")}
 function minimizeApp(name){$("win-"+name).classList.add("hidden")}
-function maximizeApp(name){
-  const w=$("win-"+name);
-  if(!w.classList.contains("maximized")){
-    w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});
-    w.classList.add("maximized");
-  }else{
-    w.classList.remove("maximized");
-    try{Object.assign(w.style,JSON.parse(w.dataset.oldStyle||"{}"))}catch{}
-  }
-}
-function toggleStart(){
-  $("notifications").classList.remove("open");
-  $("start-menu").classList.toggle("open");
-  if($("start-menu").classList.contains("open")){
-    $("start-search").value="";
-    renderPinned("");
-    $("start-search").focus();
-  }
-}
-function toggleNotifications(){
-  $("start-menu").classList.remove("open");
-  $("notifications").classList.toggle("open");
-}
-$("start-button").onclick=toggleStart;
-$("notify-button").onclick=toggleNotifications;
-
-function makeTaskButton(name){
-  if(document.querySelector('.task-button[data-app="'+name+'"]'))return;
-  const b=document.createElement("button");
-  b.className="task-button";b.dataset.app=name;b.title=APP_NAMES[name].title;b.textContent=APP_NAMES[name].icon;
-  b.onclick=()=>{
-    const win=$("win-"+name);
-    if(win.classList.contains("hidden"))openApp(name);
-    else if(Number(win.style.zIndex)===zIndex)minimizeApp(name);
-    else openApp(name);
-  };
-  $("task-apps").appendChild(b);
-}
+function maximizeApp(name){const w=$("win-"+name);if(!w.classList.contains("maximized")){w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});w.classList.add("maximized")}else{w.classList.remove("maximized");try{Object.assign(w.style,JSON.parse(w.dataset.oldStyle||"{}"))}catch{}}}
+function toggleStart(){$("notifications").classList.remove("open");$("start-menu").classList.toggle("open");if($("start-menu").classList.contains("open")){ $("start-search").value="";renderPinned("");$("start-search").focus(); }}
+function toggleNotifications(){ $("start-menu").classList.remove("open"); $("notifications").classList.toggle("open"); }
+$("start-button").onclick=toggleStart;$("notify-button").onclick=toggleNotifications;
+function makeTaskButton(name){if(document.querySelector('.task-button[data-app="'+name+'"]'))return;const b=document.createElement("button");b.className="task-button";b.dataset.app=name;b.title=APP_NAMES[name].title;b.textContent=APP_NAMES[name].icon;b.onclick=()=>{const win=$("win-"+name);if(win.classList.contains("hidden"))openApp(name);else if(Number(win.style.zIndex)===zIndex)minimizeApp(name);else openApp(name)};$("task-apps").appendChild(b)}
 Object.keys(APP_NAMES).forEach(makeTaskButton);
-document.querySelectorAll("[data-open]").forEach(b=>{
-  b.addEventListener("dblclick",()=>openApp(b.dataset.open));
-  b.addEventListener("click",()=>{if(matchMedia("(pointer: coarse)").matches)openApp(b.dataset.open)});
-});
-
-function renderPinned(query=""){
-  const host=$("pinned-apps");host.replaceChildren();
-  Object.entries(APP_NAMES).filter(([key,a])=>(a.title+" "+key).toLowerCase().includes(query.toLowerCase())).forEach(([key,a])=>{
-    const b=document.createElement("button");b.className="app-tile";
-    const icon=document.createElement("span");icon.className="icon";icon.textContent=a.icon;
-    const label=document.createElement("span");label.textContent=a.title;
-    b.append(icon,label);b.onclick=()=>openApp(key);host.appendChild(b);
-  });
-  getInstalledApps().filter(a=>(a.name+" "+a.key).toLowerCase().includes(query.toLowerCase())).forEach(app=>{
-    const b=document.createElement("button");b.className="app-tile";
-    const icon=document.createElement("span");icon.className="icon";icon.textContent=app.icon||"🌐";
-    const label=document.createElement("span");label.textContent=app.name;
-    b.append(icon,label);b.onclick=()=>openInstalledApp(app.key);host.appendChild(b);
-  });
-  if(!host.children.length)host.textContent="No apps found.";
-}
-$("start-search").oninput=e=>renderPinned(e.target.value);
-$("task-search").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    $("start-menu").classList.add("open");
-    $("start-search").value=e.target.value;
-    renderPinned(e.target.value);
-    $("start-search").focus();
-  }
-});
+document.querySelectorAll("[data-open]").forEach(b=>{b.addEventListener("dblclick",()=>openApp(b.dataset.open));b.addEventListener("click",()=>{if(matchMedia("(pointer: coarse)").matches)openApp(b.dataset.open)})});
+function renderPinned(query=""){const host=$("pinned-apps");host.replaceChildren();Object.entries(APP_NAMES).filter(([key,a])=>(a.title+" "+key).toLowerCase().includes(query.toLowerCase())).forEach(([key,a])=>{const b=document.createElement("button");b.className="app-tile";const icon=document.createElement("span");icon.className="icon";icon.textContent=a.icon;const label=document.createElement("span");label.textContent=a.title;b.append(icon,label);b.onclick=()=>openApp(key);host.appendChild(b)});if(!host.children.length)host.textContent="No apps found."}
+$("start-search").oninput=e=>renderPinned(e.target.value);$("task-search").addEventListener("keydown",e=>{if(e.key==="Enter"){ $("start-menu").classList.add("open"); $("start-search").value=e.target.value; renderPinned(e.target.value); $("start-search").focus(); }});
 renderPinned("");
-
-function selectSettingsTab(tabName){
-  document.querySelectorAll(".settings-tab").forEach(btn=>btn.classList.toggle("active",btn.dataset.settingsTab===tabName));
-  document.querySelectorAll(".settings-pane").forEach(p=>p.classList.toggle("active",p.id===`settings-pane-${tabName}`));
-}
+function selectSettingsTab(tabName){document.querySelectorAll(".settings-tab").forEach(btn=>btn.classList.toggle("active",btn.dataset.settingsTab===tabName));document.querySelectorAll(".settings-pane").forEach(p=>p.classList.toggle("active",p.id===`settings-pane-${tabName}`))}
 document.querySelectorAll(".settings-tab").forEach(btn=>btn.addEventListener("click",()=>selectSettingsTab(btn.dataset.settingsTab)));
 
-/* Draggable windows */
-document.querySelectorAll(".window").forEach(win=>{
-  win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex);
-});
-document.querySelectorAll(".titlebar").forEach(bar=>{
-  let sx=0,sy=0,ox=0,oy=0,dragging=false;
-  bar.addEventListener("pointerdown",e=>{
-    if(e.target.closest(".window-controls"))return;
-    const win=bar.closest(".window");
-    if(win.classList.contains("maximized"))return;
-    dragging=true;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;
-    win.style.zIndex=++zIndex;
-    bar.setPointerCapture(e.pointerId);
-  });
-  bar.addEventListener("pointermove",e=>{
-    if(!dragging)return;
-    const win=bar.closest(".window");
-    win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+e.clientX-sx))+"px";
-    win.style.top=Math.max(0,Math.min(innerHeight-60,oy+e.clientY-sy))+"px";
-  });
-  bar.addEventListener("pointerup",()=>dragging=false);
-  bar.addEventListener("pointercancel",()=>dragging=false);
-});
-
-$("desktop").addEventListener("contextmenu",e=>{
-  e.preventDefault();
-  const m=$("context-menu");m.style.display="block";
-  m.style.left=Math.min(e.clientX,innerWidth-190)+"px";
-  m.style.top=Math.min(e.clientY,innerHeight-150)+"px";
-});
+document.querySelectorAll(".window").forEach(win=>win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex));
+document.querySelectorAll(".titlebar").forEach(bar=>{let sx=0,sy=0,ox=0,oy=0,dragging=false;bar.addEventListener("pointerdown",e=>{if(e.target.closest(".window-controls"))return;const win=bar.closest(".window");if(win.classList.contains("maximized"))return;dragging=true;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;win.style.zIndex=++zIndex;bar.setPointerCapture(e.pointerId)});bar.addEventListener("pointermove",e=>{if(!dragging)return;const win=bar.closest(".window");win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+e.clientX-sx))+"px";win.style.top=Math.max(0,Math.min(innerHeight-60,oy+e.clientY-sy))+"px"});bar.addEventListener("pointerup",()=>dragging=false);bar.addEventListener("pointercancel",()=>dragging=false)});
+$("desktop").addEventListener("contextmenu",e=>{e.preventDefault();const m=$("context-menu");m.style.display="block";m.style.left=Math.min(e.clientX,innerWidth-190)+"px";m.style.top=Math.min(e.clientY,innerHeight-150)+"px"});
 function hideContext(){$("context-menu").style.display="none"}
-function refreshDesktop(){hideContext();renderInstalledShortcuts();toast("Desktop refreshed.")}
-document.addEventListener("click",e=>{
-  if(!e.target.closest("#context-menu"))hideContext();
-  if(!e.target.closest("#start-menu")&&!e.target.closest("#start-button")&&!e.target.closest("#task-search"))$("start-menu").classList.remove("open");
-  if(!e.target.closest("#notifications")&&!e.target.closest("#notify-button"))$("notifications").classList.remove("open");
-});
-
-function updateClock(){
-  const d=new Date();
-  $("clock").innerHTML=d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+"<br>"+d.toLocaleDateString([],{month:"numeric",day:"numeric",year:"numeric"});
-}
+function refreshDesktop(){hideContext();toast("Desktop refreshed.")}
+document.addEventListener("click",e=>{if(!e.target.closest("#context-menu"))hideContext();if(!e.target.closest("#start-menu")&&!e.target.closest("#start-button")&&!e.target.closest("#task-search"))$("start-menu").classList.remove("open");if(!e.target.closest("#notifications")&&!e.target.closest("#notify-button"))$("notifications").classList.remove("open")});
+function updateClock(){const d=new Date();$("clock").innerHTML=d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+"<br>"+d.toLocaleDateString([],{month:"numeric",day:"numeric",year:"numeric"})}
 updateClock();setInterval(updateClock,15000);
-
 function getNotes(){return safeGet("desktop.notes",[])}
 function saveNotes(notes){safeSet("desktop.notes",notes)}
-function renderNotes(){
-  const notes=getNotes(),host=$("note-list");host.replaceChildren();
-  if(!notes.length){
-    const p=document.createElement("div");p.className="empty";p.textContent="No notes yet.";host.appendChild(p);
-    activeNoteId=null;$("note-title").value="";$("note-text").value="";
-    $("note-status").textContent="Create a note to get started.";return;
-  }
-  if(!notes.some(n=>n.id===activeNoteId))activeNoteId=notes[0].id;
-  notes.forEach(n=>{
-    const b=document.createElement("div");b.className="note-item"+(n.id===activeNoteId?" selected":"");
-    const title=document.createElement("div");title.style.fontWeight="600";title.textContent=n.title||"Untitled note";
-    const preview=document.createElement("div");preview.style.color="var(--muted)";preview.style.marginTop="5px";preview.textContent=(n.text||"").slice(0,42)||"Empty note";
-    b.append(title,preview);b.onclick=()=>{saveActiveNote();activeNoteId=n.id;renderNotes()};host.appendChild(b);
-  });
-  const active=notes.find(n=>n.id===activeNoteId);
-  $("note-title").value=active.title||"";$("note-text").value=active.text||"";$("note-status").textContent="Saved locally";
-}
-function saveActiveNote(){
-  if(!activeNoteId)return;
-  const notes=getNotes(),n=notes.find(x=>x.id===activeNoteId);if(!n)return;
-  n.title=$("note-title").value;n.text=$("note-text").value;n.updated=Date.now();
-  saveNotes(notes);$("note-status").textContent="Saved at "+new Date().toLocaleTimeString();
-}
-function scheduleNoteSave(){
-  $("note-status").textContent="Saving…";clearTimeout(noteTimer);
-  noteTimer=setTimeout(()=>{saveActiveNote();renderNotes()},300);
-}
-function newNote(){
-  const notes=getNotes(),n={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:"",text:"",updated:Date.now()};
-  notes.unshift(n);saveNotes(notes);activeNoteId=n.id;renderNotes();$("note-title").focus();
-}
-function deleteNote(){
-  if(!activeNoteId)return toast("Select a note first.");
-  saveNotes(getNotes().filter(n=>n.id!==activeNoteId));
-  activeNoteId=null;renderNotes();toast("Note deleted.");
-}
-function exportNote(){
-  if(!activeNoteId)return toast("Select a note first.");
-  saveActiveNote();
-  const n=getNotes().find(x=>x.id===activeNoteId);
-  const blob=new Blob([n.title+"\n\n"+n.text],{type:"text/plain;charset=utf-8"});
-  const url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download=(n.title||"note").replace(/[\\/:*?\"<>|]/g,"_")+".txt";
-  a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-$("note-title").addEventListener("input",scheduleNoteSave);
-$("note-text").addEventListener("input",scheduleNoteSave);
-
-function setAccent(name){
-  const preset=ACCENT_MAP[name]||ACCENT_MAP.blue;
-  document.documentElement.style.setProperty("--accent",preset.accent);
-  document.documentElement.style.setProperty("--dark",preset.dark);
-  document.documentElement.style.setProperty("--accent-soft",preset.accent + "33");
-  document.documentElement.style.setProperty("--accent-strong",preset.accent === '#f8fafc' ? '#e2e8f0' : '#dbeafe');
-  document.documentElement.style.setProperty("--accent-contrast",preset.accent === '#111827' || preset.accent === '#020617' ? '#f8fafc' : '#ffffff');
-  safeSet("desktop.accentName",name);
-  const activeButtons=document.querySelectorAll(".color-dot");
-  activeButtons.forEach(btn=>btn.classList.toggle("selected",btn.dataset.accent===name));
-}
-function setWallpaper(value){
-  const choice=WALLPAPERS[value] || WALLPAPERS["purple-drop"];
-  const wallpaperUrl = choice && choice.src ? choice.src : WALLPAPERS["purple-drop"].src;
-  $("desktop").style.background=`linear-gradient(135deg, rgba(18,10,28,.52), rgba(18,10,28,.70)), url('${wallpaperUrl}') center / cover no-repeat`;
-  $("desktop").style.backgroundColor="#130c28";
-  if($("wallpaper"))$("wallpaper").value=value;
-  safeSet("desktop.wallpaper",value);
-}
+function renderNotes(){const notes=getNotes(),host=$("note-list");host.replaceChildren();if(!notes.length){const p=document.createElement("div");p.className="empty";p.textContent="No notes yet.";host.appendChild(p);activeNoteId=null;$("note-title").value="";$("note-text").value="";$("note-status").textContent="Create a note to get started.";return}if(!notes.some(n=>n.id===activeNoteId))activeNoteId=notes[0].id;notes.forEach(n=>{const b=document.createElement("div");b.className="note-item"+(n.id===activeNoteId?" selected":"");const title=document.createElement("div");title.style.fontWeight="600";title.textContent=n.title||"Untitled note";const preview=document.createElement("div");preview.style.color="var(--muted)";preview.style.marginTop="5px";preview.textContent=(n.text||"").slice(0,42)||"Empty note";b.append(title,preview);b.onclick=()=>{saveActiveNote();activeNoteId=n.id;renderNotes()};host.appendChild(b)});const active=notes.find(n=>n.id===activeNoteId);$("note-title").value=active.title||"";$("note-text").value=active.text||"";$("note-status").textContent="Saved locally"}
+function saveActiveNote(){if(!activeNoteId)return;const notes=getNotes(),n=notes.find(x=>x.id===activeNoteId);if(!n)return;n.title=$("note-title").value;n.text=$("note-text").value;n.updated=Date.now();saveNotes(notes);$("note-status").textContent="Saved at "+new Date().toLocaleTimeString()} 
+function scheduleNoteSave(){$("note-status").textContent="Saving…";clearTimeout(noteTimer);noteTimer=setTimeout(()=>{saveActiveNote();renderNotes()},300)}
+function newNote(){const notes=getNotes(),n={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:"",text:"",updated:Date.now()};notes.unshift(n);saveNotes(notes);activeNoteId=n.id;renderNotes();$("note-title").focus()}
+function deleteNote(){if(!activeNoteId)return toast("Select a note first.");saveNotes(getNotes().filter(n=>n.id!==activeNoteId));activeNoteId=null;renderNotes();toast("Note deleted.")}
+function exportNote(){if(!activeNoteId)return toast("Select a note first.");saveActiveNote();const n=getNotes().find(x=>x.id===activeNoteId);const blob=new Blob([n.title+"\n\n"+n.text],{type:"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=(n.title||"note").replace(/[\\/:*?\"<>|]/g,"_")+".txt";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$("note-title").addEventListener("input",scheduleNoteSave);$("note-text").addEventListener("input",scheduleNoteSave);
+function setAccent(name){const preset=ACCENT_MAP[name]||ACCENT_MAP.blue;document.documentElement.style.setProperty("--accent",preset.accent);document.documentElement.style.setProperty("--dark",preset.dark);document.documentElement.style.setProperty("--accent-soft",preset.accent+"33");document.documentElement.style.setProperty("--accent-strong",preset.accent==='#f8fafc'?'#e2e8f0':'#dbeafe');document.documentElement.style.setProperty("--accent-contrast",preset.accent==='#111827'||preset.accent==='#020617'?'#f8fafc':'#ffffff');safeSet("desktop.accentName",name);document.querySelectorAll(".color-dot").forEach(btn=>btn.classList.toggle("selected",btn.dataset.accent===name))}
+function setWallpaper(value){const choice=WALLPAPERS[value]||WALLPAPERS["purple-drop"];const wallpaperUrl=choice&&choice.src?choice.src:WALLPAPERS["purple-drop"].src;$("desktop").style.background=`linear-gradient(135deg, rgba(18,10,28,.52), rgba(18,10,28,.70)), url('${wallpaperUrl}') center / cover no-repeat`;$("desktop").style.backgroundColor="#130c28";if($("wallpaper"))$("wallpaper").value=value;safeSet("desktop.wallpaper",value)}
 function saveWelcomeSetting(enabled){safeSet("desktop.showWelcome",enabled)}
-function resetSettings(){
-  localStorage.removeItem("desktop.accentName");
-  localStorage.removeItem("desktop.accent");
-  localStorage.removeItem("desktop.wallpaper");
-  localStorage.removeItem("desktop.showWelcome");
-  setAccent("blue");
-  setWallpaper("purple-drop");
-  $("welcome-setting").checked=true;
-  toast("Preferences restored.");
-}
-function loadSettings(){
-  const accentName=safeGet("desktop.accentName","blue");
-  setAccent(accentName);
-  const wallpaperKey=safeGet("desktop.wallpaper","purple-drop");
-  setWallpaper(wallpaperKey);
-  $("welcome-setting").checked=safeGet("desktop.showWelcome",true);
-  $("wallpaper").value=safeGet("desktop.wallpaper","purple-drop");
-  selectSettingsTab("general");
-}
-
-Array.from(document.querySelectorAll(".color-dot")).forEach(dot=>{
-  dot.addEventListener("click",()=>setAccent(dot.dataset.accent));
-});
-
-function getInstalledApps(){return safeGet("desktop.installedApps",[])}
-function saveInstalledApps(apps){safeSet("desktop.installedApps",apps)}
-function appKey(name){
-  return String(name).toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,55);
-}
-function findCatalogApp(name){
-  const q=String(name).trim().toLowerCase();
-  return storeItems.find(a=>a.name.trim().toLowerCase()===q)||storeItems.find(a=>appKey(a.name)===appKey(name))||null;
-}
-function installApp(app){
-  if(!app||!app.url||app.url==="#"){toast("This app has no launch URL configured.");return false}
-  let url;
-  try{url=new URL(normalizeGitHubUrl(app.url),location.href)}catch{toast("Invalid app URL.");return false}
-  if (!["http:","https:"].includes(url.protocol)){toast("Only web URLs can be installed.");return false}
-  const installed=getInstalledApps(),key=appKey(app.name);
-  if(installed.some(a=>a.key===key)){toast(app.name+" is already installed.");return true}
-  installed.push({key,name:app.name,url:url.href,icon:app.icon||"🌐",desc:app.desc||"",category:app.category||"apps",installedAt:Date.now()});
-  saveInstalledApps(installed);renderInstalledShortcuts();renderPinned($("start-search").value);renderStore();
-  toast(app.name+" installed successfully.");return true;
-}
-function uninstallApp(key){
-  const app=getInstalledApps().find(a=>a.key===key);if(!app)return;
-  if(!confirm("Uninstall "+app.name+"?"))return;
-  saveInstalledApps(getInstalledApps().filter(a=>a.key!==key));
-  $("installed-window-"+key)?.remove();$("installed-task-"+key)?.remove();
-  renderInstalledShortcuts();renderPinned($("start-search").value);renderStore();toast(app.name+" uninstalled.");
-}
-function renderInstalledShortcuts(){
-  document.querySelectorAll(".installed-desktop-icon").forEach(el=>el.remove());
-  const host=document.querySelector(".desktop-icons");
-  getInstalledApps().forEach(app=>{
-    const b=document.createElement("button");b.className="desktop-icon installed-desktop-icon";
-    const icon=document.createElement("span");icon.className="icon";icon.textContent=app.icon||"🌐";
-    const label=document.createElement("span");label.textContent=app.name;
-    const remove=document.createElement("span");remove.className="uninstall-shortcut";remove.textContent="×";remove.title="Uninstall";
-    remove.style.cssText="position:absolute;right:0;top:0;width:21px;height:21px;display:none;border:0;border-radius:50%;background:#b91c1c;color:white";
-    b.onmouseenter=()=>remove.style.display="block";b.onmouseleave=()=>remove.style.display="none";
-    remove.onclick=e=>{e.stopPropagation();uninstallApp(app.key)};
-    b.append(icon,label,remove);
-    b.ondblclick=()=>openInstalledApp(app.key);
-    b.onclick=()=>{if(matchMedia("(pointer:coarse)").matches)openInstalledApp(app.key)};
-    host.appendChild(b);
-  });
-}
-function makeInstalledTaskButton(app){
-  let b=$("installed-task-"+app.key);if(b)return b;
-  b=document.createElement("button");b.id="installed-task-"+app.key;b.className="task-button";b.title=app.name;b.textContent=app.icon||"🌐";
-  b.onclick=()=>{
-    const win=$("installed-window-"+app.key);
-    if(!win)openInstalledApp(app.key);
-    else if(win.classList.contains("hidden")){win.classList.remove("hidden");win.style.zIndex=++zIndex}
-    else win.classList.add("hidden");
-  };
-  $("task-apps").appendChild(b);return b;
-}
-function openInstalledApp(key){
-  const app=getInstalledApps().find(a=>a.key===key);if(!app){toast("This app is not installed.");return}
-  let url;try{url=new URL(normalizeGitHubUrl(app.url))}catch{toast("Invalid app URL.");return}
-  if(!["http:","https:"].includes(url.protocol)){toast("Unsupported URL.");return}
-  let win=$("installed-window-"+key);
-  if(win){win.classList.remove("hidden");win.style.zIndex=++zIndex;makeInstalledTaskButton(app).classList.add("active");return}
-  win=document.createElement("section");win.id="installed-window-"+key;win.className="window installed-app-window";
-  win.style.cssText="left:calc(50% - 325px);top:calc(50% - 220px);width:650px;height:440px;z-index:"+(++zIndex);
-  const bar=document.createElement("header");bar.className="titlebar";
-  const icon=document.createElement("span");icon.className="title-icon";icon.textContent=app.icon||"🌐";
-  const title=document.createElement("span");title.className="window-title";title.textContent=app.name;
-  const controls=document.createElement("div");controls.className="window-controls";
-  const min=document.createElement("button");min.textContent="—";min.onclick=()=>win.classList.add("hidden");
-  const max=document.createElement("button");max.textContent="□";max.onclick=()=>maximizeInstalledWindow(win);
-  const close=document.createElement("button");close.className="close";close.textContent="×";
-  close.onclick=()=>{win.remove();const b=$("installed-task-"+key);if(b)b.classList.remove("active")};
-  controls.append(min,max,close);bar.append(icon,title,controls);
-  const body=document.createElement("div");body.className="window-body";
-  const loading=document.createElement("div");loading.className="app-loading";loading.textContent="Loading "+app.name+"…";
-  const frame=document.createElement("iframe");frame.title=app.name;frame.referrerPolicy="strict-origin-when-cross-origin";
-  frame.setAttribute("sandbox","allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox");
-  frame.src=url.href;frame.onload=()=>loading.remove();
-  body.append(loading,frame);win.append(bar,body);$("desktop").appendChild(win);
-  makeInstalledTaskButton(app).classList.add("active");
-  attachDragging(bar,win);
-  win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex);
-}
-function maximizeInstalledWindow(win){
-  if(!win.classList.contains("maximized")){
-    win.dataset.oldStyle=JSON.stringify({left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height});
-    win.classList.add("maximized");
-  }else{
-    win.classList.remove("maximized");
-    try{Object.assign(win.style,JSON.parse(win.dataset.oldStyle||"{}"))}catch{}
-  }
-}
-function attachDragging(bar,win){
-  let sx=0,sy=0,ox=0,oy=0,drag=false;
-  bar.addEventListener("pointerdown",e=>{
-    if(e.target.closest(".window-controls")||win.classList.contains("maximized"))return;
-    drag=true;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;win.style.zIndex=++zIndex;
-    bar.setPointerCapture(e.pointerId);
-  });
-  bar.addEventListener("pointermove",e=>{
-    if(!drag)return;
-    win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+e.clientX-sx))+"px";
-    win.style.top=Math.max(0,Math.min(innerHeight-60,oy+e.clientY-sy))+"px";
-  });
-  bar.addEventListener("pointerup",()=>drag=false);
-  bar.addEventListener("pointercancel",()=>drag=false);
-}
+function resetSettings(){localStorage.removeItem("desktop.accentName");localStorage.removeItem("desktop.wallpaper");localStorage.removeItem("desktop.showWelcome");setAccent("blue");setWallpaper("purple-drop");$("welcome-setting").checked=true;toast("Preferences restored.")}
+function loadSettings(){const accentName=safeGet("desktop.accentName","blue");setAccent(accentName);const wallpaperKey=safeGet("desktop.wallpaper","purple-drop");setWallpaper(wallpaperKey);$("welcome-setting").checked=safeGet("desktop.showWelcome",true);if($("wallpaper"))$("wallpaper").value=safeGet("desktop.wallpaper","purple-drop");selectSettingsTab("general")}
+Array.from(document.querySelectorAll(".color-dot")).forEach(dot=>dot.addEventListener("click",()=>setAccent(dot.dataset.accent)));
 
 const VUS_URL="https://raw.githubusercontent.com/Cra-Z-Gaming/VUS/refs/heads/main/apps.json";
-function normalizeCatalog(data){
-  const output=[];
-  [["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{
-    if(!Array.isArray(items))return;
-    items.forEach(item=>{
-      if(typeof item==="string")output.push({name:item,url:normalizeGitHubUrl("#"),desc:"VUS "+category,icon:"🌐",category});
-      else if(item&&typeof item==="object")output.push({
-        name:item.name||item.title||"Untitled",url:normalizeGitHubUrl(item.url||item.href||"#"),
-        desc:item.desc||item.description||"Open this VUS resource.",
-        icon:item.icon||"🌐",category
-      });
-    });
-  });
-  if(!output.length&&Array.isArray(data))data.forEach(item=>{
-    if(item&&typeof item==="object")output.push({
-      name:item.name||item.title||"Untitled",url:normalizeGitHubUrl(item.url||item.href||"#"),
-      desc:item.desc||item.description||"",icon:item.icon||"🌐",category:"apps"
-    });
-  });
-  return output;
-}
-async function loadStore(){
-  $("store-status").textContent="Loading the repository catalog…";
-  try{
-    const response=await fetch(VUS_URL,{cache:"no-store"});
-    if(!response.ok)throw Error("Catalog request failed");
-    const data=await response.json();storeItems=normalizeCatalog(data);
-    if(!storeItems.length)throw Error("No catalog entries");
-    $("store-status").textContent="Loaded from the VUS repository.";
-  }catch{
-    storeItems=[
-      {name:"VUS Repository",url:"https://github.com/Cra-Z-Gaming/VUS",desc:"Browse the source repository.",icon:"💻",category:"links"},
-      {name:"GitHub",url:"https://github.com",desc:"Explore projects and code.",icon:"🐙",category:"links"}
-    ];
-    $("store-status").textContent="Catalog unavailable. Showing fallback links.";
-  }
-  renderStore();
-}
-function renderStore(){
-  const host=$("store-grid");host.replaceChildren();
-  const q=$("store-search").value.trim().toLowerCase(),installed=getInstalledApps();
-  const items=storeItems.filter(a=>(storeCategory==="all"||a.category===storeCategory)&&(a.name+" "+a.desc+" "+a.category).toLowerCase().includes(q));
-  if(!items.length){const e=document.createElement("div");e.className="empty";e.textContent="No matching apps found.";host.appendChild(e);return}
-  items.forEach(app=>{
-    const key=appKey(app.name),isInstalled=installed.some(a=>a.key===key);
-    const card=document.createElement("article");card.className="store-card";
-    const icon=document.createElement("div");icon.className="store-icon";icon.textContent=app.icon||"🌐";
-    const title=document.createElement("h3");title.textContent=app.name;
-    const desc=document.createElement("p");desc.textContent=app.desc||"Web application";
-    const actions=document.createElement("div");actions.className="install-actions";
-    const install=document.createElement("button");install.className="primary";install.textContent=isInstalled?"Installed ✓":"Install";install.disabled=isInstalled;install.onclick=()=>installApp(app);
-    const open=document.createElement("button");open.className="soft-button";open.textContent="Open";open.disabled=!isInstalled;open.onclick=()=>openInstalledApp(key);
-    actions.append(install,open);card.append(icon,title,desc,actions);
-    if(isInstalled){const label=document.createElement("div");label.className="installed-label";label.textContent="✓ Installed";card.appendChild(label)}
-    host.appendChild(card);
-  });
-}
-$("store-search").addEventListener("input",renderStore);
-$("apps-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{
-  storeCategory=b.dataset.category;
-  $("apps-tabs").querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b));
-  renderStore();
-});
-
-function printTerminal(text=""){
-  $("terminal-output").textContent+=String(text)+"\n";
-  $("terminal").scrollTop=$("terminal").scrollHeight;
-}
-function runCommand(raw){
-  const command=raw.trim();printTerminal("desktop> "+raw);if(!command)return;
-  const installer=command.match(/^execute\s+installer\s+--(.+)$/i);
-  if(installer){
-    const app=findCatalogApp(installer[1].trim());
-    if(!app){printTerminal('Installer: "'+installer[1]+'" was not found. Open VUS Apps to load the catalog.');return}
-    if(installApp(app))printTerminal("Installer: "+app.name+" installed.");return;
-  }
-  const execute=command.match(/^execute\s+(.+)$/i);
-  if(execute){
-    const name=execute[1].trim();
-    const app=getInstalledApps().find(a=>a.name.toLowerCase()===name.toLowerCase()||a.key===appKey(name));
-    if(!app){printTerminal('App "'+name+'" is not installed. Use execute installer --'+name);return}
-    openInstalledApp(app.key);printTerminal("Launching "+app.name+"…");return;
-  }
-  const parts=command.split(/\s+/),cmd=parts.shift().toLowerCase(),arg=parts.join(" ");
-  switch(cmd){
-    case "help":printTerminal("help\ndate\ntime\napps\ninstalled\nnotes\nsettings\nstore\nexecute installer --AppName\nexecute AppName\nuninstall AppName\necho <text>\nclear\nabout\nversion\nwhoami");break;
-    case "date":case "time":printTerminal(new Date().toString());break;
-    case "apps":printTerminal(storeItems.map(a=>a.name).join("\n")||"No catalog loaded. Open VUS Apps.");break;
-    case "installed":printTerminal(getInstalledApps().map(a=>a.name).join("\n")||"No apps installed.");break;
-    case "notes":printTerminal(getNotes().length+" saved note(s)." );break;
-    case "settings":openApp("settings");break;
-    case "store":openApp("store");break;
-    case "clear":$("terminal-output").textContent="";break;
-    case "echo":printTerminal(arg);break;
-    case "about":printTerminal("Browser-based desktop environment. Web apps run inside browser windows.");break;
-    case "version":printTerminal("Desktop version 1.1");break;
-    case "whoami":printTerminal("local-user");break;
-    case "uninstall":{
-      const app=getInstalledApps().find(a=>a.name.toLowerCase()===arg.toLowerCase()||a.key===appKey(arg));
-      if(app)uninstallApp(app.key);else printTerminal("Installed app not found.");break;
-    }
-    default:printTerminal("Command not found: "+cmd+'. Type "help".');
-  }
-}
-$("terminal-input").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    const value=e.target.value;e.target.value="";
-    if(value.trim()){terminalHistory.push(value);terminalHistoryIndex=terminalHistory.length}
-    runCommand(value);
-  }else if(e.key==="ArrowUp"){
-    e.preventDefault();if(terminalHistoryIndex>0)e.target.value=terminalHistory[--terminalHistoryIndex];
-  }else if(e.key==="ArrowDown"){
-    e.preventDefault();if(terminalHistoryIndex<terminalHistory.length)e.target.value=terminalHistory[++terminalHistoryIndex]||"";
-  }
-});
-
-function initialize(){
-  loadSettings();
-  const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);
-  if(show)openApp("welcome");else closeApp("welcome");
-  $("dont-show").addEventListener("change",e=>{
-    if(e.target.checked){
-      safeSet("desktop.showWelcome",false);safeSet("desktop.welcomed",true);
-      $("welcome-setting").checked=false;
-    }
-  });
-  $("welcome-setting").addEventListener("change",()=>{
-    if($("welcome-setting").checked)safeSet("desktop.welcomed",false);
-  });
-}
+function normalizeGitHubUrl(value){if(typeof value!=="string")return value;const trimmed=value.trim();if(!trimmed)return trimmed;if(/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed))return trimmed;if(/^https?:\/\/github\.com\//i.test(trimmed)===false)return trimmed;const githubBlob=/^https?:\/\/github\.com\/(.+?)\/([^/]+)\/blob\/(.+?)\/(.+)$/i;const githubRaw=/^https?:\/\/github\.com\/(.+?)\/([^/]+)\/raw\/(.+)$/i;const m=trimmed.match(githubBlob)||trimmed.match(githubRaw);if(m){const [,owner,repo,extraPath]=m;return `https://raw.githubusercontent.com/${owner}/${repo}/${extraPath}`}return trimmed}
+function normalizeCatalog(data){const output=[];[["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{if(!Array.isArray(items))return;items.forEach(item=>{if(typeof item==="string")output.push({name:item,url:normalizeGitHubUrl("#"),desc:"VUS "+category,icon:"🌐",category});else if(item&&typeof item==="object")output.push({name:item.name||item.title||"Untitled",url:normalizeGitHubUrl(item.url||item.href||"#"),desc:item.desc||item.description||"Open this VUS resource.",icon:item.icon||"🌐",category})})});if(!output.length&&Array.isArray(data))data.forEach(item=>{if(item&&typeof item==="object")output.push({name:item.name||item.title||"Untitled",url:normalizeGitHubUrl(item.url||item.href||"#"),desc:item.desc||item.description||"",icon:item.icon||"🌐",category:"apps"})});return output}
+async function loadStore(){$("store-status").textContent="Loading the repository catalog…";try{const response=await fetch(VUS_URL,{cache:"no-store"});if(!response.ok)throw Error("Catalog request failed");const data=await response.json();storeItems=normalizeCatalog(data);if(!storeItems.length)throw Error("No catalog entries");$("store-status").textContent="Loaded from the VUS repository.";}catch{storeItems=[{name:"VUS Repository",url:"https://github.com/Cra-Z-Gaming/VUS",desc:"Browse the source repository.",icon:"💻",category:"links"},{name:"GitHub",url:"https://github.com",desc:"Explore projects and code.",icon:"🐙",category:"links"}];$("store-status").textContent="Catalog unavailable. Showing fallback links."}renderStore()}
+function renderStore(){const host=$("store-grid");host.replaceChildren();const q=$("store-search").value.trim().toLowerCase();const items=storeItems.filter(a=>(storeCategory==="all"||a.category===storeCategory)&&(a.name+" "+a.desc+" "+a.category).toLowerCase().includes(q));if(!items.length){const e=document.createElement("div");e.className="empty";e.textContent="No matching apps found.";host.appendChild(e);return}items.forEach(app=>{const key=app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");const card=document.createElement("article");card.className="store-card";const icon=document.createElement("div");icon.className="store-icon";icon.textContent=app.icon||"🌐";const title=document.createElement("h3");title.textContent=app.name;const desc=document.createElement("p");desc.textContent=app.desc||"Web application";const actions=document.createElement("div");actions.className="install-actions";const install=document.createElement("button");install.className="primary";install.textContent="Install";install.onclick=()=>installApp(app);const open=document.createElement("button");open.className="soft-button";open.textContent="Open";open.onclick=()=>openInstalledApp(key);actions.append(install,open);card.append(icon,title,desc,actions);host.appendChild(card)})}
+$("store-search").addEventListener("input",renderStore);$("apps-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{storeCategory=b.dataset.category;$("apps-tabs").querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b));renderStore()});
+function installApp(app){const installed=JSON.parse(localStorage.getItem("desktop.installedApps")||"[]");const key=app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");if(installed.some(a=>a.key===key)){toast(app.name+" is already installed.");return}installed.push({key,name:app.name,url:normalizeGitHubUrl(app.url||"#"),icon:app.icon||"🌐"});localStorage.setItem("desktop.installedApps",JSON.stringify(installed));toast(app.name+" installed successfully.")}
+function openInstalledApp(key){toast("Installed app launch is not configured in this build.")}
+function printTerminal(text=""){$("terminal-output").textContent += String(text)+"\n";$("terminal").scrollTop=$("terminal").scrollHeight}
+function runCommand(raw){const command=raw.trim();printTerminal("desktop> "+raw);if(!command)return;const parts=command.split(/\s+/),cmd=parts.shift().toLowerCase(),arg=parts.join(" ");switch(cmd){case "help":printTerminal("help\ndate\ntime\napps\nnotes\nsettings\nstore\nclear\nabout\nversion\nwhoami");break;case "date":case "time":printTerminal(new Date().toString());break;case "notes":printTerminal(getNotes().length+" saved note(s).");break;case "settings":openApp("settings");break;case "store":openApp("store");break;case "clear":$("terminal-output").textContent="";break;case "about":printTerminal("Browser-based desktop environment. Web apps run inside browser windows.");break;case "version":printTerminal("Desktop version 1.1");break;case "whoami":printTerminal("local-user");break;default:printTerminal("Command not found: "+cmd+'. Type "help".');}}
+$("terminal-input").addEventListener("keydown",e=>{if(e.key==="Enter"){const value=e.target.value;e.target.value="";if(value.trim()){terminalHistory.push(value);terminalHistoryIndex=terminalHistory.length}runCommand(value)}else if(e.key==="ArrowUp"){e.preventDefault();if(terminalHistoryIndex>0)e.target.value=terminalHistory[--terminalHistoryIndex]}else if(e.key==="ArrowDown"){e.preventDefault();if(terminalHistoryIndex<terminalHistory.length)e.target.value=terminalHistory[++terminalHistoryIndex]||""}});
+function initialize(){loadSettings();const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);if(show)openApp("welcome");else closeApp("welcome");$("dont-show").addEventListener("change",e=>{if(e.target.checked){safeSet("desktop.showWelcome",false);safeSet("desktop.welcomed",true);$("welcome-setting").checked=false}});$("welcome-setting").addEventListener("change",()=>{if($("welcome-setting").checked)safeSet("desktop.welcomed",false)})}
 initialize();
-renderInstalledShortcuts();
+openApp('welcome');
 </script>
 </body>
 </html>
