@@ -2,6 +2,8 @@
   "id": "weather",
   "name": "Weather",
   "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
   "description": "A clean weather dashboard with city search and a saved location.",
   "entry": "index.html",
   "category": "Utilities",
