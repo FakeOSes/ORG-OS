@@ -1,0 +1,23 @@
+{
+  "id": "weather",
+  "name": "Weather",
+  "version": "1.0.0",
+  "description": "A clean weather dashboard with city search and a saved location.",
+  "entry": "index.html",
+  "category": "Utilities",
+  "icon": "🌤️",
+  "features": [
+    "light-dark-theme",
+    "widgets"
+  ],
+  "widgets": [
+    {
+      "id": "weather-overview",
+      "title": "Weather widget",
+      "description": "Compact at-a-glance view provided by Weather"
+    }
+  ],
+  "permissions": [
+    "city-search"
+  ]
+}
