@@ -1,0 +1,23 @@
+{
+  "id": "music",
+  "name": "ORG Music",
+  "version": "1.0.0",
+  "description": "Play audio files locally with a queue and playback controls.",
+  "entry": "index.html",
+  "category": "Media",
+  "icon": "🎵",
+  "features": [
+    "light-dark-theme",
+    "widgets"
+  ],
+  "widgets": [
+    {
+      "id": "music-overview",
+      "title": "ORG Music widget",
+      "description": "Compact at-a-glance view provided by ORG Music"
+    }
+  ],
+  "permissions": [
+    "local-audio-files"
+  ]
+}
