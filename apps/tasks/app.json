@@ -1,0 +1,23 @@
+{
+  "id": "tasks",
+  "name": "Tasks",
+  "version": "1.0.0",
+  "description": "Organize to-dos with priorities, due dates, and filters.",
+  "entry": "index.html",
+  "category": "Productivity",
+  "icon": "✅",
+  "features": [
+    "light-dark-theme",
+    "widgets"
+  ],
+  "widgets": [
+    {
+      "id": "tasks-overview",
+      "title": "Tasks widget",
+      "description": "Compact at-a-glance view provided by Tasks"
+    }
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
