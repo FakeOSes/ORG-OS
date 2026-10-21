@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="orgwidget:name" content="Monthly Calendar">
+<meta name="orgwidget:version" content="1.0">
+<meta name="orgwidget:icon" content="📅">
+<meta name="orgwidget:width" content="2">
+<meta name="orgwidget:height" content="2">
+<style>
+*{box-sizing:border-box}body{margin:0;padding:16px;background:linear-gradient(145deg,#312e81,#111827);color:#f8fafc;font:12px system-ui,sans-serif;border-radius:14px}.heading{font-size:14px;font-weight:700;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.grid span{display:grid;place-items:center;min-height:25px;border-radius:7px;color:#dbeafe}.grid .weekday{color:#a5b4fc;font-weight:700}.grid .today{background:#818cf8;color:#111827;font-weight:800}
+</style>
+</head>
+<body><div id="heading" class="heading">Calendar</div><div id="calendar" class="grid"></div>
+<script>
+const now=new Date(),host=document.getElementById("calendar");document.getElementById("heading").textContent=now.toLocaleDateString([],{month:"long",year:"numeric"});["S","M","T","W","T","F","S"].forEach(d=>{const e=document.createElement("span");e.className="weekday";e.textContent=d;host.appendChild(e);});const offset=new Date(now.getFullYear(),now.getMonth(),1).getDay(),total=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();for(let i=0;i<offset;i++)host.appendChild(document.createElement("span"));for(let d=1;d<=total;d++){const e=document.createElement("span");e.textContent=d;if(d===now.getDate())e.className="today";host.appendChild(e);}
+</script></body></html>
