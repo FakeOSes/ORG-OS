@@ -1,0 +1,23 @@
+{
+  "id": "monitor",
+  "name": "System Monitor",
+  "version": "1.0.0",
+  "description": "Inspect browser capabilities, open app windows, and runtime status.",
+  "entry": "index.html",
+  "category": "System",
+  "icon": "📊",
+  "features": [
+    "light-dark-theme",
+    "widgets"
+  ],
+  "widgets": [
+    {
+      "id": "monitor-overview",
+      "title": "System Monitor widget",
+      "description": "Compact at-a-glance view provided by System Monitor"
+    }
+  ],
+  "permissions": [
+    "browser-metrics"
+  ]
+}
