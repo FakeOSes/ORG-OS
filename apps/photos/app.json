@@ -1,0 +1,23 @@
+{
+  "id": "photos",
+  "name": "ORG Photos",
+  "version": "1.0.0",
+  "description": "Browse local images in a thumbnail gallery and preview them.",
+  "entry": "index.html",
+  "category": "Media",
+  "icon": "🖼️",
+  "features": [
+    "light-dark-theme",
+    "widgets"
+  ],
+  "widgets": [
+    {
+      "id": "photos-overview",
+      "title": "ORG Photos widget",
+      "description": "Compact at-a-glance view provided by ORG Photos"
+    }
+  ],
+  "permissions": [
+    "local-image-files"
+  ]
+}
