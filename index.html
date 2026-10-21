@@ -878,8 +878,9 @@ function syncTaskbar(activeName){const visibleTop=getTopVisibleApp();if(!activeN
 function focusApp(name){const win=$("win-"+name);if(!win||win.classList.contains("hidden"))return;win.style.zIndex=++zIndex;syncTaskbar(name);}
 function openApp(name){let win=$("win-"+name);if(name==="widgets"){renderWidgets();renderOrgWidgetGallery();if(!window.__orgWidgetLibraryRequested){window.__orgWidgetLibraryRequested=true;loadOrgWidgetLibrary();}}if(!win){const installed=getInstalledApps().find(app=>app.appKey===name||app.key===name);if(installed){openInstalledApp(installed.key);return;}return;}if(name==="orgstore")renderOrgStore();win.dataset.launched="true";$("start-menu").classList.remove("open");$("notifications").classList.remove("open");win.classList.remove("hidden");if(name==="orgstore"&&win.dataset.storePositioned!=="true"){win.style.left=Math.max(8,(innerWidth-win.offsetWidth)/2)+"px";win.style.top=Math.max(8,(innerHeight-win.offsetHeight)/2)+"px";win.dataset.storePositioned="true";}win.style.zIndex=++zIndex;syncTaskbar(name);}
 function closeApp(name){const win=$("win-"+name);if(win){win.classList.add("hidden");win.dataset.launched="false";}syncTaskbar("");}
-function minimizeApp(name){const win=$("win-"+name);if(win)win.classList.add("hidden");syncTaskbar("");}
-function maximizeApp(name){const w=$("win-"+name);if(!w)return;if(!w.classList.contains("maximized")){w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});w.classList.add("maximized");w.style.left="0";w.style.top="0";w.style.width="100%";w.style.height="100%"}else{w.classList.remove("maximized");const prev=JSON.parse(w.dataset.oldStyle||"{}" );w.style.left=prev.left||"";w.style.top=prev.top||"";w.style.width=prev.width||"";w.style.height=prev.height||""}focusApp(w.id.replace("win-",""))}
+function minimizeApp(name){const win=$("win-"+name);if(win)win.classList.add("hidden");syncFullscreenTaskbar();syncTaskbar("");}
+function syncFullscreenTaskbar(){const active=[...document.querySelectorAll(".window.maximized")].some(w=>!w.classList.contains("hidden"));document.body.classList.toggle("fullscreen-window",active);if(!active)document.body.classList.remove("taskbar-revealed");}
+function maximizeApp(name){const w=$("win-"+name);if(!w)return;if(!w.classList.contains("maximized")){w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});w.classList.add("maximized");w.style.left="0";w.style.top="0";w.style.width="100%";w.style.height="100%"}else{w.classList.remove("maximized");const prev=JSON.parse(w.dataset.oldStyle||"{}" );w.style.left=prev.left||"";w.style.top=prev.top||"";w.style.width=prev.width||"";w.style.height=prev.height||""}syncFullscreenTaskbar();focusApp(w.id.replace("win-",""))}
 function updateStartClock(){const now=new Date();const d=$("start-date"),t=$("start-time");if(d)d.textContent=now.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});if(t)t.textContent=formatDesktopTime(now);if($("win-widgets")&&!$("win-widgets").classList.contains("hidden"))renderWidgets();}
 function closeAllWindows(){document.querySelectorAll(".window").forEach(win=>{win.classList.add("hidden");win.dataset.launched="false";});syncTaskbar("");$("start-menu").classList.remove("open");toast("All windows closed.");}
 function toggleStart(){$("notifications").classList.remove("open");$("start-menu").classList.toggle("open");if($("start-menu").classList.contains("open")){$("start-search").value="";renderPinned();updateStartClock();$("start-search").focus();}}
@@ -952,12 +953,12 @@ const taskbarEdge=$("taskbar-edge"),taskbar=$("taskbar");
 function revealTaskbar(){document.body.classList.add("taskbar-revealed");}
 function hideTaskbar(){if(taskbar&&!taskbar.matches(":hover")&&!taskbar.contains(document.activeElement))document.body.classList.remove("taskbar-revealed");}
 if(taskbarEdge&&taskbar){
- taskbarEdge.addEventListener("pointerenter",revealTaskbar);
- taskbarEdge.addEventListener("pointerdown",e=>{e.preventDefault();revealTaskbar();});
- taskbarEdge.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();document.body.classList.toggle("taskbar-revealed");}});
- taskbar.addEventListener("pointerleave",e=>{if(e.clientY<innerHeight-10)document.body.classList.remove("taskbar-revealed");});
- taskbar.addEventListener("focusout",()=>{if(!taskbar.matches(":hover"))document.body.classList.remove("taskbar-revealed");});
- document.addEventListener("pointermove",e=>{if(e.clientY>=innerHeight-2)revealTaskbar();else if(e.clientY<innerHeight-14&&document.body.classList.contains("taskbar-revealed")&&!taskbar.matches(":hover")&&!taskbar.contains(document.activeElement))document.body.classList.remove("taskbar-revealed");});
+ taskbarEdge.addEventListener("pointerenter",()=>{if(document.body.classList.contains("fullscreen-window"))revealTaskbar();});
+ taskbarEdge.addEventListener("pointerdown",e=>{if(!document.body.classList.contains("fullscreen-window"))return;e.preventDefault();revealTaskbar();});
+ taskbarEdge.addEventListener("keydown",e=>{if(document.body.classList.contains("fullscreen-window")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();document.body.classList.toggle("taskbar-revealed");}});
+ taskbar.addEventListener("pointerleave",e=>{if(document.body.classList.contains("fullscreen-window")&&e.clientY<innerHeight-10)document.body.classList.remove("taskbar-revealed");});
+ taskbar.addEventListener("focusout",()=>{if(document.body.classList.contains("fullscreen-window")&&!taskbar.matches(":hover"))document.body.classList.remove("taskbar-revealed");});
+ document.addEventListener("pointermove",e=>{if(!document.body.classList.contains("fullscreen-window"))return;if(e.clientY>=innerHeight-2)revealTaskbar();else if(e.clientY<innerHeight-14&&document.body.classList.contains("taskbar-revealed")&&!taskbar.matches(":hover")&&!taskbar.contains(document.activeElement))document.body.classList.remove("taskbar-revealed");});
 }
 
 document.querySelectorAll(".window").forEach(enableWindowDragging);
@@ -1154,13 +1155,16 @@ body>.org-lock-screen,#org-lock-screen.org-lock-screen{position:fixed!important;
 /* ORG Store 2.1: native storefront layout; intentionally after legacy CSS. */
 
 /* Screenshot-driven correction: enforce mutually exclusive Store pages and true dock auto-hide. */
-body:not(.taskbar-revealed) #taskbar,
-body:not(.taskbar-revealed) #taskbar:hover,
-body:not(.taskbar-revealed) #taskbar:focus-within{transform:translateY(100%)!important;pointer-events:none!important}
-body.taskbar-revealed #taskbar,
-body.taskbar-revealed #taskbar:hover,
-body.taskbar-revealed #taskbar:focus-within{transform:translateY(0)!important;pointer-events:auto!important}
+/* The dock is normally visible; auto-hide is enabled only for a maximized window. */
+#taskbar{transform:translateY(0)!important;pointer-events:auto!important}
+body.fullscreen-window:not(.taskbar-revealed) #taskbar,
+body.fullscreen-window:not(.taskbar-revealed) #taskbar:hover,
+body.fullscreen-window:not(.taskbar-revealed) #taskbar:focus-within{transform:translateY(100%)!important;pointer-events:none!important}
+body.fullscreen-window.taskbar-revealed #taskbar,
+body.fullscreen-window.taskbar-revealed #taskbar:hover,
+body.fullscreen-window.taskbar-revealed #taskbar:focus-within{transform:translateY(0)!important;pointer-events:auto!important}
 #taskbar-edge{z-index:7003!important}
+body:not(.fullscreen-window) #taskbar-edge{display:none!important}
 #org-store-discover-page.hidden,
 #org-store-updates-page.hidden{display:none!important}
 #org-store-discover-page:not(.hidden),
