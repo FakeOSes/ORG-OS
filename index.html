@@ -431,10 +431,24 @@ function setWallpaper(value){
   const desktop=$("desktop");
   if(desktop){
     desktop.style.backgroundColor="#101b35";
-    desktop.style.backgroundImage=`linear-gradient(135deg, rgba(9, 12, 18, 0.28), rgba(17, 24, 39, 0.34)), url("${choice.src}")`;
+    desktop.style.backgroundImage="none";
     desktop.style.backgroundPosition="center center";
     desktop.style.backgroundSize="cover";
     desktop.style.backgroundRepeat="no-repeat";
+    const imageUrl=new URL(choice.src,document.baseURI).href;
+    const image=new Image();
+    image.onload=()=>{
+      desktop.style.backgroundImage=`linear-gradient(135deg, rgba(9, 12, 18, 0.28), rgba(17, 24, 39, 0.34)), url("${imageUrl}")`;
+    };
+    image.onerror=()=>{
+      if(key!==WALLPAPER_DEFAULT){
+        setWallpaper(WALLPAPER_DEFAULT);
+      }else{
+        desktop.style.backgroundImage="linear-gradient(135deg, rgba(9, 12, 18, 0.28), rgba(17, 24, 39, 0.34))";
+        toast("Wallpaper image could not be loaded. Check the Wallpaper folder and file names.");
+      }
+    };
+    image.src=imageUrl;
   }
   safeSet("desktop.wallpaper",key);
   const select=$("wallpaper");
