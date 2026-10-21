@@ -2,7 +2,6 @@
 
 A browser-based desktop environment built with HTML, CSS, and JavaScript. ORG OS brings a familiar desktop experience to your browser, with draggable desktop icons, app windows, a taskbar, settings, and an app store.
 
-**Live demo:** https://avinstudios.github.io/ORG-OS/
 
 ## Features
 
