@@ -3,1824 +3,776 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ORG OS</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desktop</title>
 <style>
-:root {
-  --accent: #8b5cf6;
-  --bg: #10111b;
-  --panel: rgba(28, 29, 43, .96);
-  --text: #f6f5ff;
-  --muted: #aaa9c1;
-  --border: rgba(255,255,255,.13);
-  --wallpaper: linear-gradient(135deg,#111827,#312e81,#6d28d9);
-  --radius: 14px;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: Inter, system-ui, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  overflow: hidden;
-}
-
-button, input, textarea, select {
-  font: inherit;
-}
-
-button {
-  color: var(--text);
-  background: rgba(255,255,255,.08);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 9px 12px;
-  cursor: pointer;
-  transition: .15s;
-}
-
-button:hover {
-  background: var(--accent);
-}
-
-input, textarea, select {
-  color: var(--text);
-  background: rgba(0,0,0,.23);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
-  width: 100%;
-  outline: none;
-}
-
-input:focus, textarea:focus, select:focus {
-  border-color: var(--accent);
-}
-
-textarea {
-  resize: none;
-}
-
-#boot {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  background: #080910;
-  transition: opacity .7s;
-}
-
-.boot-logo {
-  width: 92px;
-  height: 92px;
-  border-radius: 25px;
-  display: grid;
-  place-items: center;
-  font-size: 42px;
-  font-weight: 900;
-  background: linear-gradient(135deg,#8b5cf6,#22d3ee);
-  box-shadow: 0 0 60px #8b5cf655;
-}
-
-.boot-title {
-  font-size: 25px;
-  font-weight: 750;
-  letter-spacing: 3px;
-}
-
-.boot-subtitle {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.boot-track {
-  width: 210px;
-  height: 4px;
-  border-radius: 10px;
-  background: #242536;
-  overflow: hidden;
-}
-
-.boot-progress {
-  height: 100%;
-  width: 0;
-  background: var(--accent);
-  animation: bootload 2s ease forwards;
-}
-
-@keyframes bootload {
-  to { width: 100%; }
-}
-
-#login {
-  position: fixed;
-  inset: 0;
-  z-index: 8000;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  background: var(--wallpaper);
-  backdrop-filter: blur(20px);
-}
-
-.avatar {
-  width: 95px;
-  height: 95px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 42px;
-  background: var(--panel);
-  border: 2px solid var(--border);
-}
-
-#desktop {
-  position: fixed;
-  inset: 0;
-  background: var(--wallpaper);
-  background-size: cover;
-  overflow: hidden;
-}
-
-#desktop:before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at 70% 20%,
-    transparent,
-    rgba(0,0,0,.18)
-  );
-  pointer-events: none;
-}
-
-.desktop-icons {
-  position: absolute;
-  z-index: 2;
-  top: 15px;
-  left: 12px;
-  display: grid;
-  grid-template-columns: 85px;
-  gap: 10px;
-}
-
-.desktop-icon {
-  width: 80px;
-  min-height: 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  cursor: pointer;
-  text-align: center;
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-
-.desktop-icon:hover {
-  background: rgba(255,255,255,.12);
-  border-color: var(--border);
-}
-
-.desktop-icon .emoji {
-  font-size: 30px;
-}
-
-#taskbar {
-  position: absolute;
-  z-index: 500;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  min-height: 57px;
-  max-width: calc(100% - 20px);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 17px;
-  backdrop-filter: blur(24px);
-  box-shadow: 0 10px 40px #0004;
-}
-
-.task-button {
-  width: 43px;
-  height: 43px;
-  padding: 0;
-  font-size: 22px;
-  border: none;
-  background: transparent;
-}
-
-#clock {
-  font-size: 12px;
-  padding: 0 10px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.window {
-  position: absolute;
-  z-index: 10;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(720px, calc(100vw - 24px));
-  height: min(510px, calc(100vh - 100px));
-  min-height: 250px;
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(24px);
-  box-shadow: 0 25px 90px #0007;
-}
-
-.window.active {
-  display: flex;
-}
-
-.window.maximized {
-  top: 8px;
-  left: 8px;
-  transform: none;
-  width: calc(100vw - 16px);
-  height: calc(100vh - 86px);
-}
-
-.titlebar {
-  height: 45px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 12px;
-  background: rgba(255,255,255,.04);
-  border-bottom: 1px solid var(--border);
-  cursor: grab;
-  user-select: none;
-}
-
-.titlebar:active { cursor: grabbing; }
-
-.titlebar-name {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 650;
-  font-size: 13px;
-}
-
-.window-controls {
-  display: flex;
-  gap: 5px;
-}
-
-.window-controls button {
-  width: 27px;
-  height: 27px;
-  padding: 0;
-  font-size: 12px;
-}
-
-.close:hover { background: #ef4444; }
-
-.window-content {
-  flex: 1;
-  min-height: 0;
-  padding: 16px;
-  overflow: auto;
-}
-
-h1, h2, h3, p { margin-top: 0; }
-
-h1 { font-size: 25px; }
-h2 { font-size: 19px; }
-h3 { font-size: 15px; }
-
-.muted { color: var(--muted); }
-
-.card {
-  padding: 15px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(255,255,255,.035);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(145px,1fr));
-  gap: 12px;
-}
-
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.row > :first-child { min-width: 0; }
-
-.setting {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.setting small {
-  color: var(--muted);
-}
-
-.setting input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--accent);
-}
-
-.setting input[type="color"] {
-  width: 50px;
-  height: 38px;
-  padding: 3px;
-}
-
-#start-menu {
-  position: absolute;
-  z-index: 700;
-  bottom: 78px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(410px,calc(100vw - 20px));
-  max-height: min(570px,75vh);
-  display: none;
-  flex-direction: column;
-  gap: 13px;
-  padding: 17px;
-  overflow: auto;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  backdrop-filter: blur(25px);
-  box-shadow: 0 15px 60px #0006;
-}
-
-#start-menu.open { display: flex; }
-
-.app-list {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 8px;
-}
-
-.app-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 85px;
-  font-size: 12px;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
-.app-tile span { font-size: 25px; }
-
-.note-layout {
-  display: grid;
-  grid-template-columns: 175px minmax(0,1fr);
-  height: 100%;
-  gap: 12px;
-}
-
-.note-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
-}
-
-#notes-list {
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.note-item {
-  text-align: left;
-  overflow-wrap: anywhere;
-}
-
-.note-item.selected {
-  background: var(--accent);
-}
-
-.note-editor {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  min-height: 0;
-}
-
-#note-title {
-  font-size: 19px;
-  font-weight: 700;
-}
-
-#note-body {
-  flex: 1;
-  min-height: 100px;
-  line-height: 1.6;
-}
-
-.terminal {
-  background: #080910;
-  color: #a7f3d0;
-  font-family: ui-monospace,monospace;
-  font-size: 13px;
-}
-
-#terminal-output {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.terminal-line {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.terminal-line input {
-  border: none;
-  background: transparent;
-  color: #a7f3d0;
-  font-family: inherit;
-}
-
-#browser-frame {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  background: white;
-  border-radius: 8px;
-}
-
-#toast {
-  position: absolute;
-  z-index: 10000;
-  bottom: 82px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 17px;
-  border-radius: 12px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 30px #0005;
-  display: none;
-  max-width: calc(100% - 24px);
-}
-
-.hidden { display: none !important; }
-
-body.light {
-  --panel: rgba(246,246,252,.96);
-  --text: #171725;
-  --muted: #66667a;
-  --border: rgba(0,0,0,.14);
-}
-
-body.reduce-motion *, body.reduce-motion *:before {
-  animation: none !important;
-  transition: none !important;
-  scroll-behavior: auto !important;
-}
-
-@media(max-width:600px) {
-  .desktop-icons {
-    grid-template-columns: 75px 75px;
-    gap: 4px;
-  }
-
-  .desktop-icon { width: 70px; }
-
-  .window {
-    top: 5%;
-    height: calc(100vh - 100px);
-  }
-
-  .note-layout {
-    grid-template-columns: 105px minmax(0,1fr);
-    gap: 7px;
-  }
-
-  .window-content { padding: 10px; }
-
-  #clock { display: none; }
-}
+:root{--accent:#60a5fa;--dark:#2563eb;--panel:rgba(25,34,49,.94);--border:rgba(255,255,255,.13);--muted:#aab6c8}
+*{box-sizing:border-box}
+body{margin:0;font:14px "Segoe UI",system-ui,sans-serif;color:#f8fafc;overflow:hidden;background:#101b35;user-select:none}
+button,input,textarea,select{font:inherit}
+button{color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#desktop{position:fixed;inset:0 0 52px;overflow:hidden;background:radial-gradient(ellipse at 75% 38%,rgba(65,130,255,.7),transparent 38%),radial-gradient(ellipse at 68% 45%,rgba(27,80,180,.8),transparent 45%),linear-gradient(135deg,#081226,#152a50 55%,#071020)}
+#desktop:before{content:"";position:absolute;width:65vw;height:65vw;max-width:850px;max-height:850px;right:8%;top:50%;transform:translateY(-50%) rotate(-30deg);border:1px solid #93c5fd24;border-radius:42%;box-shadow:0 0 0 65px #60a5fa09,0 0 0 130px #60a5fa06;pointer-events:none}
+.desktop-icons{position:relative;z-index:1;display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-start;gap:5px;padding:12px;width:100%;height:100%}
+.desktop-icon{position:relative;width:82px;min-height:82px;padding:8px 3px;border:1px solid transparent;background:transparent;border-radius:5px;display:flex;align-items:center;flex-direction:column;gap:7px;font-size:12px;text-align:center;text-shadow:0 1px 3px #000}
+.desktop-icon:hover{background:#ffffff1f;border-color:#ffffff2b}
+.icon{font-size:29px;line-height:34px}
+#taskbar{position:fixed;bottom:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 12px;background:#121926db;backdrop-filter:blur(24px);border-top:1px solid #ffffff1f;z-index:9000}
+.task-apps{display:flex;align-items:center;gap:4px}
+.task-button{min-width:42px;height:40px;padding:0 11px;border:1px solid transparent;border-radius:5px;background:transparent;font-size:20px}
+.task-button:hover,.task-button.active{background:#ffffff1f}
+.task-button.active:after{content:"";display:block;height:3px;width:17px;border-radius:5px;background:var(--accent);margin:1px auto -4px}
+#start-button{width:42px;min-width:42px;display:grid;place-items:center;padding:0}
+.start-logo{width:22px;height:22px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;transform:perspective(35px) rotateY(-9deg)}
+.start-logo span{background:#60a5fa;border-radius:1px}
+#start-button:hover .start-logo span{background:#93c5fd}
+#task-search{height:36px;width:190px;border-radius:5px;border:1px solid var(--border);background:#ffffff17;color:white;padding:0 12px}
+#task-search::placeholder{color:#cbd5e1}
+.tray{position:absolute;right:12px;display:flex;align-items:center;gap:12px;font-size:12px}
+.tray button{border:0;background:transparent;border-radius:4px;padding:5px;font-size:15px}
+#clock{text-align:center;line-height:17px;min-width:75px}
+.panel{background:var(--panel);backdrop-filter:blur(30px) saturate(150%);border:1px solid var(--border);box-shadow:0 18px 60px #0006;border-radius:9px}
+#start-menu{display:none;position:fixed;z-index:8000;width:min(530px,calc(100vw - 20px));height:min(600px,calc(100vh - 75px));bottom:60px;left:50%;transform:translateX(-50%);padding:23px;overflow:auto}
+#start-menu.open{display:block}
+.search-box,.field{width:100%;padding:11px 13px;border-radius:5px;color:white;background:#ffffff0d;border:1px solid var(--border)}
+.search-box{margin-bottom:20px}
+.panel-heading{font-size:17px;font-weight:600;margin-bottom:15px}
+.app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.app-tile{display:flex;align-items:center;flex-direction:column;justify-content:center;gap:9px;min-height:90px;background:transparent;border:1px solid transparent;border-radius:6px;font-size:12px}
+.app-tile:hover{background:#ffffff19}
+.app-tile .icon{font-size:28px}
+.start-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:22px;padding-top:16px}
+.start-bottom button,.soft-button{background:#ffffff0d;border:1px solid var(--border);border-radius:5px;padding:8px 12px}
+#notifications{display:none;position:fixed;z-index:8100;right:12px;bottom:60px;width:min(330px,calc(100vw - 24px));padding:20px}
+#notifications.open{display:block}
+.window{position:absolute;z-index:100;width:650px;height:450px;max-width:calc(100vw - 16px);max-height:calc(100% - 12px);min-width:290px;min-height:210px;display:flex;flex-direction:column;overflow:hidden;background:#1c2534f7;border:1px solid #ffffff2b;border-radius:8px;box-shadow:0 24px 70px #0007;resize:both}
+.window.hidden{display:none}
+.window.maximized{inset:0!important;width:100%!important;height:100%!important;max-width:100%;max-height:100%;resize:none;border-radius:0}
+.titlebar{height:43px;min-height:43px;display:flex;align-items:center;gap:9px;padding-left:13px;background:#ffffff09;border-bottom:1px solid var(--border);cursor:grab;touch-action:none}
+.titlebar:active{cursor:grabbing}
+.title-icon{font-size:18px}
+.window-title{font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.window-controls{display:flex;height:100%;flex-shrink:0}
+.window-controls button{width:43px;border:0;background:transparent;font-size:14px}
+.window-controls button:hover{background:#ffffff20}
+.window-controls .close:hover{background:#c42b1c}
+.window-body{flex:1;min-height:0;overflow:auto}
+.toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.toolbar button,.primary{border:1px solid var(--border);border-radius:5px;padding:7px 12px;background:#ffffff0d}
+.primary{background:var(--dark);border-color:transparent}
+.primary:hover{filter:brightness(1.15)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.note-layout{display:flex;height:100%;min-height:0}
+.note-sidebar{width:175px;min-width:125px;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:10px;gap:7px}
+.note-list{overflow:auto;flex:1}
+.note-item{padding:10px;border-radius:5px;margin-bottom:4px;cursor:pointer;font-size:12px;overflow:hidden}
+.note-item.selected,.note-item:hover{background:#ffffff19}
+.note-editor{display:flex;flex-direction:column;flex:1;min-width:0;padding:15px;gap:10px}
+.note-editor input{font-size:20px;font-weight:600;background:transparent;color:white;border:0;outline:none;padding:4px 0}
+.note-editor textarea{flex:1;min-height:0;resize:none;background:transparent;color:#e5edf8;border:0;outline:none;font:14px/1.65 "Segoe UI",sans-serif}
+.status{font-size:11px;color:var(--muted)}
+.terminal{height:100%;padding:15px;overflow:auto;background:#090d12;color:#d1fae5;font:13px/1.6 Consolas,monospace}
+.terminal-output{white-space:pre-wrap;overflow-wrap:anywhere}
+.terminal-line{display:flex;gap:8px;margin-top:5px}
+.terminal-line span{color:#86efac}
+.terminal-line input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#d1fae5;font:inherit}
+.settings-content{padding:20px}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid var(--border)}
+.setting small{display:block;color:var(--muted);margin-top:5px}
+.setting select{background:#263449;color:white;border:1px solid var(--border);padding:8px;border-radius:5px}
+.setting input[type=checkbox]{accent-color:var(--accent)}
+.colors{display:flex;gap:9px;flex-wrap:wrap}
+.color-dot{width:29px;height:29px;border-radius:50%;border:2px solid #ffffff66}
+.color-dot:hover{outline:2px solid white;outline-offset:2px}
+.welcome-content{padding:35px;display:flex;flex-direction:column;gap:17px}
+.welcome-mark{width:65px;height:65px;display:grid;place-items:center;border-radius:15px;background:var(--dark);font-size:32px}
+.welcome-content h1{font-size:28px;margin:0}
+.welcome-content p{color:#c5d0df;line-height:1.6;max-width:440px}
+.welcome-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+.apps-content{padding:15px}
+.apps-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:15px}
+.apps-tabs button{border:1px solid var(--border);background:transparent;border-radius:5px;padding:7px 12px}
+.apps-tabs button.selected{background:var(--dark)}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
+.store-card{padding:13px;border:1px solid var(--border);border-radius:7px;background:#ffffff08;min-width:0}
+.store-card h3{font-size:14px;margin:0 0 7px;overflow-wrap:anywhere}
+.store-card p{font-size:12px;line-height:1.5;color:var(--muted);min-height:35px}
+.store-card .install-actions{display:flex;gap:6px;margin-top:10px}
+.store-card .install-actions button{flex:1;min-width:0;padding:7px 5px;font-size:12px}
+.installed-label{color:#86efac;font-size:12px;margin-top:8px}
+.installed-app-window .window-body{display:flex;flex-direction:column;min-height:0;background:white}
+.installed-app-window iframe{width:100%;height:100%;flex:1;border:0;background:white}
+.app-loading{padding:8px 12px;background:#202938;color:white;font-size:12px}
+.empty{color:var(--muted);font-size:13px;padding:15px 0}
+#context-menu{display:none;position:fixed;z-index:9999;padding:6px;min-width:175px}
+#context-menu button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:9px;border-radius:4px;font-size:13px}
+#context-menu button:hover{background:#ffffff1f}
+#toast{position:fixed;right:18px;bottom:67px;z-index:10000;background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:12px 16px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;font-size:13px}
+#toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:105px;min-width:105px}.note-editor{padding:9px}.app-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
-
 <body>
 
-<!-- STARTUP SCREEN -->
-<div id="boot">
-  <div class="boot-logo">V</div>
-  <div class="boot-title">VUS DESKTOP</div>
-  <div class="boot-subtitle" id="boot-status">Initializing system...</div>
-  <div class="boot-track"><div class="boot-progress"></div></div>
-  <button id="skip-boot">Skip startup</button>
-</div>
-
-<!-- LOGIN SCREEN -->
-<div id="login">
-  <div class="avatar">👤</div>
-  <h1 id="login-name">User</h1>
-  <p class="muted">Welcome back.</p>
-  <button id="login-button">Enter desktop →</button>
-</div>
-
-<!-- DESKTOP -->
 <div id="desktop">
-
   <div class="desktop-icons">
-    <div class="desktop-icon" data-open="welcome">
-      <span class="emoji">💻</span>Welcome
+    <button class="desktop-icon" data-open="welcome"><span class="icon">👋</span>Welcome</button>
+    <button class="desktop-icon" data-open="notes"><span class="icon">📝</span>Notes</button>
+    <button class="desktop-icon" data-open="terminal"><span class="icon">⌨️</span>Terminal</button>
+    <button class="desktop-icon" data-open="settings"><span class="icon">⚙️</span>Settings</button>
+    <button class="desktop-icon" data-open="store"><span class="icon">🛍️</span>App Store</button>
+  </div>
+</div>
+
+<div id="taskbar">
+  <button class="task-button" id="start-button" title="Start" aria-label="Start menu">
+    <span class="start-logo" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </span>
+  </button>
+  <input id="task-search" placeholder="Search apps..." aria-label="Search apps">
+  <div class="task-apps" id="task-apps"></div>
+  <div class="tray">
+    <button id="notify-button" title="Notifications">◔</button>
+    <div id="clock"></div>
+  </div>
+</div>
+
+<div id="start-menu" class="panel">
+  <input class="search-box" id="start-search" placeholder="Search for apps">
+  <div class="panel-heading">Pinned</div>
+  <div class="app-grid" id="pinned-apps"></div>
+  <div class="start-bottom">
+    <span>Desktop</span>
+    <button onclick="openApp('settings')">⚙ Settings</button>
+  </div>
+</div>
+
+<div id="notifications" class="panel">
+  <div class="panel-heading">Notifications</div>
+  <p style="color:var(--muted)">You're all caught up.</p>
+  <button class="soft-button" onclick="toggleNotifications()">Close</button>
+</div>
+
+<div id="context-menu" class="panel">
+  <button onclick="openApp('settings');hideContext()">⚙ Personalize</button>
+  <button onclick="openApp('notes');newNote();hideContext()">📝 New note</button>
+  <button onclick="openApp('terminal');hideContext()">⌨ Open terminal</button>
+  <button onclick="refreshDesktop()">↻ Refresh</button>
+</div>
+<div id="toast"></div>
+
+<section class="window" id="win-welcome" style="left:calc(50% - 300px);top:calc(50% - 200px);width:600px;height:400px">
+  <header class="titlebar">
+    <span class="title-icon">👋</span><span class="window-title">Welcome</span>
+    <div class="window-controls">
+      <button onclick="minimizeApp('welcome')">—</button>
+      <button onclick="maximizeApp('welcome')">□</button>
+      <button class="close" onclick="closeApp('welcome')">×</button>
     </div>
-    <div class="desktop-icon" data-open="notes">
-      <span class="emoji">📝</span>Notes
+  </header>
+  <div class="window-body welcome-content">
+    <div class="welcome-mark">✦</div>
+    <h1>Welcome to your desktop</h1>
+    <p>Your own browser-based desktop. Open apps, write notes, customize your workspace, or install web apps from the catalog.</p>
+    <div class="welcome-actions">
+      <button class="primary" onclick="safeSet('desktop.welcomed',true);openApp('notes');closeApp('welcome')">Open Notes →</button>
+      <button class="soft-button" onclick="safeSet('desktop.welcomed',true);openApp('store');closeApp('welcome')">Explore apps</button>
     </div>
-    <div class="desktop-icon" data-open="browser">
-      <span class="emoji">🌐</span>Browser
+    <label style="font-size:12px;color:var(--muted)">
+      <input type="checkbox" id="dont-show"> Don't show this again at startup
+    </label>
+  </div>
+</section>
+
+<section class="window hidden" id="win-notes" style="left:calc(50% - 350px);top:calc(50% - 250px)">
+  <header class="titlebar">
+    <span class="title-icon">📝</span><span class="window-title">Notes</span>
+    <div class="window-controls">
+      <button onclick="minimizeApp('notes')">—</button>
+      <button onclick="maximizeApp('notes')">□</button>
+      <button class="close" onclick="closeApp('notes')">×</button>
     </div>
-    <div class="desktop-icon" data-open="settings">
-      <span class="emoji">⚙️</span>Settings
-    </div>
-    <div class="desktop-icon" data-open="terminal">
-      <span class="emoji">⌨️</span>Terminal
-    </div>
-    <div class="desktop-icon" data-open="store">
-      <span class="emoji">🛍️</span>App Store
+  </header>
+  <div class="window-body note-layout">
+    <aside class="note-sidebar">
+      <button class="primary" onclick="newNote()">＋ New note</button>
+      <div id="note-list" class="note-list"></div>
+      <button class="soft-button" onclick="deleteNote()">🗑 Delete</button>
+      <button class="soft-button" onclick="exportNote()">↗ Export</button>
+    </aside>
+    <div class="note-editor">
+      <input id="note-title" placeholder="Untitled note" maxlength="100">
+      <textarea id="note-text" placeholder="Start typing..."></textarea>
+      <div class="status" id="note-status">Saved locally</div>
     </div>
   </div>
+</section>
 
-  <!-- WELCOME -->
-  <section class="window active" id="win-welcome">
-    <div class="titlebar">
-      <div class="titlebar-name">👋 Welcome to VUS</div>
-      <div class="window-controls">
-        <button data-minimize>—</button>
-        <button data-maximize>□</button>
-        <button class="close" data-close>×</button>
-      </div>
+<section class="window hidden" id="win-terminal" style="left:calc(50% - 325px);top:calc(50% - 220px);width:650px;height:440px">
+  <header class="titlebar">
+    <span class="title-icon">⌨️</span><span class="window-title">Terminal</span>
+    <div class="window-controls">
+      <button onclick="minimizeApp('terminal')">—</button>
+      <button onclick="maximizeApp('terminal')">□</button>
+      <button class="close" onclick="closeApp('terminal')">×</button>
     </div>
-    <div class="window-content">
-      <h1>Welcome to your desktop.</h1>
-      <p class="muted">Your little corner of the internet.</p>
-      <div class="grid">
-        <div class="card">
-          <h2>📝 Notes</h2>
-          <p class="muted">Write things down and save them.</p>
-          <button data-launch="notes">Open Notes</button>
-        </div>
-        <div class="card">
-          <h2>⚙️ Settings</h2>
-          <p class="muted">Make your desktop yours.</p>
-          <button data-launch="settings">Customize</button>
-        </div>
-        <div class="card">
-          <h2>🛍️ Apps</h2>
-          <p class="muted">Explore available apps.</p>
-          <button data-launch="store">Explore apps</button>
-        </div>
-        <div class="card">
-          <h2>⌨️ Terminal</h2>
-          <p class="muted">Try some system commands.</p>
-          <button data-launch="terminal">Open terminal</button>
-        </div>
-      </div>
-      <p class="muted" style="margin-top:20px">
-        Tip: use the V button on the taskbar to open the app menu.
-      </p>
-    </div>
-  </section>
-
-  <!-- NOTES -->
-  <section class="window" id="win-notes">
-    <div class="titlebar">
-      <div class="titlebar-name">📝 Notes</div>
-      <div class="window-controls">
-        <button data-minimize>—</button>
-        <button data-maximize>□</button>
-        <button class="close" data-close>×</button>
-      </div>
-    </div>
-    <div class="window-content">
-      <div class="note-layout">
-        <div class="note-sidebar">
-          <button id="new-note">＋ New note</button>
-          <div id="notes-list"></div>
-          <button id="delete-note">Delete note</button>
-        </div>
-        <div class="note-editor">
-          <input id="note-title" placeholder="Note title">
-          <textarea id="note-body" placeholder="Start typing..."></textarea>
-          <small id="note-status" class="muted">Saved locally</small>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SETTINGS -->
-  <section class="window" id="win-settings">
-    <div class="titlebar">
-      <div class="titlebar-name">⚙️ Settings</div>
-      <div class="window-controls">
-        <button data-minimize>—</button>
-        <button data-maximize>□</button>
-        <button class="close" data-close>×</button>
-      </div>
-    </div>
-    <div class="window-content stack">
-
-      <div>
-        <h1>Settings</h1>
-        <p class="muted">Personalize your VUS experience.</p>
-      </div>
-
-      <div class="card stack">
-        <h2>🎨 Appearance</h2>
-
-        <label class="setting">
-          <span>Wallpaper</span>
-          <select id="setting-wallpaper">
-            <option value="purple">Purple dream</option>
-            <option value="ocean">Ocean blue</option>
-            <option value="sunset">Sunset</option>
-            <option value="forest">Forest</option>
-            <option value="midnight">Midnight</option>
-          </select>
-        </label>
-
-        <div class="row">
-          <div class="setting">
-            <span>Accent color</span>
-            <small>Buttons and highlights</small>
-          </div>
-          <input id="setting-accent" type="color" value="#8b5cf6">
-        </div>
-
-        <label class="row setting">
-          <span>Light mode</span>
-          <input id="setting-light" type="checkbox">
-        </label>
-
-        <label class="row setting">
-          <span>Reduce animations</span>
-          <input id="setting-motion" type="checkbox">
-        </label>
-      </div>
-
-      <div class="card stack">
-        <h2>🖥️ Desktop</h2>
-
-        <label class="setting">
-          <span>Display name</span>
-          <input id="setting-username" maxlength="30" placeholder="Your name">
-        </label>
-
-        <label class="row setting">
-          <span>Show clock in taskbar</span>
-          <input id="setting-clock" type="checkbox" checked>
-        </label>
-
-        <label class="row setting">
-          <span>Show startup screen</span>
-          <input id="setting-startup" type="checkbox" checked>
-        </label>
-
-        <button id="restart-system">↻ Restart desktop</button>
-      </div>
-
-      <div class="card stack">
-        <h2>🔒 Storage & privacy</h2>
-        <p class="muted">
-          Notes and preferences are stored in this browser on this device.
-        </p>
-        <button id="export-notes">Export notes as JSON</button>
-        <button id="reset-settings">Reset settings</button>
-        <button id="clear-notes">Delete all notes</button>
-      </div>
-
-      <div class="card">
-        <h2>ℹ️ About VUS</h2>
-        <p class="muted">VUS Desktop · Version 2.0</p>
-        <p class="muted">A browser-based desktop experiment.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- TERMINAL -->
-  <section class="window" id="win-terminal">
-    <div class="titlebar">
-      <div class="titlebar-name">⌨️ Terminal</div>
-      <div class="window-controls">
-        <button data-minimize>—</button>
-        <button data-maximize>□</button>
-        <button class="close" data-close>×</button>
-      </div>
-    </div>
-    <div class="window-content terminal">
-      <div id="terminal-output">VUS Terminal [Version 2.0]
+  </header>
+  <div class="window-body terminal" id="terminal">
+    <div class="terminal-output" id="terminal-output">ORG SHELL [Version 1.1]
 Type "help" to see available commands.
 
 </div>
-      <form id="terminal-form" class="terminal-line">
-        <span>VUS &gt;</span>
-        <input id="terminal-input" autocomplete="off" autofocus>
-      </form>
-    </div>
-  </section>
-
-  <!-- BROWSER -->
-  <section class="window" id="win-browser">
-    <div class="titlebar">
-      <div class="titlebar-name">🌐 Web Viewer</div>
-      <div class="window-controls">
-        <button data-minimize>—</button>
-        <button data-maximize>□</button>
-        <button class="close" data-close>×</button>
-      </div>
-    </div>
-    <div class="window-content stack">
-      <form id="browser-form" class="row">
-        <input id="browser-url" placeholder="Enter a website URL">
-        <button type="submit">Go</button>
-      </form>
-      <p class="muted" id="browser-status">
-        Some websites block embedding. If one fails, open it in a new tab.
-      </p>
-      <button id="browser-new-tab">Open website in new tab</button>
-      <iframe id="browser-frame" title="Web viewer"
-        sandbox="allow-forms allow-scripts allow-same-origin allow-popups">
-      </iframe>
-    </div>
-  </section>
-
-  <!-- APP STORE -->
-  <section class="window" id="win-store">
-    <div class="titlebar">
-      <div class="titlebar-name">🛍️ VUS App Store</div>
-      <div class="window-controls">
-        <button data-minimize>—</button>
-        <button data-maximize>□</button>
-        <button class="close" data-close>×</button>
-      </div>
-    </div>
-    <div class="window-content stack">
-      <div>
-        <h1>App Store</h1>
-        <p class="muted">Built-in apps and online projects.</p>
-      </div>
-      <input id="store-search" placeholder="Search apps...">
-      <div id="store-status" class="muted">Loading catalog...</div>
-      <div id="store-apps" class="grid"></div>
-      <button id="reload-store">Reload online catalog</button>
-    </div>
-  </section>
-
-  <!-- TASKBAR -->
-  <div id="taskbar">
-    <button id="start-button" class="task-button" title="Start menu">V</button>
-    <button class="task-button" data-launch="welcome" title="Welcome">🏠</button>
-    <button class="task-button" data-launch="notes" title="Notes">📝</button>
-    <button class="task-button" data-launch="browser" title="Browser">🌐</button>
-    <button class="task-button" data-launch="settings" title="Settings">⚙️</button>
-    <div id="clock">--:--</div>
+    <div class="terminal-line"><span>desktop&gt;</span><input id="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal command"></div>
   </div>
+</section>
 
-  <!-- START MENU -->
-  <div id="start-menu">
-    <h2 style="margin-bottom:0">VUS Desktop</h2>
-    <input id="app-search" placeholder="Search apps...">
-    <div id="start-apps" class="app-list"></div>
-    <div class="row">
-      <span id="start-user" class="muted">User</span>
-      <button id="power-button">⏻ Power</button>
+<section class="window hidden" id="win-settings" style="left:calc(50% - 300px);top:calc(50% - 235px);width:600px;height:470px">
+  <header class="titlebar">
+    <span class="title-icon">⚙️</span><span class="window-title">Settings</span>
+    <div class="window-controls">
+      <button onclick="minimizeApp('settings')">—</button>
+      <button onclick="maximizeApp('settings')">□</button>
+      <button class="close" onclick="closeApp('settings')">×</button>
     </div>
+  </header>
+  <div class="window-body settings-content">
+    <h2 style="margin-top:0">Personalization</h2>
+    <p style="color:var(--muted)">Customize your desktop.</p>
+    <div class="setting">
+      <div><strong>Accent color</strong><small>Choose an interface highlight.</small></div>
+      <div class="colors">
+        <button class="color-dot" style="background:#60a5fa" onclick="setAccent('#60a5fa','#2563eb')" aria-label="Blue"></button>
+        <button class="color-dot" style="background:#a78bfa" onclick="setAccent('#a78bfa','#6d28d9')" aria-label="Purple"></button>
+        <button class="color-dot" style="background:#34d399" onclick="setAccent('#34d399','#047857')" aria-label="Green"></button>
+        <button class="color-dot" style="background:#fb7185" onclick="setAccent('#fb7185','#be123c')" aria-label="Pink"></button>
+        <button class="color-dot" style="background:#fbbf24" onclick="setAccent('#fbbf24','#b45309')" aria-label="Yellow"></button>
+      </div>
+    </div>
+    <div class="setting">
+      <div><strong>Wallpaper</strong><small>Choose a desktop background.</small></div>
+      <select id="wallpaper" onchange="setWallpaper(this.value)">
+        <option value="blue">Blue glow</option>
+        <option value="purple">Purple night</option>
+        <option value="green">Forest glow</option>
+        <option value="dark">Midnight</option>
+      </select>
+    </div>
+    <div class="setting">
+      <div><strong>Show welcome at startup</strong><small>Show Welcome on the next launch.</small></div>
+      <input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)">
+    </div>
+    <div class="setting">
+      <div><strong>Reset preferences</strong><small>Restore default appearance.</small></div>
+      <button class="soft-button" onclick="resetSettings()">Reset</button>
+    </div>
+    <p class="status">Preferences are saved in your browser.</p>
   </div>
+</section>
 
-  <div id="toast"></div>
-</div>
+<section class="window hidden" id="win-store" style="left:calc(50% - 360px);top:calc(50% - 255px);width:720px;height:510px">
+  <header class="titlebar">
+    <span class="title-icon">🛍️</span><span class="window-title">VUS Apps</span>
+    <div class="window-controls">
+      <button onclick="minimizeApp('store')">—</button>
+      <button onclick="maximizeApp('store')">□</button>
+      <button class="close" onclick="closeApp('store')">×</button>
+    </div>
+  </header>
+  <div class="window-body apps-content">
+    <input id="store-search" class="field" placeholder="Search apps, tools, hubs and links..." style="margin-bottom:14px">
+    <div class="apps-tabs" id="apps-tabs">
+      <button class="selected" data-category="all">All</button>
+      <button data-category="apps">Apps</button>
+      <button data-category="tools">Tools</button>
+      <button data-category="hubs">Hubs</button>
+      <button data-category="links">Links</button>
+    </div>
+    <div id="store-status" class="status" style="margin-bottom:12px">Loading catalog…</div>
+    <div id="store-grid" class="apps-grid"></div>
+  </div>
+</section>
 
 <script>
-"use strict";
+const $=id=>document.getElementById(id);
+const APP_NAMES={
+  welcome:{title:"Welcome",icon:"👋"},
+  notes:{title:"Notes",icon:"📝"},
+  terminal:{title:"Terminal",icon:"⌨️"},
+  settings:{title:"Settings",icon:"⚙️"},
+  store:{title:"App Store",icon:"🛍️"}
+};
+let zIndex=200,activeNoteId=null,noteTimer;
+let storeCategory="all",storeItems=[],terminalHistory=[],terminalHistoryIndex=0;
 
-/* -------------------------------------------------
-   SAFE STORAGE
-------------------------------------------------- */
-
-const $ = id => document.getElementById(id);
-
-function safeGet(key, fallback) {
-  try {
-    const value = localStorage.getItem(key);
-    return value === null ? fallback : JSON.parse(value);
-  } catch {
-    return fallback;
-  }
+function safeGet(key,fallback){
+  try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}
+  catch{return fallback}
 }
-
-function safeSet(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch {
-    toast("Could not save. Browser storage may be disabled.");
-    return false;
-  }
+function safeSet(key,value){
+  try{localStorage.setItem(key,JSON.stringify(value))}
+  catch{toast("Browser storage is unavailable.")}
 }
-
-function toast(message) {
-  const el = $("toast");
-  if (!el) return;
-  el.textContent = message;
-  el.style.display = "block";
+function toast(message){
+  $("toast").textContent=message;
+  $("toast").classList.add("show");
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => {
-    el.style.display = "none";
-  }, 2500);
+  toast.timer=setTimeout(()=>$("toast").classList.remove("show"),2400);
 }
 
-/* -------------------------------------------------
-   SETTINGS
-------------------------------------------------- */
-
-const defaultSettings = {
-  wallpaper: "purple",
-  accent: "#8b5cf6",
-  light: false,
-  reduceMotion: false,
-  username: "User",
-  showClock: true,
-  showStartup: true
-};
-
-let settings = {
-  ...defaultSettings,
-  ...safeGet("vus-settings", {})
-};
-
-const wallpapers = {
-  purple: "linear-gradient(135deg,#111827,#312e81,#6d28d9)",
-  ocean: "linear-gradient(135deg,#082f49,#0369a1,#22d3ee)",
-  sunset: "linear-gradient(135deg,#431407,#c2410c,#f9a8d4)",
-  forest: "linear-gradient(135deg,#052e16,#166534,#86efac)",
-  midnight: "linear-gradient(135deg,#020617,#111827,#334155)"
-};
-
-function applySettings() {
-  document.documentElement.style.setProperty(
-    "--accent", settings.accent
-  );
-
-  document.documentElement.style.setProperty(
-    "--wallpaper",
-    wallpapers[settings.wallpaper] || wallpapers.purple
-  );
-
-  document.body.classList.toggle("light", !!settings.light);
-  document.body.classList.toggle(
-    "reduce-motion", !!settings.reduceMotion
-  );
-
-  $("desktop").style.background = wallpapers[settings.wallpaper]
-    || wallpapers.purple;
-
-  $("clock").style.display = settings.showClock ? "" : "none";
-
-  $("login-name").textContent = settings.username || "User";
-  $("start-user").textContent = settings.username || "User";
-
-  $("setting-wallpaper").value = settings.wallpaper;
-  $("setting-accent").value = settings.accent;
-  $("setting-light").checked = !!settings.light;
-  $("setting-motion").checked = !!settings.reduceMotion;
-  $("setting-username").value = settings.username || "";
-  $("setting-clock").checked = !!settings.showClock;
-  $("setting-startup").checked = !!settings.showStartup;
-}
-
-function saveSettings() {
-  safeSet("vus-settings", settings);
-  applySettings();
-}
-
-$("setting-wallpaper").addEventListener("change", e => {
-  settings.wallpaper = e.target.value;
-  saveSettings();
-});
-
-$("setting-accent").addEventListener("input", e => {
-  settings.accent = e.target.value;
-  saveSettings();
-});
-
-$("setting-light").addEventListener("change", e => {
-  settings.light = e.target.checked;
-  saveSettings();
-});
-
-$("setting-motion").addEventListener("change", e => {
-  settings.reduceMotion = e.target.checked;
-  saveSettings();
-});
-
-$("setting-username").addEventListener("change", e => {
-  settings.username = e.target.value.trim() || "User";
-  saveSettings();
-  toast("Display name updated.");
-});
-
-$("setting-clock").addEventListener("change", e => {
-  settings.showClock = e.target.checked;
-  saveSettings();
-});
-
-$("setting-startup").addEventListener("change", e => {
-  settings.showStartup = e.target.checked;
-  saveSettings();
-});
-
-/* -------------------------------------------------
-   WINDOW MANAGEMENT
-------------------------------------------------- */
-
-let highestZ = 20;
-
-function openApp(name) {
-  const win = $("win-" + name);
-
-  if (!win) {
-    const installed = getInstalledApps().find(app => app.id === name);
-    if (installed) return openInstalledApp(installed);
-    toast("That app could not be found.");
-    return;
-  }
-
-  win.classList.add("active");
-  win.style.zIndex = ++highestZ;
-
+function openApp(name){
+  const win=$("win-"+name);
+  if(!win)return;
   $("start-menu").classList.remove("open");
-
-  if (name === "terminal") {
-    setTimeout(() => $("terminal-input").focus(), 50);
+  $("notifications").classList.remove("open");
+  win.classList.remove("hidden");
+  win.style.zIndex=++zIndex;
+  document.querySelectorAll(".task-button[data-app]").forEach(b=>b.classList.toggle("active",b.dataset.app===name));
+  if(name==="notes")renderNotes();
+  if(name==="store"&&!storeItems.length)loadStore();
+  if(name==="terminal")setTimeout(()=>$("terminal-input").focus(),50);
+}
+function closeApp(name){$("win-"+name).classList.add("hidden")}
+function minimizeApp(name){$("win-"+name).classList.add("hidden")}
+function maximizeApp(name){
+  const w=$("win-"+name);
+  if(!w.classList.contains("maximized")){
+    w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});
+    w.classList.add("maximized");
+  }else{
+    w.classList.remove("maximized");
+    try{Object.assign(w.style,JSON.parse(w.dataset.oldStyle||"{}"))}catch{}
   }
-
-  if (name === "notes") renderNotesList();
 }
-
-function closeWindow(win) {
-  win.classList.remove("active");
-}
-
-document.querySelectorAll("[data-launch]").forEach(button => {
-  button.addEventListener("click", () => {
-    openApp(button.dataset.launch);
-  });
-});
-
-document.querySelectorAll("[data-open]").forEach(icon => {
-  icon.addEventListener("dblclick", () => {
-    openApp(icon.dataset.open);
-  });
-
-  icon.addEventListener("click", () => {
-    if (matchMedia("(pointer: coarse)").matches) {
-      openApp(icon.dataset.open);
-    }
-  });
-});
-
-document.querySelectorAll(".window").forEach(win => {
-  win.addEventListener("pointerdown", () => {
-    win.style.zIndex = ++highestZ;
-  });
-
-  const titlebar = win.querySelector(".titlebar");
-
-  win.querySelector("[data-close]").addEventListener("click", () => {
-    closeWindow(win);
-  });
-
-  win.querySelector("[data-minimize]").addEventListener("click", () => {
-    win.classList.remove("active");
-  });
-
-  win.querySelector("[data-maximize]").addEventListener("click", () => {
-    win.classList.toggle("maximized");
-  });
-
-  let dragging = false;
-  let startX = 0;
-  let startY = 0;
-  let originX = 0;
-  let originY = 0;
-
-  titlebar.addEventListener("pointerdown", e => {
-    if (e.target.closest("button")) return;
-    if (win.classList.contains("maximized")) return;
-    if (e.button !== 0) return;
-
-    dragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-
-    const rect = win.getBoundingClientRect();
-    originX = rect.left;
-    originY = rect.top;
-
-    win.style.left = originX + "px";
-    win.style.top = originY + "px";
-    win.style.transform = "none";
-
-    titlebar.setPointerCapture(e.pointerId);
-  });
-
-  titlebar.addEventListener("pointermove", e => {
-    if (!dragging) return;
-
-    const x = originX + e.clientX - startX;
-    const y = originY + e.clientY - startY;
-
-    win.style.left = Math.max(
-      -win.offsetWidth + 100,
-      Math.min(innerWidth - 100, x)
-    ) + "px";
-
-    win.style.top = Math.max(
-      0,
-      Math.min(innerHeight - 100, y)
-    ) + "px";
-  });
-
-  titlebar.addEventListener("pointerup", () => {
-    dragging = false;
-  });
-
-  titlebar.addEventListener("pointercancel", () => {
-    dragging = false;
-  });
-});
-
-/* -------------------------------------------------
-   START MENU & CLOCK
-------------------------------------------------- */
-
-$("start-button").addEventListener("click", () => {
+function toggleStart(){
+  $("notifications").classList.remove("open");
   $("start-menu").classList.toggle("open");
-});
-
-document.addEventListener("pointerdown", e => {
-  if (
-    !$("start-menu").contains(e.target) &&
-    !$("start-button").contains(e.target)
-  ) {
-    $("start-menu").classList.remove("open");
+  if($("start-menu").classList.contains("open")){
+    $("start-search").value="";
+    renderPinned("");
+    $("start-search").focus();
   }
-});
-
-function updateClock() {
-  $("clock").textContent = new Date().toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
 }
-
-updateClock();
-setInterval(updateClock, 10000);
-
-/* -------------------------------------------------
-   NOTES - FIXED note-title EVENT HANDLER
-------------------------------------------------- */
-
-let notes = safeGet("vus-notes", []);
-
-if (!Array.isArray(notes)) notes = [];
-
-notes = notes.filter(note =>
-  note && typeof note === "object"
-  && typeof note.id === "string"
-);
-
-let currentNoteId = null;
-let saveTimer = null;
-
-function saveNotes() {
-  safeSet("vus-notes", notes);
-  $("note-status").textContent = "Saved locally";
+function toggleNotifications(){
+  $("start-menu").classList.remove("open");
+  $("notifications").classList.toggle("open");
 }
+$("start-button").onclick=toggleStart;
+$("notify-button").onclick=toggleNotifications;
 
-function renderNotesList() {
-  const list = $("notes-list");
-  list.replaceChildren();
-
-  if (notes.length === 0) {
-    const empty = document.createElement("small");
-    empty.className = "muted";
-    empty.textContent = "No notes yet";
-    list.appendChild(empty);
-    return;
-  }
-
-  notes.forEach(note => {
-    const button = document.createElement("button");
-    button.className = "note-item"
-      + (note.id === currentNoteId ? " selected" : "");
-
-    button.textContent = note.title || "Untitled note";
-
-    button.addEventListener("click", () => {
-      selectNote(note.id);
-    });
-
-    list.appendChild(button);
-  });
-}
-
-function selectNote(id) {
-  const note = notes.find(item => item.id === id);
-  if (!note) return;
-
-  currentNoteId = id;
-  $("note-title").value = note.title || "";
-  $("note-body").value = note.body || "";
-
-  renderNotesList();
-}
-
-function createNote() {
-  const note = {
-    id: (crypto.randomUUID
-      ? crypto.randomUUID()
-      : String(Date.now()) + Math.random()),
-    title: "Untitled note",
-    body: ""
+function makeTaskButton(name){
+  if(document.querySelector('.task-button[data-app="'+name+'"]'))return;
+  const b=document.createElement("button");
+  b.className="task-button";b.dataset.app=name;b.title=APP_NAMES[name].title;b.textContent=APP_NAMES[name].icon;
+  b.onclick=()=>{
+    const win=$("win-"+name);
+    if(win.classList.contains("hidden"))openApp(name);
+    else if(Number(win.style.zIndex)===zIndex)minimizeApp(name);
+    else openApp(name);
   };
-
-  notes.unshift(note);
-  currentNoteId = note.id;
-
-  saveNotes();
-  selectNote(note.id);
-  $("note-title").focus();
+  $("task-apps").appendChild(b);
 }
-
-function updateCurrentNote() {
-  const note = notes.find(item => item.id === currentNoteId);
-  if (!note) return;
-
-  note.title = $("note-title").value;
-  note.body = $("note-body").value;
-
-  $("note-status").textContent = "Saving...";
-
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    saveNotes();
-    renderNotesList();
-  }, 250);
-}
-
-$("new-note").addEventListener("click", createNote);
-
-/* This element now exists in the HTML above. */
-$("note-title").addEventListener("input", updateCurrentNote);
-$("note-body").addEventListener("input", updateCurrentNote);
-
-$("delete-note").addEventListener("click", () => {
-  if (!currentNoteId) {
-    toast("Select a note first.");
-    return;
-  }
-
-  notes = notes.filter(note => note.id !== currentNoteId);
-  currentNoteId = null;
-
-  $("note-title").value = "";
-  $("note-body").value = "";
-
-  saveNotes();
-  renderNotesList();
-  toast("Note deleted.");
+Object.keys(APP_NAMES).forEach(makeTaskButton);
+document.querySelectorAll("[data-open]").forEach(b=>{
+  b.addEventListener("dblclick",()=>openApp(b.dataset.open));
+  b.addEventListener("click",()=>{if(matchMedia("(pointer: coarse)").matches)openApp(b.dataset.open)});
 });
 
-renderNotesList();
-
-if (notes.length) {
-  selectNote(notes[0].id);
-} else {
-  $("note-title").value = "";
-  $("note-body").value = "";
+function renderPinned(query=""){
+  const host=$("pinned-apps");host.replaceChildren();
+  Object.entries(APP_NAMES).filter(([key,a])=>(a.title+" "+key).toLowerCase().includes(query.toLowerCase())).forEach(([key,a])=>{
+    const b=document.createElement("button");b.className="app-tile";
+    const icon=document.createElement("span");icon.className="icon";icon.textContent=a.icon;
+    const label=document.createElement("span");label.textContent=a.title;
+    b.append(icon,label);b.onclick=()=>openApp(key);host.appendChild(b);
+  });
+  getInstalledApps().filter(a=>(a.name+" "+a.key).toLowerCase().includes(query.toLowerCase())).forEach(app=>{
+    const b=document.createElement("button");b.className="app-tile";
+    const icon=document.createElement("span");icon.className="icon";icon.textContent=app.icon||"🌐";
+    const label=document.createElement("span");label.textContent=app.name;
+    b.append(icon,label);b.onclick=()=>openInstalledApp(app.key);host.appendChild(b);
+  });
+  if(!host.children.length)host.textContent="No apps found.";
 }
+$("start-search").oninput=e=>renderPinned(e.target.value);
+$("task-search").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    $("start-menu").classList.add("open");
+    $("start-search").value=e.target.value;
+    renderPinned(e.target.value);
+    $("start-search").focus();
+  }
+});
+renderPinned("");
 
-/* -------------------------------------------------
-   TERMINAL
-------------------------------------------------- */
+/* Draggable windows */
+document.querySelectorAll(".window").forEach(win=>{
+  win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex);
+});
+document.querySelectorAll(".titlebar").forEach(bar=>{
+  let sx=0,sy=0,ox=0,oy=0,dragging=false;
+  bar.addEventListener("pointerdown",e=>{
+    if(e.target.closest(".window-controls"))return;
+    const win=bar.closest(".window");
+    if(win.classList.contains("maximized"))return;
+    dragging=true;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;
+    win.style.zIndex=++zIndex;
+    bar.setPointerCapture(e.pointerId);
+  });
+  bar.addEventListener("pointermove",e=>{
+    if(!dragging)return;
+    const win=bar.closest(".window");
+    win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+e.clientX-sx))+"px";
+    win.style.top=Math.max(0,Math.min(innerHeight-60,oy+e.clientY-sy))+"px";
+  });
+  bar.addEventListener("pointerup",()=>dragging=false);
+  bar.addEventListener("pointercancel",()=>dragging=false);
+});
 
-$("terminal-form").addEventListener("submit", e => {
+$("desktop").addEventListener("contextmenu",e=>{
   e.preventDefault();
-
-  const input = $("terminal-input");
-  const output = $("terminal-output");
-  const command = input.value.trim();
-
-  if (!command) return;
-
-  const line = document.createElement("div");
-  line.textContent = "VUS > " + command;
-  output.appendChild(line);
-
-  const result = document.createElement("div");
-  result.style.marginBottom = "10px";
-
-  const args = command.split(/\s+/);
-  const cmd = args[0].toLowerCase();
-
-  switch (cmd) {
-    case "help":
-      result.textContent =
-        "Available commands:\n" +
-        "help - Show commands\n" +
-        "clear - Clear terminal\n" +
-        "date - Show current date\n" +
-        "about - About VUS\n" +
-        "apps - List built-in apps\n" +
-        "open notes - Open Notes\n" +
-        "open settings - Open Settings\n" +
-        "open store - Open App Store\n" +
-        "restart - Restart desktop";
-      break;
-
-    case "clear":
-      output.replaceChildren();
-      input.value = "";
-      return;
-
-    case "date":
-      result.textContent = new Date().toString();
-      break;
-
-    case "about":
-      result.textContent = "VUS Desktop version 2.0";
-      break;
-
-    case "apps":
-      result.textContent =
-        "Welcome, Notes, Browser, Settings, Terminal, App Store";
-      break;
-
-    case "open":
-      if (args[1]) {
-        openApp(args[1].toLowerCase());
-        result.textContent = "Opening " + args[1] + "...";
-      } else {
-        result.textContent = "Usage: open notes";
-      }
-      break;
-
-    case "restart":
-      result.textContent = "Restarting...";
-      setTimeout(restartDesktop, 500);
-      break;
-
-    default:
-      result.textContent =
-        "Command not found: " + command +
-        "\nType help to see available commands.";
-  }
-
-  output.appendChild(result);
-  output.scrollTop = output.scrollHeight;
-  input.value = "";
+  const m=$("context-menu");m.style.display="block";
+  m.style.left=Math.min(e.clientX,innerWidth-190)+"px";
+  m.style.top=Math.min(e.clientY,innerHeight-150)+"px";
+});
+function hideContext(){$("context-menu").style.display="none"}
+function refreshDesktop(){hideContext();renderInstalledShortcuts();toast("Desktop refreshed.")}
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#context-menu"))hideContext();
+  if(!e.target.closest("#start-menu")&&!e.target.closest("#start-button")&&!e.target.closest("#task-search"))$("start-menu").classList.remove("open");
+  if(!e.target.closest("#notifications")&&!e.target.closest("#notify-button"))$("notifications").classList.remove("open");
 });
 
-/* -------------------------------------------------
-   BROWSER
-------------------------------------------------- */
-
-function normalizeUrl(value) {
-  let url = value.trim();
-  if (!url) return null;
-
-  if (!/^https?:\/\//i.test(url)) {
-    url = "https://" + url;
-  }
-
-  try {
-    const parsed = new URL(url);
-    if (!["http:", "https:"].includes(parsed.protocol)) return null;
-    return parsed.href;
-  } catch {
-    return null;
-  }
+/* Clock */
+function updateClock(){
+  const d=new Date();
+  $("clock").innerHTML=d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+"<br>"+d.toLocaleDateString([],{month:"numeric",day:"numeric",year:"numeric"});
 }
+updateClock();setInterval(updateClock,15000);
 
-function navigateBrowser(newTab = false) {
-  const url = normalizeUrl($("browser-url").value);
-
-  if (!url) {
-    toast("Enter a valid website address.");
-    return;
+/* Notes */
+function getNotes(){return safeGet("desktop.notes",[])}
+function saveNotes(notes){safeSet("desktop.notes",notes)}
+function renderNotes(){
+  const notes=getNotes(),host=$("note-list");host.replaceChildren();
+  if(!notes.length){
+    const p=document.createElement("div");p.className="empty";p.textContent="No notes yet.";host.appendChild(p);
+    activeNoteId=null;$("note-title").value="";$("note-text").value="";
+    $("note-status").textContent="Create a note to get started.";return;
   }
-
-  $("browser-url").value = url;
-
-  if (newTab) {
-    window.open(url, "_blank", "noopener,noreferrer");
-    return;
-  }
-
-  $("browser-status").textContent =
-    "If the page stays blank, that website may block embedded browsing.";
-
-  $("browser-frame").src = url;
+  if(!notes.some(n=>n.id===activeNoteId))activeNoteId=notes[0].id;
+  notes.forEach(n=>{
+    const b=document.createElement("div");b.className="note-item"+(n.id===activeNoteId?" selected":"");
+    const title=document.createElement("div");title.style.fontWeight="600";title.textContent=n.title||"Untitled note";
+    const preview=document.createElement("div");preview.style.color="var(--muted)";preview.style.marginTop="5px";preview.textContent=(n.text||"").slice(0,42)||"Empty note";
+    b.append(title,preview);b.onclick=()=>{saveActiveNote();activeNoteId=n.id;renderNotes()};host.appendChild(b);
+  });
+  const active=notes.find(n=>n.id===activeNoteId);
+  $("note-title").value=active.title||"";$("note-text").value=active.text||"";$("note-status").textContent="Saved locally";
 }
-
-$("browser-form").addEventListener("submit", e => {
-  e.preventDefault();
-  navigateBrowser(false);
-});
-
-$("browser-new-tab").addEventListener("click", () => {
-  navigateBrowser(true);
-});
-
-/* -------------------------------------------------
-   APP CATALOG
-------------------------------------------------- */
-
-const builtInApps = [
-  { id: "welcome", name: "Welcome", icon: "👋", description: "Desktop home" },
-  { id: "notes", name: "Notes", icon: "📝", description: "Write and save notes" },
-  { id: "browser", name: "Browser", icon: "🌐", description: "View websites" },
-  { id: "settings", name: "Settings", icon: "⚙️", description: "Customize your desktop" },
-  { id: "terminal", name: "Terminal", icon: "⌨️", description: "Run desktop commands" },
-  { id: "store", name: "App Store", icon: "🛍️", description: "Discover apps" }
-];
-
-let catalogApps = [];
-let installedApps = safeGet("vus-installed-apps", []);
-
-if (!Array.isArray(installedApps)) installedApps = [];
-
-function getInstalledApps() {
-  return installedApps.filter(app =>
-    app && typeof app.id === "string" && typeof app.url === "string"
-  );
+function saveActiveNote(){
+  if(!activeNoteId)return;
+  const notes=getNotes(),n=notes.find(x=>x.id===activeNoteId);if(!n)return;
+  n.title=$("note-title").value;n.text=$("note-text").value;n.updated=Date.now();
+  saveNotes(notes);$("note-status").textContent="Saved at "+new Date().toLocaleTimeString();
 }
-
-function renderAppTiles() {
-  const query = $("app-search").value.toLowerCase();
-
-  $("start-apps").replaceChildren();
-
-  builtInApps
-    .filter(app => app.name.toLowerCase().includes(query))
-    .forEach(app => {
-      const button = document.createElement("button");
-      button.className = "app-tile";
-
-      const icon = document.createElement("span");
-      icon.textContent = app.icon;
-
-      const label = document.createElement("div");
-      label.textContent = app.name;
-
-      button.append(icon, label);
-      button.addEventListener("click", () => openApp(app.id));
-      $("start-apps").appendChild(button);
-    });
-
-  getInstalledApps()
-    .filter(app => app.name.toLowerCase().includes(query))
-    .forEach(app => {
-      const button = document.createElement("button");
-      button.className = "app-tile";
-
-      const icon = document.createElement("span");
-      icon.textContent = app.icon || "📦";
-
-      const label = document.createElement("div");
-      label.textContent = app.name;
-
-      button.append(icon, label);
-      button.addEventListener("click", () => openInstalledApp(app));
-      $("start-apps").appendChild(button);
-    });
+function scheduleNoteSave(){
+  $("note-status").textContent="Saving…";clearTimeout(noteTimer);
+  noteTimer=setTimeout(()=>{saveActiveNote();renderNotes()},300);
 }
+function newNote(){
+  const notes=getNotes(),n={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:"",text:"",updated:Date.now()};
+  notes.unshift(n);saveNotes(notes);activeNoteId=n.id;renderNotes();$("note-title").focus();
+}
+function deleteNote(){
+  if(!activeNoteId)return toast("Select a note first.");
+  saveNotes(getNotes().filter(n=>n.id!==activeNoteId));
+  activeNoteId=null;renderNotes();toast("Note deleted.");
+}
+function exportNote(){
+  if(!activeNoteId)return toast("Select a note first.");
+  saveActiveNote();
+  const n=getNotes().find(x=>x.id===activeNoteId);
+  const blob=new Blob([n.title+"\n\n"+n.text],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=(n.title||"note").replace(/[\\/:*?"<>|]/g,"_")+".txt";
+  a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$("note-title").addEventListener("input",scheduleNoteSave);
+$("note-text").addEventListener("input",scheduleNoteSave);
 
-$("app-search").addEventListener("input", renderAppTiles);
-renderAppTiles();
+/* Settings */
+function setAccent(color,dark){
+  document.documentElement.style.setProperty("--accent",color);
+  document.documentElement.style.setProperty("--dark",dark);
+  safeSet("desktop.accent",{color,dark});
+}
+function setWallpaper(value){
+  const backgrounds={
+    blue:"radial-gradient(ellipse at 75% 38%,rgba(65,130,255,.7),transparent 38%),radial-gradient(ellipse at 68% 45%,rgba(27,80,180,.8),transparent 45%),linear-gradient(135deg,#081226,#152a50 55%,#071020)",
+    purple:"radial-gradient(ellipse at 70% 40%,#7245b9,transparent 45%),linear-gradient(135deg,#130c28,#37204f,#101020)",
+    green:"radial-gradient(ellipse at 70% 40%,#238b72,transparent 45%),linear-gradient(135deg,#061c1a,#10493f,#091522)",
+    dark:"radial-gradient(ellipse at 75% 35%,#303c51,transparent 45%),linear-gradient(135deg,#050608,#111827,#02040a)"
+  };
+  $("desktop").style.background=backgrounds[value]||backgrounds.blue;
+  safeSet("desktop.wallpaper",value);
+}
+function saveWelcomeSetting(enabled){safeSet("desktop.showWelcome",enabled)}
+function resetSettings(){
+  localStorage.removeItem("desktop.accent");localStorage.removeItem("desktop.wallpaper");localStorage.removeItem("desktop.showWelcome");
+  setAccent("#60a5fa","#2563eb");setWallpaper("blue");$("welcome-setting").checked=true;toast("Preferences restored.");
+}
+function loadSettings(){
+  const a=safeGet("desktop.accent",null);if(a)setAccent(a.color,a.dark);
+  setWallpaper(safeGet("desktop.wallpaper","blue"));
+  $("welcome-setting").checked=safeGet("desktop.showWelcome",true);
+}
+loadSettings();
 
-function renderStore() {
-  const query = $("store-search").value.toLowerCase();
-  const container = $("store-apps");
-  container.replaceChildren();
-
-  const apps = [
-    ...builtInApps,
-    ...catalogApps
-  ].filter(app =>
-    String(app.name || "").toLowerCase().includes(query)
-  );
-
-  if (!apps.length) {
-    $("store-status").textContent = "No matching apps found.";
-    return;
-  }
-
-  $("store-status").textContent =
-    catalogApps.length
-      ? "Online catalog loaded."
-      : "Showing built-in apps. Online catalog may be unavailable.";
-
-  apps.forEach(app => {
-    const card = document.createElement("div");
-    card.className = "card stack";
-
-    const title = document.createElement("h3");
-    title.textContent = (app.icon || "📦") + " " + app.name;
-
-    const desc = document.createElement("p");
-    desc.className = "muted";
-    desc.textContent = app.description || "An app for VUS Desktop.";
-
-    card.append(title, desc);
-
-    if (builtInApps.some(item => item.id === app.id)) {
-      const button = document.createElement("button");
-      button.textContent = "Open";
-      button.addEventListener("click", () => openApp(app.id));
-      card.appendChild(button);
-    } else if (app.url) {
-      const button = document.createElement("button");
-      const existing = getInstalledApps().some(item => item.id === app.id);
-      button.textContent = existing ? "Open app" : "Install app";
-
-      button.addEventListener("click", () => {
-        if (existing) {
-          openInstalledApp(app);
-        } else {
-          installApp(app);
-        }
-      });
-
-      card.appendChild(button);
-    }
-
-    container.appendChild(card);
+/* Installed web apps */
+function getInstalledApps(){return safeGet("desktop.installedApps",[])}
+function saveInstalledApps(apps){safeSet("desktop.installedApps",apps)}
+function appKey(name){
+  return String(name).toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,55);
+}
+function findCatalogApp(name){
+  const q=String(name).trim().toLowerCase();
+  return storeItems.find(a=>a.name.trim().toLowerCase()===q)||storeItems.find(a=>appKey(a.name)===appKey(name))||null;
+}
+function installApp(app){
+  if(!app||!app.url||app.url==="#"){toast("This app has no launch URL configured.");return false}
+  let url;
+  try{url=new URL(app.url,location.href)}catch{toast("Invalid app URL.");return false}
+  if(!["http:","https:"].includes(url.protocol)){toast("Only web URLs can be installed.");return false}
+  const installed=getInstalledApps(),key=appKey(app.name);
+  if(installed.some(a=>a.key===key)){toast(app.name+" is already installed.");return true}
+  installed.push({key,name:app.name,url:url.href,icon:app.icon||"🌐",desc:app.desc||"",category:app.category||"apps",installedAt:Date.now()});
+  saveInstalledApps(installed);renderInstalledShortcuts();renderPinned($("start-search").value);renderStore();
+  toast(app.name+" installed successfully.");return true;
+}
+function uninstallApp(key){
+  const app=getInstalledApps().find(a=>a.key===key);if(!app)return;
+  if(!confirm("Uninstall "+app.name+"?"))return;
+  saveInstalledApps(getInstalledApps().filter(a=>a.key!==key));
+  $("installed-window-"+key)?.remove();$("installed-task-"+key)?.remove();
+  renderInstalledShortcuts();renderPinned($("start-search").value);renderStore();toast(app.name+" uninstalled.");
+}
+function renderInstalledShortcuts(){
+  document.querySelectorAll(".installed-desktop-icon").forEach(el=>el.remove());
+  const host=document.querySelector(".desktop-icons");
+  getInstalledApps().forEach(app=>{
+    const b=document.createElement("button");b.className="desktop-icon installed-desktop-icon";
+    const icon=document.createElement("span");icon.className="icon";icon.textContent=app.icon||"🌐";
+    const label=document.createElement("span");label.textContent=app.name;
+    const remove=document.createElement("span");remove.className="uninstall-shortcut";remove.textContent="×";remove.title="Uninstall";
+    remove.style.cssText="position:absolute;right:0;top:0;width:21px;height:21px;display:none;border:0;border-radius:50%;background:#b91c1c;color:white";
+    b.onmouseenter=()=>remove.style.display="block";b.onmouseleave=()=>remove.style.display="none";
+    remove.onclick=e=>{e.stopPropagation();uninstallApp(app.key)};
+    b.append(icon,label,remove);
+    b.ondblclick=()=>openInstalledApp(app.key);
+    b.onclick=()=>{if(matchMedia("(pointer:coarse)").matches)openInstalledApp(app.key)};
+    host.appendChild(b);
   });
 }
-
-$("store-search").addEventListener("input", renderStore);
-
-async function loadCatalog() {
-  $("store-status").textContent = "Fetching online catalog...";
-
-  const catalogUrl =
-    "https://raw.githubusercontent.com/Cra-Z-Gaming/VUS/main/apps.json";
-
-  try {
-    const response = await fetch(catalogUrl, {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error("Catalog request failed: " + response.status);
-    }
-
-    const data = await response.json();
-
-    const rawApps = Array.isArray(data)
-      ? data
-      : Array.isArray(data.apps) ? data.apps : [];
-
-    catalogApps = rawApps
-      .filter(app => app && typeof app === "object")
-      .map((app, index) => ({
-        id: String(app.id || app.name || "online-app-" + index),
-        name: String(app.name || app.title || "Unnamed app"),
-        icon: String(app.icon || "📦"),
-        description: String(app.description || "Online app"),
-        url: typeof app.url === "string" ? app.url : ""
-      }))
-      .filter(app => app.url && normalizeUrl(app.url));
-
-    renderStore();
-  } catch (error) {
-    console.warn("VUS catalog unavailable:", error);
-    catalogApps = [];
-    renderStore();
-  }
+function makeInstalledTaskButton(app){
+  let b=$("installed-task-"+app.key);if(b)return b;
+  b=document.createElement("button");b.id="installed-task-"+app.key;b.className="task-button";b.title=app.name;b.textContent=app.icon||"🌐";
+  b.onclick=()=>{
+    const win=$("installed-window-"+app.key);
+    if(!win)openInstalledApp(app.key);
+    else if(win.classList.contains("hidden")){win.classList.remove("hidden");win.style.zIndex=++zIndex}
+    else win.classList.add("hidden");
+  };
+  $("task-apps").appendChild(b);return b;
 }
-
-$("reload-store").addEventListener("click", loadCatalog);
-
-function installApp(app) {
-  const url = normalizeUrl(app.url);
-
-  if (!url) {
-    toast("This app has an invalid URL.");
-    return;
-  }
-
-  if (getInstalledApps().some(item => item.id === app.id)) {
-    toast("App is already installed.");
-    return;
-  }
-
-  installedApps.push({
-    id: String(app.id),
-    name: String(app.name || "App"),
-    icon: String(app.icon || "📦"),
-    description: String(app.description || ""),
-    url
-  });
-
-  safeSet("vus-installed-apps", installedApps);
-  renderAppTiles();
-  renderStore();
-  toast(app.name + " installed.");
+function openInstalledApp(key){
+  const app=getInstalledApps().find(a=>a.key===key);if(!app){toast("This app is not installed.");return}
+  let url;try{url=new URL(app.url)}catch{toast("Invalid app URL.");return}
+  if(!["http:","https:"].includes(url.protocol)){toast("Unsupported URL.");return}
+  let win=$("installed-window-"+key);
+  if(win){win.classList.remove("hidden");win.style.zIndex=++zIndex;makeInstalledTaskButton(app).classList.add("active");return}
+  win=document.createElement("section");win.id="installed-window-"+key;win.className="window installed-app-window";
+  win.style.cssText="left:calc(50% - 325px);top:calc(50% - 220px);width:650px;height:440px;z-index:"+(++zIndex);
+  const bar=document.createElement("header");bar.className="titlebar";
+  const icon=document.createElement("span");icon.className="title-icon";icon.textContent=app.icon||"🌐";
+  const title=document.createElement("span");title.className="window-title";title.textContent=app.name;
+  const controls=document.createElement("div");controls.className="window-controls";
+  const min=document.createElement("button");min.textContent="—";min.onclick=()=>win.classList.add("hidden");
+  const max=document.createElement("button");max.textContent="□";max.onclick=()=>maximizeInstalledWindow(win);
+  const close=document.createElement("button");close.className="close";close.textContent="×";
+  close.onclick=()=>{win.remove();const b=$("installed-task-"+key);if(b)b.classList.remove("active")};
+  controls.append(min,max,close);bar.append(icon,title,controls);
+  const body=document.createElement("div");body.className="window-body";
+  const loading=document.createElement("div");loading.className="app-loading";loading.textContent="Loading "+app.name+"…";
+  const frame=document.createElement("iframe");frame.title=app.name;frame.referrerPolicy="strict-origin-when-cross-origin";
+  frame.setAttribute("sandbox","allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox");
+  frame.src=url.href;frame.onload=()=>loading.remove();
+  body.append(loading,frame);win.append(bar,body);$("desktop").appendChild(win);
+  makeInstalledTaskButton(app).classList.add("active");
+  attachDragging(bar,win);
+  win.addEventListener("pointerdown",()=>win.style.zIndex=++zIndex);
 }
-
-function openInstalledApp(app) {
-  const url = normalizeUrl(app.url);
-
-  if (!url) {
-    toast("Invalid app URL.");
-    return;
-  }
-
-  const id = "installed-" + app.id;
-  let win = $(id);
-
-  if (!win) {
-    win = document.createElement("section");
-    win.className = "window";
-    win.id = id;
-
-    const bar = document.createElement("div");
-    bar.className = "titlebar";
-
-    const title = document.createElement("div");
-    title.className = "titlebar-name";
-    title.textContent = (app.icon || "📦") + " " + app.name;
-
-    const controls = document.createElement("div");
-    controls.className = "window-controls";
-
-    const minimize = document.createElement("button");
-    minimize.textContent = "—";
-
-    const close = document.createElement("button");
-    close.className = "close";
-    close.textContent = "×";
-
-    controls.append(minimize, close);
-    bar.append(title, controls);
-
-    const content = document.createElement("div");
-    content.className = "window-content";
-    content.style.padding = "8px";
-
-    const frame = document.createElement("iframe");
-    frame.title = app.name;
-    frame.src = url;
-    frame.style.width = "100%";
-    frame.style.height = "100%";
-    frame.style.border = "0";
-    frame.sandbox = "allow-forms allow-scripts allow-popups";
-
-    content.appendChild(frame);
-    win.append(bar, content);
-    $("desktop").appendChild(win);
-
-    close.addEventListener("click", () => win.classList.remove("active"));
-    minimize.addEventListener("click", () => win.classList.remove("active"));
-
-    win.addEventListener("pointerdown", () => {
-      win.style.zIndex = ++highestZ;
-    });
-
-    let dragging = false;
-    let x0 = 0, y0 = 0, left0 = 0, top0 = 0;
-
-    bar.addEventListener("pointerdown", e => {
-      if (e.target.closest("button")) return;
-      if (e.button !== 0) return;
-
-      dragging = true;
-      const rect = win.getBoundingClientRect();
-
-      x0 = e.clientX;
-      y0 = e.clientY;
-      left0 = rect.left;
-      top0 = rect.top;
-
-      win.style.left = left0 + "px";
-      win.style.top = top0 + "px";
-      win.style.transform = "none";
-
-      bar.setPointerCapture(e.pointerId);
-    });
-
-    bar.addEventListener("pointermove", e => {
-      if (!dragging) return;
-      win.style.left = Math.max(
-        0, Math.min(innerWidth - 100, left0 + e.clientX - x0)
-      ) + "px";
-      win.style.top = Math.max(
-        0, Math.min(innerHeight - 100, top0 + e.clientY - y0)
-      ) + "px";
-    });
-
-    bar.addEventListener("pointerup", () => dragging = false);
-    bar.addEventListener("pointercancel", () => dragging = false);
-  }
-
-  win.classList.add("active");
-  win.style.zIndex = ++highestZ;
-  $("start-menu").classList.remove("open");
-}
-
-renderStore();
-
-/* -------------------------------------------------
-   SETTINGS ACTIONS
-------------------------------------------------- */
-
-$("reset-settings").addEventListener("click", () => {
-  settings = { ...defaultSettings };
-  saveSettings();
-  toast("Settings reset.");
-});
-
-$("clear-notes").addEventListener("click", () => {
-  if (!confirm("Delete every saved note? This cannot be undone.")) return;
-
-  notes = [];
-  currentNoteId = null;
-  $("note-title").value = "";
-  $("note-body").value = "";
-
-  saveNotes();
-  renderNotesList();
-  toast("All notes deleted.");
-});
-
-$("export-notes").addEventListener("click", () => {
-  const blob = new Blob(
-    [JSON.stringify(notes, null, 2)],
-    { type: "application/json" }
-  );
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-
-  a.href = url;
-  a.download = "vus-notes.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-  toast("Notes export started.");
-});
-
-/* -------------------------------------------------
-   STARTUP & POWER
-------------------------------------------------- */
-
-let bootFinished = false;
-
-function enterDesktop() {
-  $("boot").style.display = "none";
-  $("login").style.display = "none";
-  $("desktop").style.display = "block";
-  bootFinished = true;
-}
-
-function showLogin() {
-  $("boot").style.display = "none";
-  $("login").style.display = "flex";
-  $("desktop").style.display = "none";
-}
-
-function startSystem() {
-  $("boot").style.display = "flex";
-  $("login").style.display = "none";
-  $("desktop").style.display = "none";
-  $("boot-status").textContent = "Initializing system...";
-
-  setTimeout(() => {
-    $("boot-status").textContent = "Loading desktop...";
-  }, 500);
-
-  setTimeout(() => {
-    if (settings.showStartup) {
-      showLogin();
-    } else {
-      enterDesktop();
-    }
-  }, 2200);
-}
-
-$("skip-boot").addEventListener("click", () => {
-  if (settings.showStartup) {
-    showLogin();
-  } else {
-    enterDesktop();
-  }
-});
-
-$("login-button").addEventListener("click", enterDesktop);
-
-function restartDesktop() {
-  $("start-menu").classList.remove("open");
-
-  document.querySelectorAll(".window").forEach(win => {
-    win.classList.remove("active");
+function maximizeInstalledWindow(win){
+  if(!win.classList.contains("maximized")){
+    win.dataset.oldStyle=JSON.stringify({left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height});
+    win.classList.add("maximized");
+  }else{
     win.classList.remove("maximized");
-    win.style.left = "";
-    win.style.top = "";
-    win.style.transform = "";
+    try{Object.assign(win.style,JSON.parse(win.dataset.oldStyle||"{}"))}catch{}
+  }
+}
+function attachDragging(bar,win){
+  let sx=0,sy=0,ox=0,oy=0,drag=false;
+  bar.addEventListener("pointerdown",e=>{
+    if(e.target.closest(".window-controls")||win.classList.contains("maximized"))return;
+    drag=true;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;win.style.zIndex=++zIndex;
+    bar.setPointerCapture(e.pointerId);
   });
-
-  $("win-welcome").classList.add("active");
-  startSystem();
+  bar.addEventListener("pointermove",e=>{
+    if(!drag)return;
+    win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+e.clientX-sx))+"px";
+    win.style.top=Math.max(0,Math.min(innerHeight-60,oy+e.clientY-sy))+"px";
+  });
+  bar.addEventListener("pointerup",()=>drag=false);
+  bar.addEventListener("pointercancel",()=>drag=false);
 }
 
-$("restart-system").addEventListener("click", restartDesktop);
+/* VUS catalog */
+const VUS_URL="https://raw.githubusercontent.com/Cra-Z-Gaming/VUS/refs/heads/main/apps.json";
+function normalizeCatalog(data){
+  const output=[];
+  [["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{
+    if(!Array.isArray(items))return;
+    items.forEach(item=>{
+      if(typeof item==="string")output.push({name:item,url:"#",desc:"VUS "+category,icon:"🌐",category});
+      else if(item&&typeof item==="object")output.push({
+        name:item.name||item.title||"Untitled",url:item.url||item.href||"#",
+        desc:item.desc||item.description||"Open this VUS resource.",
+        icon:item.icon||"🌐",category
+      });
+    });
+  });
+  if(!output.length&&Array.isArray(data))data.forEach(item=>{
+    if(item&&typeof item==="object")output.push({
+      name:item.name||item.title||"Untitled",url:item.url||item.href||"#",
+      desc:item.desc||item.description||"",icon:item.icon||"🌐",category:"apps"
+    });
+  });
+  return output;
+}
+async function loadStore(){
+  $("store-status").textContent="Loading the repository catalog…";
+  try{
+    const response=await fetch(VUS_URL,{cache:"no-store"});
+    if(!response.ok)throw Error("Catalog request failed");
+    const data=await response.json();storeItems=normalizeCatalog(data);
+    if(!storeItems.length)throw Error("No catalog entries");
+    $("store-status").textContent="Loaded from the VUS repository.";
+  }catch{
+    storeItems=[
+      {name:"VUS Repository",url:"https://github.com/Cra-Z-Gaming/VUS",desc:"Browse the source repository.",icon:"💻",category:"links"},
+      {name:"GitHub",url:"https://github.com",desc:"Explore projects and code.",icon:"🐙",category:"links"}
+    ];
+    $("store-status").textContent="Catalog unavailable. Showing fallback links. Try hosting this HTML on GitHub Pages.";
+  }
+  renderStore();
+}
+function renderStore(){
+  const host=$("store-grid");host.replaceChildren();
+  const q=$("store-search").value.trim().toLowerCase(),installed=getInstalledApps();
+  const items=storeItems.filter(a=>(storeCategory==="all"||a.category===storeCategory)&&(a.name+" "+a.desc+" "+a.category).toLowerCase().includes(q));
+  if(!items.length){const e=document.createElement("div");e.className="empty";e.textContent="No matching apps found.";host.appendChild(e);return}
+  items.forEach(app=>{
+    const key=appKey(app.name),isInstalled=installed.some(a=>a.key===key);
+    const card=document.createElement("article");card.className="store-card";
+    const icon=document.createElement("div");icon.className="store-icon";icon.textContent=app.icon||"🌐";
+    const title=document.createElement("h3");title.textContent=app.name;
+    const desc=document.createElement("p");desc.textContent=app.desc||"Web application";
+    const actions=document.createElement("div");actions.className="install-actions";
+    const install=document.createElement("button");install.className="primary";install.textContent=isInstalled?"Installed ✓":"Install";install.disabled=isInstalled;install.onclick=()=>installApp(app);
+    const open=document.createElement("button");open.className="soft-button";open.textContent="Open";open.disabled=!isInstalled;open.onclick=()=>openInstalledApp(key);
+    actions.append(install,open);card.append(icon,title,desc,actions);
+    if(isInstalled){const label=document.createElement("div");label.className="installed-label";label.textContent="✓ Installed";card.appendChild(label)}
+    host.appendChild(card);
+  });
+}
+$("store-search").addEventListener("input",renderStore);
+$("apps-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  storeCategory=b.dataset.category;
+  $("apps-tabs").querySelectorAll("button").forEach(x=>x.classList.toggle("selected",x===b));
+  renderStore();
+});
 
-$("power-button").addEventListener("click", () => {
-  $("start-menu").classList.remove("open");
-
-  const choice = prompt(
-    "Power options:\n1 = Restart\n2 = Shut down\n3 = Cancel",
-    "1"
-  );
-
-  if (choice === "1") {
-    restartDesktop();
-  } else if (choice === "2") {
-    $("desktop").style.display = "none";
-    $("login").style.display = "none";
-    $("boot").style.display = "flex";
-    $("boot-status").textContent = "Desktop shut down.";
-    $("skip-boot").textContent = "Power on";
-
-    $("skip-boot").onclick = () => {
-      $("skip-boot").textContent = "Skip startup";
-      startSystem();
-    };
+/* Terminal commands */
+function printTerminal(text=""){
+  $("terminal-output").textContent+=String(text)+"\n";
+  $("terminal").scrollTop=$("terminal").scrollHeight;
+}
+function runCommand(raw){
+  const command=raw.trim();printTerminal("desktop> "+raw);if(!command)return;
+  const installer=command.match(/^execute\s+installer\s+--(.+)$/i);
+  if(installer){
+    const app=findCatalogApp(installer[1].trim());
+    if(!app){printTerminal('Installer: "'+installer[1]+'" was not found. Open VUS Apps to load the catalog.');return}
+    if(installApp(app))printTerminal("Installer: "+app.name+" installed.");return;
+  }
+  const execute=command.match(/^execute\s+(.+)$/i);
+  if(execute){
+    const name=execute[1].trim();
+    const app=getInstalledApps().find(a=>a.name.toLowerCase()===name.toLowerCase()||a.key===appKey(name));
+    if(!app){printTerminal('App "'+name+'" is not installed. Use execute installer --'+name);return}
+    openInstalledApp(app.key);printTerminal("Launching "+app.name+"…");return;
+  }
+  const parts=command.split(/\s+/),cmd=parts.shift().toLowerCase(),arg=parts.join(" ");
+  switch(cmd){
+    case "help":printTerminal("help\ndate\ntime\napps\ninstalled\nnotes\nsettings\nstore\nexecute installer --AppName\nexecute AppName\nuninstall AppName\necho <text>\nclear\nabout\nversion\nwhoami");break;
+    case "date":case "time":printTerminal(new Date().toString());break;
+    case "apps":printTerminal(storeItems.map(a=>a.name).join("\n")||"No catalog loaded. Open VUS Apps.");break;
+    case "installed":printTerminal(getInstalledApps().map(a=>a.name).join("\n")||"No apps installed.");break;
+    case "notes":printTerminal(getNotes().length+" saved note(s).");break;
+    case "settings":openApp("settings");break;
+    case "store":openApp("store");break;
+    case "clear":$("terminal-output").textContent="";break;
+    case "echo":printTerminal(arg);break;
+    case "about":printTerminal("Browser-based desktop environment. Web apps run inside browser windows.");break;
+    case "version":printTerminal("Desktop version 1.1");break;
+    case "whoami":printTerminal("local-user");break;
+    case "uninstall":{
+      const app=getInstalledApps().find(a=>a.name.toLowerCase()===arg.toLowerCase()||a.key===appKey(arg));
+      if(app)uninstallApp(app.key);else printTerminal("Installed app not found.");break;
+    }
+    default:printTerminal("Command not found: "+cmd+'. Type "help".');
+  }
+}
+$("terminal-input").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const value=e.target.value;e.target.value="";
+    if(value.trim()){terminalHistory.push(value);terminalHistoryIndex=terminalHistory.length}
+    runCommand(value);
+  }else if(e.key==="ArrowUp"){
+    e.preventDefault();if(terminalHistoryIndex>0)e.target.value=terminalHistory[--terminalHistoryIndex];
+  }else if(e.key==="ArrowDown"){
+    e.preventDefault();if(terminalHistoryIndex<terminalHistory.length)e.target.value=terminalHistory[++terminalHistoryIndex]||"";
   }
 });
 
-/* -------------------------------------------------
-   INITIALIZE
-------------------------------------------------- */
-
-applySettings();
-renderNotesList();
-renderAppTiles();
-renderStore();
-loadCatalog();
-startSystem();
-
+/* First launch */
+function initialize(){
+  const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);
+  if(show)openApp("welcome");else closeApp("welcome");
+  $("dont-show").addEventListener("change",e=>{
+    if(e.target.checked){
+      safeSet("desktop.showWelcome",false);safeSet("desktop.welcomed",true);
+      $("welcome-setting").checked=false;
+    }
+  });
+  $("welcome-setting").addEventListener("change",()=>{
+    if($("welcome-setting").checked)safeSet("desktop.welcomed",false);
+  });
+}
+initialize();
+renderInstalledShortcuts();
 </script>
 </body>
 </html>
