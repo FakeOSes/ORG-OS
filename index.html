@@ -953,11 +953,11 @@ function revealTaskbar(){document.body.classList.add("taskbar-revealed");}
 function hideTaskbar(){if(taskbar&&!taskbar.matches(":hover")&&!taskbar.contains(document.activeElement))document.body.classList.remove("taskbar-revealed");}
 if(taskbarEdge&&taskbar){
  taskbarEdge.addEventListener("pointerenter",revealTaskbar);
- taskbarEdge.addEventListener("pointerdown",e=>{e.preventDefault();if(document.body.classList.contains("taskbar-revealed"))document.body.classList.remove("taskbar-revealed");else revealTaskbar();});
+ taskbarEdge.addEventListener("pointerdown",e=>{e.preventDefault();revealTaskbar();});
  taskbarEdge.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();document.body.classList.toggle("taskbar-revealed");}});
- taskbar.addEventListener("pointerleave",e=>{if(e.clientY<innerHeight-10)hideTaskbar();});
- taskbar.addEventListener("focusout",()=>setTimeout(hideTaskbar,80));
- document.addEventListener("pointermove",e=>{if(e.clientY>=innerHeight-3)revealTaskbar();});
+ taskbar.addEventListener("pointerleave",e=>{if(e.clientY<innerHeight-10)document.body.classList.remove("taskbar-revealed");});
+ taskbar.addEventListener("focusout",()=>{if(!taskbar.matches(":hover"))document.body.classList.remove("taskbar-revealed");});
+ document.addEventListener("pointermove",e=>{if(e.clientY>=innerHeight-2)revealTaskbar();else if(e.clientY<innerHeight-14&&document.body.classList.contains("taskbar-revealed")&&!taskbar.matches(":hover")&&!taskbar.contains(document.activeElement))document.body.classList.remove("taskbar-revealed");});
 }
 
 document.querySelectorAll(".window").forEach(enableWindowDragging);
@@ -1155,11 +1155,13 @@ body>.org-lock-screen,#org-lock-screen.org-lock-screen{position:fixed!important;
 
 /* V1 polish: OS-wide auto-hide dock and consistent Store pages */
 #desktop{bottom:0;transition:bottom .18s ease}
-#taskbar{transform:translateY(calc(100% - 4px));transition:transform .2s ease;will-change:transform}
-body.taskbar-revealed #taskbar,#taskbar:hover,#taskbar:focus-within{transform:translateY(0)}
-#taskbar-edge{position:fixed;z-index:7002;left:0;right:0;bottom:0;height:9px;touch-action:manipulation;background:transparent}
-body.taskbar-revealed #taskbar-edge{height:3px}
+#taskbar{transform:translateY(100%);transition:transform .2s ease;will-change:transform;pointer-events:none}
+body.taskbar-revealed #taskbar,#taskbar:focus-within{transform:translateY(0);pointer-events:auto}
+#taskbar-edge{position:fixed;z-index:7003;left:0;right:0;bottom:0;height:12px;touch-action:manipulation;background:transparent;pointer-events:auto}
+body.taskbar-revealed #taskbar-edge{height:2px;z-index:6999}
 #taskbar{z-index:7001}
+body.taskbar-revealed #taskbar{pointer-events:auto}
+
 .window.maximized{bottom:0!important}
 #win-orgstore{max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);min-width:0;min-height:0}
 #win-orgstore.maximized{max-width:100%;max-height:100%;border-radius:0}
@@ -1172,7 +1174,11 @@ body.taskbar-revealed #taskbar-edge{height:3px}
 #win-orgstore .store-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 #win-orgstore .org-store-grid{align-content:start}
 #win-orgstore .org-store-updates{box-sizing:border-box;padding:28px!important;display:flex;flex-direction:column;gap:14px}
+#win-orgstore .org-store-updates{display:flex!important;flex-direction:column;box-sizing:border-box;min-height:0}
 #win-orgstore .org-store-updates.hidden{display:none!important}
+#win-orgstore .org-store-main.hidden{display:none!important}
+#win-orgstore .org-store-updates .org-update-card{flex:0 0 auto}
+#win-orgstore .org-store-updates .org-updates-footnote{flex:0 0 auto}
 #win-orgstore .org-updates-heading{padding:0 0 18px;margin:0 0 4px;border-bottom:1px solid #e5e7ef}
 #win-orgstore .org-updates-heading .store-eyebrow{display:inline-flex;margin-bottom:4px}
 #win-orgstore .org-update-card{box-sizing:border-box;width:100%;margin:0;padding:17px 18px;display:flex;align-items:center;gap:14px;border:1px solid #e1e4ed;border-radius:14px;background:#fff;box-shadow:0 2px 5px #1b23400a}
