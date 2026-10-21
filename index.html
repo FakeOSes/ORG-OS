@@ -509,6 +509,24 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
 #org-lock-screen .org-lock-bottom{right:16px!important;bottom:14px!important;font-size:10px!important}
 }
 
+
+/* WINDOWS 11 LOCK SCREEN LAYOUT REFINEMENT */
+#org-lock-screen .org-lock-content{left:5.2%!important;top:auto!important;right:auto!important;bottom:18%!important;inset:auto auto 18% 5.2%!important;width:auto!important;height:auto!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;gap:3px!important;transform:none!important}
+#org-lock-screen .org-lock-clock{font-family:"Segoe UI Variable","Segoe UI",system-ui,sans-serif!important;font-size:clamp(84px,10vw,128px)!important;font-weight:300!important;letter-spacing:-.065em!important;line-height:1!important}
+#org-lock-screen .org-lock-date{font-size:clamp(18px,1.8vw,23px)!important;font-weight:450!important;margin:5px 0 0!important;line-height:1.4!important}
+#org-lock-screen .org-lock-bottom{right:28px!important;bottom:22px!important;inset:auto 28px 22px auto!important;font-size:22px!important;letter-spacing:.18em!important}
+#org-lock-screen.org-lock-signin .org-lock-content{left:0!important;top:0!important;right:0!important;bottom:0!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;transform:none!important}
+#org-lock-screen.org-lock-signin .org-lock-clock,#org-lock-screen.org-lock-signin .org-lock-date{display:none!important}
+#org-lock-screen.org-lock-signin .org-lock-card{display:flex!important;position:absolute!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;inset:50% auto auto 50%!important;transform:translate(-50%,-50%)!important;justify-self:auto!important;align-self:auto!important;width:340px!important;max-width:calc(100vw - 36px)!important;padding:26px!important;border:0!important;border-radius:4px!important;background:rgba(20,27,40,.38)!important;box-shadow:none!important;backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important}
+#org-lock-screen.org-lock-signin .org-lock-bottom{right:28px!important;bottom:22px!important;inset:auto 28px 22px auto!important;font-size:22px!important}
+@media(max-width:700px){
+#org-lock-screen .org-lock-content{left:6%!important;bottom:18%!important;inset:auto auto 18% 6%!important}
+#org-lock-screen .org-lock-clock{font-size:clamp(72px,17vw,100px)!important}
+#org-lock-screen .org-lock-date{font-size:clamp(16px,4vw,20px)!important}
+#org-lock-screen .org-lock-bottom{right:18px!important;bottom:16px!important;inset:auto 18px 16px auto!important;font-size:19px!important}
+#org-lock-screen.org-lock-signin .org-lock-card{top:48%!important;inset:48% auto auto 50%!important;padding:22px!important}
+}
+
 </style>
 </head>
 <body>
@@ -914,7 +932,7 @@ function lockOrgOS(targetId=getActiveProfileId()){
  const unlock=document.createElement("button");unlock.className="store-install-button org-lock-unlock";unlock.textContent="Unlock";const switcher=document.createElement("button");switcher.className="soft-button org-lock-switch";switcher.textContent="Switch user";const manager=document.createElement("button");manager.className="soft-button org-lock-manage";manager.textContent="Manage profiles";
  const finish=async()=>{if(p.pinHash){if(!/^\d{6}$/.test(input.value)){error.textContent="Enter all six digits.";input.focus();return;}if(await hashProfilePin(input.value)!==p.pinHash){error.textContent="Incorrect PIN. Try again.";input.value="";dots.replaceChildren();for(let i=0;i<6;i++){const dot=document.createElement("span");dot.className="org-pin-dot";dots.appendChild(dot);}input.focus();return;}}localStorage.setItem("desktop.activeProfile",p.id);overlay.remove();setupProfiles();loadSettings();renderPinned();renderRecentSearches();renderNotes();updateProfileBadge();toast("Welcome, "+p.name+".");};
  unlock.onclick=finish;input.addEventListener("keydown",e=>{if(e.key==="Enter")finish();});switcher.onclick=()=>showProfilePicker(p.id,id=>lockOrgOS(id));manager.onclick=()=>{overlay.remove();openProfileManager();};const foot=document.createElement("div");foot.className="org-lock-actions";foot.append(switcher,manager);card.appendChild(foot);
- const bottom=document.createElement("div");bottom.className="org-lock-bottom";bottom.textContent="ORG-OS  •  PERSONAL DESKTOP";card.append(avatar,name,hint,dots,input,error,unlock);content.append(clock,date,card);shell.append(top,content,bottom);overlay.appendChild(shell);document.body.appendChild(overlay);
+ const bottom=document.createElement("div");bottom.className="org-lock-bottom";bottom.textContent="◉   ◈   ⏻";card.append(avatar,name,hint,dots,input,error,unlock);content.append(clock,date,card);shell.append(top,content,bottom);overlay.appendChild(shell);document.body.appendChild(overlay);
  const showSignIn=()=>{if(!overlay.classList.contains("org-lock-signin")){overlay.classList.add("org-lock-signin");if(p.pinHash)setTimeout(()=>input.focus(),0);}};
  overlay.addEventListener("click",e=>{if(!overlay.classList.contains("org-lock-signin")&&!e.target.closest("button,input"))showSignIn();});
  overlay.addEventListener("keydown",e=>{if(!overlay.classList.contains("org-lock-signin")&&!["Shift","Control","Alt","Meta","Tab"].includes(e.key)){showSignIn();e.preventDefault();}});
