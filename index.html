@@ -568,6 +568,50 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
 #desktop{touch-action:pan-y}.desktop-icons{display:block;position:absolute;inset:0;padding:0;overflow:hidden}.desktop-icon{position:absolute;left:12px;top:12px;touch-action:none;user-select:none;cursor:grab}.desktop-icon.is-dragging,.desktop-widget.is-dragging{opacity:.78;z-index:20;cursor:grabbing;transform:scale(1.03)}#desktop.desktop-drop-ready:after{background:linear-gradient(120deg,#60a5fa0b,transparent 60%)}.desktop-widget{position:absolute;left:120px;top:18px;width:260px;min-width:190px;min-height:140px;max-width:min(420px,90vw);resize:both;overflow:hidden;border:1px solid #ffffff30;border-radius:15px;background:rgba(15,23,42,.88);box-shadow:0 16px 40px #0004;color:#f8fafc;backdrop-filter:blur(18px);z-index:4}.desktop-widget-head{display:flex;align-items:center;gap:8px;padding:9px 10px;cursor:grab;user-select:none;background:#ffffff0a;border-bottom:1px solid #ffffff18;font-size:12px}.desktop-widget-head strong{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.desktop-widget-head button{border:0;background:#ffffff12;border-radius:6px;color:inherit;padding:3px 7px;cursor:pointer}.desktop-widget iframe{display:block;width:100%;height:175px;border:0;background:#0f172a}.desktop-widget .desktop-widget-resize-note{font-size:9px;color:#94a3b8;padding:4px 9px}.desktop-drag-hint{display:none}.app-tile,.start-pinned-item{touch-action:none;-webkit-user-select:none;user-select:none}
 .orgwidget-card-foot .desktop-add-widget{font-size:10px;padding:6px 9px}
 
+
+/* ORG Store 2.1 — native storefront-inspired refresh (Beta) */
+.org-store-body{background:#f5f5f7;color:#1d1d1f;padding:0!important;overflow:auto}
+#win-orgstore{width:min(1120px,calc(100vw - 32px))!important;height:min(760px,calc(100vh - 72px))!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)}
+#win-orgstore .titlebar{background:#f5f5f7;color:#242426;border-bottom:1px solid #d8d8dc}
+#win-orgstore .titlebar .window-controls button{color:#444;background:#e5e5e8;border-color:#d3d3d7}
+#win-orgstore .window-body{background:#f5f5f7}
+.org-store-body .store-hero{position:relative;display:block;padding:26px 30px 24px;background:linear-gradient(110deg,#fff 0%,#f2f4ff 55%,#e7edff 100%);border-bottom:1px solid #e1e1e5}
+.org-store-body .store-eyebrow{display:inline-flex;align-items:center;gap:7px;color:#505b83;font-size:10px;letter-spacing:.13em}
+.org-store-body .store-eyebrow:after{content:"BETA";display:inline-block;border-radius:5px;background:#e5e7eb;color:#555d6b;padding:3px 6px;font-size:9px;letter-spacing:.08em}
+.org-store-body .store-hero h2{color:#17171a;font-size:clamp(28px,3vw,38px);letter-spacing:-.045em;margin:10px 0 7px}
+.org-store-body .store-hero p{color:#62626b;font-size:14px}
+.org-store-body .store-hero-mark{position:absolute;right:35px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:90px;height:90px;border-radius:24px;background:linear-gradient(145deg,#5c7cfa,#8b5cf6);color:white;font-size:47px;box-shadow:0 12px 30px #6c63d933}
+.org-store-body .store-toolbar{padding:18px 30px 12px;gap:12px}
+.org-store-body .store-toolbar .field{background:#fff;color:#242426;border:1px solid #d8d8dc;border-radius:11px;box-shadow:0 1px 2px #00000008;font-size:13px;padding:12px 14px}
+.org-store-body .store-toolbar input{min-width:80px}
+.org-store-body .store-toolbar select{width:175px}
+.org-store-body .store-status-row{padding:10px 30px 15px}
+.org-store-body .store-status-row>strong{font-size:21px;letter-spacing:-.025em;color:#202024}
+.org-store-body .store-status-row .status{color:#777780}
+.org-store-body .org-store-grid{grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:14px;padding:0 30px 30px}
+.org-store-body .store-card-modern{gap:11px;padding:17px;border:1px solid #e3e3e8;border-radius:16px;background:#fff;color:#222226;box-shadow:0 2px 5px #00000005;transition:transform .16s,box-shadow .16s,border-color .16s}
+.org-store-body .store-card-modern:hover{transform:translateY(-2px);border-color:#c9cce0;background:#fff;box-shadow:0 8px 22px #25254a12}
+.org-store-body .store-app-icon,.org-store-body .store-details-icon{width:60px;height:60px;border-radius:15px;background:linear-gradient(145deg,#f2f4ff,#e9eaff);border:1px solid #e4e6f2;color:#333;font-size:31px;box-shadow:0 2px 4px #00000005}
+.org-store-body .store-category-tag{background:#f1f2f6;color:#646570;border:1px solid #e8e8ed;font-size:10px}
+.org-store-body .store-card-modern h3{color:#1d1d1f;font-size:15px;font-weight:750}
+.org-store-body .store-card-modern h3[role="button"]:hover{color:#4d63d8}
+.org-store-body .store-card-modern p{color:#696971;font-size:12px;line-height:1.55}
+.org-store-body .store-card-modern .install-actions button{border-radius:999px;padding:8px 13px;font-size:11px}
+.org-store-body .store-card-modern .store-install-button{background:#2868e8;color:white;border-color:#2868e8}
+.org-store-body .store-card-modern .store-launch-button{background:#eef1f8;color:#315cba;border-color:#e3e7f0}
+.org-store-body .store-card-modern .soft-button{color:#4d5668;border-color:#e0e1e7}
+.org-store-body .store-card-modern .installed-label{color:#18804a}
+.org-store-body .store-empty{background:#fff;border:1px dashed #d7d8df;border-radius:16px;color:#686873}
+.store-details-overlay{background:rgba(24,27,37,.42);backdrop-filter:blur(9px)}
+.store-details-panel{background:#fff;color:#202024;border:1px solid #e1e2e8;box-shadow:0 25px 90px #11182730}
+.store-details-panel h2{color:#17171a}
+.store-details-panel>p{color:#62626b}
+.store-details-panel .store-detail-meta{color:#454550}
+.store-details-panel .store-detail-note{background:#f3f5fa;color:#555d6c}
+.store-details-panel .store-details-close{background:#f3f4f7;color:#444;border-color:#dedfe5}
+.store-details-panel .store-category-tag{background:#eef0f7;color:#555b6b}
+@media(max-width:650px){#win-orgstore{width:calc(100vw - 12px)!important;height:calc(100vh - 72px)!important}.org-store-body .store-hero{padding:21px 18px}.org-store-body .store-hero-mark{right:18px;width:56px;height:56px;border-radius:16px;font-size:30px}.org-store-body .store-hero h2{font-size:25px;max-width:75%}.org-store-body .store-hero p{max-width:78%;font-size:12px}.org-store-body .store-toolbar{padding:14px 18px 8px;flex-wrap:wrap}.org-store-body .store-toolbar select{width:100%}.org-store-body .store-status-row{padding:10px 18px 14px}.org-store-body .org-store-grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;padding:0 18px 22px}.org-store-body .store-card-modern{padding:12px}.org-store-body .store-card-modern .install-actions{flex-wrap:wrap}}
+
 </style>
 </head>
 <body>
@@ -771,7 +815,7 @@ Type "help" to see available commands.
 </div></div></section>
 <section class="window hidden" id="win-orgstore" style="left:calc(50% - 340px);top:calc(50% - 235px);width:680px;height:470px">
   <header class="titlebar">
-    <span class="title-icon">▦</span><span class="window-title">ORG Store 2.1</span>
+    <span class="title-icon">▦</span><span class="window-title">ORG Store 2.1 · Beta</span>
     <div class="window-controls">
       <button onclick="minimizeApp('orgstore')">—</button>
       <button onclick="maximizeApp('orgstore')">□</button>
@@ -779,9 +823,9 @@ Type "help" to see available commands.
     </div>
   </header>
   <div class="window-body apps-content org-store-body">
-    <div class="store-hero"><div><span class="store-eyebrow">ORG STORE 2.1</span><h2>Apps for your desktop.</h2><p>Discover and manage apps made for ORG-OS.</p></div><div class="store-hero-mark">▦</div></div>
+    <div class="store-hero"><div><span class="store-eyebrow">ORG STORE 2.1</span><h2>Discover something great.</h2><p>Explore apps for your ORG-OS desktop. We’re still in beta.</p></div><div class="store-hero-mark">▦</div></div>
     <div class="store-toolbar"><input id="org-store-search" class="field" placeholder="Search apps, tools, and more..." aria-label="Search apps"><select id="org-store-category" class="field" aria-label="Filter by category"><option value="all">All categories</option><option value="system">System</option></select></div>
-    <div class="store-status-row"><strong>Discover</strong><span class="status" id="org-store-status">ORG-OS applications</span></div>
+    <div class="store-status-row"><strong>Discover</strong><span class="status" id="org-store-status">Beta · ORG-OS applications</span></div>
     <div id="org-store-grid" class="apps-grid org-store-grid"></div>
   </div>
 </section>
