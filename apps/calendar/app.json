@@ -1,0 +1,23 @@
+{
+  "id": "calendar",
+  "name": "Calendar",
+  "version": "1.0.0",
+  "description": "Plan events with month navigation and saved appointments.",
+  "entry": "index.html",
+  "category": "Productivity",
+  "icon": "📅",
+  "features": [
+    "light-dark-theme",
+    "widgets"
+  ],
+  "widgets": [
+    {
+      "id": "calendar-overview",
+      "title": "Calendar widget",
+      "description": "Compact at-a-glance view provided by Calendar"
+    }
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
