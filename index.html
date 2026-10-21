@@ -768,6 +768,7 @@ Type "help" to see available commands.
 <div class="settings-card"><div class="settings-card-heading"><div><strong>Accent color</strong><small>Change highlights across the desktop.</small></div></div><div class="colors" id="accent-colors">
 <button class="color-dot selected" data-accent="blue" style="background:#60a5fa" aria-label="Blue" title="Blue"></button><button class="color-dot" data-accent="purple" style="background:#a78bfa" aria-label="Purple" title="Purple"></button><button class="color-dot" data-accent="green" style="background:#34d399" aria-label="Green" title="Green"></button><button class="color-dot" data-accent="pink" style="background:#fb7185" aria-label="Pink" title="Pink"></button><button class="color-dot" data-accent="amber" style="background:#fbbf24" aria-label="Amber" title="Amber"></button><button class="color-dot" data-accent="red" style="background:#f87171" aria-label="Red" title="Red"></button><button class="color-dot" data-accent="teal" style="background:#2dd4bf" aria-label="Teal" title="Teal"></button><button class="color-dot" data-accent="slate" style="background:#94a3b8" aria-label="Slate" title="Slate"></button><button class="color-dot" data-accent="black" style="background:#111827" aria-label="Black" title="Black"></button><button class="color-dot" data-accent="white" style="background:#f8fafc" aria-label="White" title="White"></button></div></div></div>
 <div id="settings-pane-appearance" class="settings-pane"><div class="settings-page-head"><div class="settings-eyebrow">LOOK & FEEL</div><h2>Appearance</h2><p>Fine-tune how your desktop shell feels.</p></div>
+<div class="settings-card settings-option-row"><div><strong>App theme</strong><small>Choose light or dark appearance for supported app windows.</small></div><div class="org-theme-picker"><button type="button" class="org-theme-choice" data-theme-choice="light" onclick="setAppTheme('light')">☀️ Light</button><button type="button" class="org-theme-choice" data-theme-choice="dark" onclick="setAppTheme('dark')">🌙 Dark</button><button type="button" class="org-theme-choice" data-theme-choice="system" onclick="setAppTheme('system')">◐ System</button></div></div>
 <div class="settings-card settings-option-row"><div><strong>Taskbar glass effect</strong><small>Adjust taskbar transparency.</small></div><input id="taskbar-opacity" type="range" min="55" max="100" value="86" oninput="setTaskbarOpacity(this.value)"><span id="taskbar-opacity-value" class="status">86%</span></div>
 <div class="settings-card settings-option-row"><div><strong>Desktop icons</strong><small>Show or hide desktop app icons.</small></div><label class="settings-switch"><input id="desktop-labels" type="checkbox" checked onchange="setDesktopLabels(this.checked)"><span></span></label></div>
 <div class="settings-card settings-option-row"><div><strong>Window animations</strong><small>Enable subtle window transitions.</small></div><label class="settings-switch"><input id="window-animations" type="checkbox" checked onchange="setWindowAnimations(this.checked)"><span></span></label></div></div>
@@ -965,6 +966,7 @@ if(taskbarEdge&&taskbar){
 
 document.querySelectorAll(".window").forEach(enableWindowDragging);
 installFullscreenTaskbarSync();
+loadAppTheme();
 $("desktop").addEventListener("contextmenu",e=>{e.preventDefault();const m=$("context-menu");m.style.display="block";m.style.left=Math.min(e.clientX,innerWidth-190)+"px";m.style.top=Math.min(e.clientY,innerHeight-190)+"px";});
 function hideContext(){$("context-menu").style.display="none"}
 function refreshDesktop(){hideContext();toast("Desktop refreshed.")}
@@ -1004,7 +1006,11 @@ function setDesktopLabels(enabled){document.querySelector(".desktop-icons").styl
 function setWindowAnimations(enabled){document.documentElement.classList.toggle("no-window-animations",!enabled||safeGet("desktop.reduceMotion",false));safeSet("desktop.animations",enabled);}
 function saveWelcomeSetting(enabled){safeSet("desktop.showWelcome",enabled)}
 function resetSettings(){["desktop.accentName","desktop.wallpaper","desktop.wallpaperUrl","desktop.showWelcome","desktop.taskbarOpacity","desktop.labels","desktop.animations"].forEach(k=>localStorage.removeItem(k));setAccent("blue");setWallpaper(WALLPAPER_DEFAULT);$("welcome-setting").checked=true;$("wallpaper-url").value="";$("taskbar-opacity").value=86;$("taskbar-opacity-value").textContent="86%";setTaskbarOpacity(86);$("desktop-labels").checked=true;setDesktopLabels(true);$("window-animations").checked=true;setWindowAnimations(true);toast("Settings restored to defaults.");}
+function setAppTheme(theme){const allowed=["light","dark","system"];if(!allowed.includes(theme))theme="system";try{localStorage.setItem("orgos.appTheme",theme);}catch(e){}applyAppTheme(theme);}
+function applyAppTheme(theme){const resolved=theme==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):theme;document.body.dataset.appTheme=resolved;document.documentElement.style.colorScheme=resolved;document.querySelectorAll("[data-theme-choice]").forEach(b=>b.classList.toggle("active",b.dataset.themeChoice===theme));}
+function loadAppTheme(){let theme="system";try{theme=localStorage.getItem("orgos.appTheme")||"system";}catch(e){}applyAppTheme(theme);const pane=document.getElementById("settings-pane-appearance");if(pane)pane.dataset.selectedTheme=theme;}
 function loadSettings(){setAccent(safeGet("desktop.accentName","blue"));const wallpaperKey=safeGet("desktop.wallpaper",WALLPAPER_DEFAULT);$("welcome-setting").checked=safeGet("desktop.showWelcome",true);$("taskbar-opacity").value=safeGet("desktop.taskbarOpacity",86);$("taskbar-opacity-value").textContent=$("taskbar-opacity").value+"%";setTaskbarOpacity($("taskbar-opacity").value);$("desktop-labels").checked=safeGet("desktop.labels",true);setDesktopLabels($("desktop-labels").checked);$("window-animations").checked=safeGet("desktop.animations",true);setWindowAnimations($("window-animations").checked);if(wallpaperKey==="custom"){const url=safeGet("desktop.wallpaperUrl","");$("wallpaper").value="custom";$("wallpaper-url").value=url;if(url)setWallpaper(url);}else setWallpaper(normalizeWallpaperKey(wallpaperKey));selectSettingsTab("general");syncExtraSettings();}
+ loadAppTheme();
 Array.from(document.querySelectorAll(".color-dot")).forEach(dot=>dot.addEventListener("click",()=>setAccent(dot.dataset.accent)));
 
 
@@ -1157,6 +1163,46 @@ body>.org-lock-screen,#org-lock-screen.org-lock-screen{position:fixed!important;
 
 /* ORG Store 2.1: native storefront layout; intentionally after legacy CSS. */
 
+/* App appearance themes: theme every OS window without changing desktop wallpaper. */
+:root{color-scheme:dark}
+body[data-app-theme="light"]{color-scheme:light}
+body[data-app-theme="light"] .window:not(#win-orgstore){background:#f7f8fc;color:#20212a;border-color:#d9deea}
+body[data-app-theme="light"] .window:not(#win-orgstore) .titlebar{background:#eef0f6;color:#20212a;border-bottom-color:#d9deea}
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body{background:#f7f8fc;color:#20212a}
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body h1,
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body h2,
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body h3,
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body strong,
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body label{color:#20212a}
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body p,
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body small{color:#5e6472}
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body input:not([type="checkbox"]):not([type="range"]),
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body textarea,
+body[data-app-theme="light"] .window:not(#win-orgstore) .window-body select{background:#fff;color:#20212a;border-color:#d4d9e5}
+body[data-app-theme="dark"]{color-scheme:dark}
+body[data-app-theme="dark"] .window:not(#win-orgstore){background:#171c28;color:#e8edf7;border-color:#343c4d}
+body[data-app-theme="dark"] .window:not(#win-orgstore) .titlebar{background:#202736;color:#f3f6fc;border-bottom-color:#343c4d}
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body{background:#171c28;color:#e8edf7}
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body h1,
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body h2,
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body h3,
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body strong,
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body label{color:#f0f4fb}
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body p,
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body small{color:#b2bdcf}
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body input:not([type="checkbox"]):not([type="range"]),
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body textarea,
+body[data-app-theme="dark"] .window:not(#win-orgstore) .window-body select{background:#111722;color:#edf2fb;border-color:#414b5f}
+body[data-app-theme="dark"] .settings-sidebar{background:#131925;border-color:#343c4d}
+body[data-app-theme="dark"] .settings-sidebar .settings-tab{color:#bac4d5}
+body[data-app-theme="dark"] .settings-sidebar .settings-tab.active{background:#293348;color:#fff}
+body[data-app-theme="dark"] .settings-card{background:#202736;border-color:#343c4d;color:#e8edf7}
+body[data-app-theme="dark"] .settings-card .settings-note{background:#293348;color:#c8d2e2}
+body[data-app-theme="dark"] .settings-page-head p{color:#b2bdcf}
+body[data-app-theme="dark"] .org-theme-choice{background:#293348;color:#e8edf7;border-color:#414b5f}
+.org-theme-picker{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.org-theme-choice{padding:8px 10px;border:1px solid #d8deea;border-radius:9px;background:#fff;color:#283044;font-size:11px;font-weight:700}
+.org-theme-choice.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
 /* Screenshot-driven correction: enforce mutually exclusive Store pages and true dock auto-hide. */
 /* The dock is normally visible; auto-hide is enabled only for a maximized window. */
 #taskbar{transform:translateY(0)!important;pointer-events:auto!important}
