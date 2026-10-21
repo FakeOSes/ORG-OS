@@ -1153,6 +1153,29 @@ body>.org-lock-screen,#org-lock-screen.org-lock-screen{position:fixed!important;
 
 /* ORG Store 2.1: native storefront layout; intentionally after legacy CSS. */
 
+/* Screenshot-driven correction: enforce mutually exclusive Store pages and true dock auto-hide. */
+body:not(.taskbar-revealed) #taskbar,
+body:not(.taskbar-revealed) #taskbar:hover,
+body:not(.taskbar-revealed) #taskbar:focus-within{transform:translateY(100%)!important;pointer-events:none!important}
+body.taskbar-revealed #taskbar,
+body.taskbar-revealed #taskbar:hover,
+body.taskbar-revealed #taskbar:focus-within{transform:translateY(0)!important;pointer-events:auto!important}
+#taskbar-edge{z-index:7003!important}
+#org-store-discover-page.hidden,
+#org-store-updates-page.hidden{display:none!important}
+#org-store-discover-page:not(.hidden),
+#org-store-updates-page:not(.hidden){display:block!important;min-width:0;min-height:0}
+#org-store-updates-page:not(.hidden){display:flex!important;flex-direction:column}
+#org-store-updates-page .org-update-card{width:100%;max-width:none}
+#org-store-updates-page .org-updates-heading{margin-bottom:8px}
+#org-store-updates-page{overflow-y:auto;overscroll-behavior:contain}
+#org-store-discover-page{overflow-y:auto;overscroll-behavior:contain}
+@media(min-width:761px){
+ #win-orgstore .window-body.org-store-body{grid-template-columns:190px minmax(0,1fr)}
+ #org-store-updates-page{padding:30px!important;gap:16px}
+ #org-store-updates-page .org-updates-heading h2{font-size:30px}
+ #org-store-updates-page .org-update-card{min-height:88px;padding:18px 20px}
+}
 /* V1 polish: OS-wide auto-hide dock and consistent Store pages */
 #desktop{bottom:0;transition:bottom .18s ease}
 #taskbar{transform:translateY(100%);transition:transform .2s ease;will-change:transform;pointer-events:none}
