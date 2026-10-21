@@ -110,37 +110,26 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #toast{position:fixed;right:18px;bottom:67px;z-index:10000;background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:12px 16px;opacity:0;transform:translateY(8px);transition:.2s ease}
 #toast.show{opacity:1;transform:translateY(0)}
 
-#splash-screen{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(96,165,250,.25),transparent 22%),linear-gradient(135deg,#06111d,#0f1d36 45%,#0b1531);z-index:99999;transition:opacity .75s ease,visibility .75s ease}
+#splash-screen{position:fixed;inset:0;display:grid;place-items:center;background:#f6f5f4;z-index:99999;transition:opacity .7s ease,visibility .7s ease}
 #splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.splash-panel{display:flex;flex-direction:column;align-items:center;gap:18px;padding:38px 42px 30px;border:1px solid rgba(148,163,184,.2);background:rgba(15,23,42,.72);backdrop-filter:blur(6px);border-radius:22px;box-shadow:0 25px 70px rgba(2,6,23,.8)}
-.splash-mark{width:104px;height:104px;border-radius:24px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);display:grid;place-items:center;box-shadow:0 12px 30px rgba(59,130,246,.45);overflow:hidden}
-.splash-mark svg{width:100%;height:100%;display:block}
-.splash-mark .duck-body{fill:#fff;stroke:#0b0d12;stroke-width:13;stroke-linecap:round;stroke-linejoin:round}
-.splash-mark .duck-eye{fill:#0b0d12}
-.splash-title{font-size:clamp(2rem,4vw,3.2rem);letter-spacing:.26em;text-transform:uppercase;font-weight:800;color:#f8fbff}
-.splash-subtitle{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#bfdbfe;opacity:.9}
-.splash-bar{width:min(300px,70vw);height:8px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden;position:relative}
-.splash-progress{display:block;width:42%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#93c5fd,#60a5fa,#2563eb);box-shadow:0 0 18px rgba(96,165,250,.8);animation:splash-load 1.8s ease-in-out infinite alternate}
-@keyframes splash-load{0%{transform:translateX(-8%) scaleX(.75)}100%{transform:translateX(120%) scaleX(1)}}
+.splash-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 30px 20px;border-radius:18px;background:rgba(255,255,255,.6);box-shadow:0 0 0 1px rgba(15,23,42,.1),0 16px 40px rgba(15,23,42,.12)}
+.splash-logo{width:min(34vmin,280px);height:min(34vmin,280px);display:grid;place-items:center;background:transparent;filter:grayscale(1) contrast(1.1)}
+.splash-logo img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto}
+.splash-title{font-size:clamp(1.7rem,3vw,2.4rem);letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:#111827}
+.splash-subtitle{font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:#374151}
+.splash-bar{width:min(260px,70vw);height:5px;border-radius:999px;background:rgba(15,23,42,.12);overflow:hidden;position:relative}
+.splash-progress{display:block;width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#0f172a,#1f2937,#111827);animation:splash-load 1.8s ease-in-out infinite alternate}
+@keyframes splash-load{0%{transform:translateX(-10%)}100%{transform:translateX(185%)}}
 
-@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:130px}.splash-panel{padding:30px 22px 24px}.splash-title{letter-spacing:.12em}.splash-subtitle{letter-spacing:.12em}.splash-mark{width:88px;height:88px}}
+@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:130px}.splash-panel{padding:18px 18px 16px}.splash-title{letter-spacing:.18em}.splash-subtitle{letter-spacing:.2em}}
 </style>
 </head>
 <body>
 
 <div id="splash-screen" aria-live="polite" aria-label="ORG OS loading screen">
   <div class="splash-panel">
-    <div class="splash-mark" aria-label="ORG OS logo">
-      <svg viewBox="0 0 520 320" role="img" aria-hidden="true">
-        <g class="duck-body">
-          <path d="M52 170C52 93 102 52 171 52C202 52 243 66 277 95C320 54 374 44 420 62C462 80 488 118 488 166C488 215 459 253 410 273C363 293 311 290 260 263C232 280 196 290 160 286C104 280 52 236 52 170Z"/>
-          <path d="M367 102L480 72L455 152Z"/>
-          <circle class="duck-eye" cx="278" cy="120" r="20"/>
-          <circle cx="272" cy="113" r="6" fill="#fff"/>
-          <path d="M168 100C191 86 215 82 239 85C271 89 294 104 304 123" fill="none" stroke="#0b0d12" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M150 128C182 145 210 150 248 143" fill="none" stroke="#0b0d12" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-        </g>
-      </svg>
+    <div class="splash-logo">
+      <img src="https://raw.githubusercontent.com/avinstudios/ORG-OS/main/images.png" alt="ORG OS logo" />
     </div>
     <div class="splash-title">ORG OS</div>
     <div class="splash-subtitle">Starting system</div>
