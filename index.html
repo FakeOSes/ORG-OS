@@ -396,13 +396,15 @@ if(lower==="about"){printTerminal("ORG OS · Version 1.2\nBrowser-based desktop 
 if(lower==="whoami"){printTerminal("User");return;}
 if(lower==="date"){printTerminal(new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"}));return;}
 if(lower==="time"){printTerminal(new Date().toLocaleTimeString());return;}
-if(lower==="apps"||lower==="list"||lower==="ls"){registerInstalledApps();printTerminal("Built-in apps: "+Object.values(APP_NAMES).map(a=>a.title).join(", ")+"\nUse 'open <app>' to launch a built-in app.");return;}
+if(lower==="apps"||lower==="list"||lower==="ls"){registerInstalledApps();printTerminal("Built-in apps: "+Object.values(APP_NAMES).map(a=>a.title).join(", ")+"\nOnline catalog: "+storeItems.length+" apps\nUse open <app> or install <app name>.");return;}
 if(lower==="installed"){const installed=getInstalledApps();printTerminal(installed.length?installed.map(a=>a.name+" ("+a.key+")").join("\n"):"No installed apps yet.");return;}
-if(lower==="refresh"){renderPinned($("start-search").value);syncTaskbar("");printTerminal("Desktop state refreshed.");return;}
+if(lower==="refresh"){loadAppCatalog();renderPinned($("start-search").value);syncTaskbar("");printTerminal("Refreshing catalog and desktop state…");return;}
 if(lower.startsWith("echo ")){printTerminal(line.slice(5));return;}
 if(lower.startsWith("open ")){const name=line.slice(5).trim(),key=findAppKey(name);if(key){openApp(key);printTerminal("Opened "+APP_NAMES[key].title+".");}else printTerminal("App not found: "+name);return;}
 if(lower.startsWith("close ")){const key=findAppKey(line.slice(6));if(key){closeApp(key);printTerminal("Closed "+APP_NAMES[key].title+".");}else printTerminal("App not found.");return;}
 if(lower.startsWith("minimize ")){const key=findAppKey(line.slice(9));if(key){minimizeApp(key);printTerminal("Minimized "+APP_NAMES[key].title+".");}else printTerminal("App not found.");return;}
+ if(lower.startsWith("install ")){installByName(line.slice(8));return;}
+ if((m=line.match(/^execute\\s+installer\\s+--(?:app\\s+)?(.+)$/i))){const name=m[1].trim();if(name.toLowerCase()==="appname"){printTerminal("Replace AppName with the catalog item name.");return;}installByName(name);return;}
 
 
 if(lower.startsWith("pin ")){const key=findAppKey(line.slice(4));if(key){const pins=getPinnedKeys();if(pins.includes(key))printTerminal(APP_NAMES[key].title+" is already pinned.");else if(pins.length>=3)printTerminal("Only 3 apps can be pinned. Unpin one first.");else{togglePinnedApp(key);printTerminal("Pinned "+APP_NAMES[key].title+".");}}else printTerminal("App not found.");return;}
