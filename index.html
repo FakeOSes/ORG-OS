@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="./images.png">
 <title>Desktop</title>
 <style>
 :root{--accent:#60a5fa;--dark:#2563eb;--panel:rgba(25,34,49,.94);--border:rgba(255,255,255,.13);--muted:#aab6c8}
@@ -77,7 +78,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .terminal-line{display:flex;gap:8px;margin-top:5px}
 .terminal-line span{color:#86efac}
 .terminal-line input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#d1fae5;font:inherit}
-.settings-content{padding:20px;overflow:auto}
+.settings-content{padding:0;overflow:hidden}
+.settings-layout{display:flex;height:100%}
+.settings-sidebar{width:190px;min-width:190px;border-right:1px solid var(--border);background:rgba(255,255,255,.02);padding:12px 10px;display:flex;flex-direction:column;gap:8px}
+.settings-tab{width:100%;text-align:left;border:1px solid transparent;border-radius:8px;background:transparent;padding:10px 12px;color:#e2e8f0;font-weight:600}
+.settings-tab:hover{background:#ffffff12;border-color:var(--border)}
+.settings-tab.active{background:var(--dark);border-color:transparent;color:white;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.settings-main{flex:1;min-width:0;padding:20px;overflow:auto}
+.settings-pane{display:none;padding:0}
+.settings-pane.active{display:block}
 .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
 .setting{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid var(--border)}
 .setting.full{grid-column:1 / -1}
@@ -87,6 +96,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .colors{display:flex;gap:9px;flex-wrap:wrap}
 .color-dot{width:29px;height:29px;border-radius:50%;border:2px solid #ffffff66}
 .color-dot:hover{outline:2px solid white;outline-offset:2px}
+.panel-list{display:flex;flex-direction:column;gap:10px;list-style:none;padding:0;margin:0}
+.panel-list li{padding:12px 14px;border-radius:8px;background:#ffffff08;border:1px solid var(--border);color:#e5edf8}
+.mini-tag{display:inline-block;padding:4px 7px;border-radius:999px;background:#ffffff12;border:1px solid var(--border);font-size:11px;color:#dbeafe;margin-top:8px}
 .welcome-content{padding:35px;display:flex;flex-direction:column;gap:17px}
 .welcome-mark{width:65px;height:65px;display:grid;place-items:center;border-radius:15px;background:var(--dark);font-size:32px}
 .welcome-content h1{font-size:28px;margin:0}
@@ -124,7 +136,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .splash-progress{display:block;width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#fff,#d1d5db,#fff);box-shadow:0 0 18px rgba(255,255,255,.6);animation:splash-load 1.8s ease-in-out infinite alternate}
 @keyframes splash-load{0%{transform:translateX(-10%)}100%{transform:translateX(185%)}}
 
-@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:140px}.app-grid{grid-template-columns:repeat(2,1fr)}.settings-grid{grid-template-columns:1fr}}
+@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:140px}.app-grid{grid-template-columns:repeat(2,1fr)}.settings-layout{flex-direction:column}.settings-sidebar{width:100%;min-width:0;border-right:0;border-bottom:1px solid var(--border)}.settings-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -263,40 +275,124 @@ Type "help" to see available commands.
     </div>
   </header>
   <div class="window-body settings-content">
-    <div class="settings-grid">
-      <div class="setting full">
-        <div><strong>Personalization</strong><small>Customize your desktop.</small></div>
-      </div>
-      <div class="setting full">
-        <div><strong>Accent color</strong><small>Choose an interface highlight.</small></div>
-        <div class="colors">
-          <button class="color-dot" style="background:#60a5fa" onclick="setAccent('#60a5fa','#2563eb')" aria-label="Blue"></button>
-          <button class="color-dot" style="background:#a78bfa" onclick="setAccent('#a78bfa','#6d28d9')" aria-label="Purple"></button>
-          <button class="color-dot" style="background:#34d399" onclick="setAccent('#34d399','#047857')" aria-label="Green"></button>
-          <button class="color-dot" style="background:#fb7185" onclick="setAccent('#fb7185','#be123c')" aria-label="Pink"></button>
-          <button class="color-dot" style="background:#fbbf24" onclick="setAccent('#fbbf24','#b45309')" aria-label="Yellow"></button>
+    <div class="settings-layout">
+      <aside class="settings-sidebar">
+        <button class="settings-tab active" data-settings-tab="general">General</button>
+        <button class="settings-tab" data-settings-tab="personalize">Personalize</button>
+        <button class="settings-tab" data-settings-tab="appearance">Appearance</button>
+        <button class="settings-tab" data-settings-tab="startup">Startup</button>
+        <button class="settings-tab" data-settings-tab="privacy">Privacy</button>
+      </aside>
+      <div class="settings-main">
+        <div id="settings-pane-general" class="settings-pane active">
+          <div class="settings-grid">
+            <div class="setting full">
+              <div><strong>System</strong><small>Overview of the desktop environment.</small></div>
+              <span class="mini-tag">ORG OS</span>
+            </div>
+            <div class="setting">
+              <div><strong>Desktop version</strong><small>Current interface build.</small></div>
+              <div class="status">1.1</div>
+            </div>
+            <div class="setting">
+              <div><strong>Theme mode</strong><small>Current desktop styling.</small></div>
+              <div class="status">Dark</div>
+            </div>
+            <div class="setting full">
+              <div><strong>Quick actions</strong><small>Common system controls.</small></div>
+            </div>
+            <div class="setting full">
+              <ul class="panel-list">
+                <li>Open welcome screen</li>
+                <li>Open notes</li>
+                <li>Launch app store</li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="setting full">
-        <div><strong>Wallpaper</strong><small>Choose a desktop background.</small></div>
-        <select id="wallpaper" onchange="setWallpaper(this.value)">
-          <option value="blue">Blue glow</option>
-          <option value="purple">Purple night</option>
-          <option value="green">Forest glow</option>
-          <option value="dark">Midnight</option>
-        </select>
-      </div>
-      <div class="setting">
-        <div><strong>Startup behavior</strong><small>Show welcome on next launch.</small></div>
-        <input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)">
-      </div>
-      <div class="setting">
-        <div><strong>Reset preferences</strong><small>Restore default appearance.</small></div>
-        <button class="soft-button" onclick="resetSettings()">Reset</button>
-      </div>
-      <div class="setting full">
-        <div><strong>Display</strong><small>Desktop theme and behavior.</small></div>
-        <div class="status">Preferences are saved in your browser.</div>
+
+        <div id="settings-pane-personalize" class="settings-pane">
+          <div class="settings-grid">
+            <div class="setting full">
+              <div><strong>Accent color</strong><small>Choose an interface highlight.</small></div>
+              <div class="colors">
+                <button class="color-dot" style="background:#60a5fa" onclick="setAccent('#60a5fa','#2563eb')" aria-label="Blue"></button>
+                <button class="color-dot" style="background:#a78bfa" onclick="setAccent('#a78bfa','#6d28d9')" aria-label="Purple"></button>
+                <button class="color-dot" style="background:#34d399" onclick="setAccent('#34d399','#047857')" aria-label="Green"></button>
+                <button class="color-dot" style="background:#fb7185" onclick="setAccent('#fb7185','#be123c')" aria-label="Pink"></button>
+                <button class="color-dot" style="background:#fbbf24" onclick="setAccent('#fbbf24','#b45309')" aria-label="Yellow"></button>
+              </div>
+            </div>
+            <div class="setting full">
+              <div><strong>Desktop background</strong><small>Choose a desktop wallpaper.</small></div>
+              <select id="wallpaper" onchange="setWallpaper(this.value)">
+                <option value="blue">Blue glow</option>
+                <option value="purple">Purple night</option>
+                <option value="green">Forest glow</option>
+                <option value="dark">Midnight</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="settings-pane-appearance" class="settings-pane">
+          <div class="settings-grid">
+            <div class="setting full">
+              <div><strong>Taskbar</strong><small>Control how the shell looks and behaves.</small></div>
+            </div>
+            <div class="setting">
+              <div><strong>Transparency</strong><small>Glass effect intensity.</small></div>
+              <div class="status">Enabled</div>
+            </div>
+            <div class="setting">
+              <div><strong>Icon sizes</strong><small>Desktop item size preference.</small></div>
+              <div class="status">Standard</div>
+            </div>
+            <div class="setting full">
+              <div><strong>Display</strong><small>Use the current launch visual style.</small></div>
+              <span class="mini-tag">Adaptive</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="settings-pane-startup" class="settings-pane">
+          <div class="settings-grid">
+            <div class="setting full">
+              <div><strong>Welcome screen</strong><small>Show captain intro on next startup.</small></div>
+              <input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)">
+            </div>
+            <div class="setting full">
+              <div><strong>Startup actions</strong><small>Items that appear when your desktop loads.</small></div>
+            </div>
+            <div class="setting full">
+              <ul class="panel-list">
+                <li>Welcome screen</li>
+                <li>Desktop icons</li>
+                <li>App store catalog</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="settings-pane-privacy" class="settings-pane">
+          <div class="settings-grid">
+            <div class="setting full">
+              <div><strong>Privacy & storage</strong><small>Preferences saved locally in your browser.</small></div>
+            </div>
+            <div class="setting">
+              <div><strong>Saved state</strong><small>Notes and desktop preferences.</small></div>
+              <div class="status">Local</div>
+            </div>
+            <div class="setting">
+              <div><strong>Reset settings</strong><small>Restore defaults instantly.</small></div>
+              <button class="soft-button" onclick="resetSettings()">Reset</button>
+            </div>
+            <div class="setting full">
+              <div><strong>Storage status</strong><small>Files saved in browser local storage.</small></div>
+              <span class="mini-tag">Enabled</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -370,8 +466,8 @@ function normalizeGitHubUrl(value){
   const githubRaw=/^https?:\/\/github\.com\/(.+?)\/([^/]+)\/raw\/(.+)$/i;
   const m=trimmed.match(githubBlob) || trimmed.match(githubRaw);
   if(m){
-    const [, owner, repo, path]=m;
-    return `https://raw.githubusercontent.com/${owner}/${repo}/${path}`;
+    const [, owner, repo, extraPath]=m;
+    return `https://raw.githubusercontent.com/${owner}/${repo}/${extraPath}`;
   }
   return trimmed;
 }
@@ -460,6 +556,12 @@ $("task-search").addEventListener("keydown",e=>{
   }
 });
 renderPinned("");
+
+function selectSettingsTab(tabName){
+  document.querySelectorAll(".settings-tab").forEach(btn=>btn.classList.toggle("active",btn.dataset.settingsTab===tabName));
+  document.querySelectorAll(".settings-pane").forEach(p=>p.classList.toggle("active",p.id===`settings-pane-${tabName}`));
+}
+document.querySelectorAll(".settings-tab").forEach(btn=>btn.addEventListener("click",()=>selectSettingsTab(btn.dataset.settingsTab)));
 
 /* Draggable windows */
 document.querySelectorAll(".window").forEach(win=>{
@@ -582,6 +684,7 @@ function loadSettings(){
   const a=safeGet("desktop.accent",null);if(a)setAccent(a.color,a.dark);
   setWallpaper(safeGet("desktop.wallpaper","blue"));
   $("welcome-setting").checked=safeGet("desktop.showWelcome",true);
+  $("wallpaper").value=safeGet("desktop.wallpaper","blue");
 }
 loadSettings();
 
