@@ -2,6 +2,8 @@
   "id": "photos",
   "name": "ORG Photos",
   "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
   "description": "Browse local images in a thumbnail gallery and preview them.",
   "entry": "index.html",
   "category": "Media",
