@@ -393,6 +393,46 @@ button:disabled{opacity:.45;cursor:not-allowed}
  .org-lock-bottom{font-size:8px!important}
 }
 
+
+/* Windows sign-in screen: full-screen desktop wallpaper with a floating account, not a boxed mobile card */
+.org-lock-screen{position:fixed!important;inset:0!important;z-index:20000!important;overflow:hidden!important;background-size:cover!important;background-position:center!important}
+.org-lock-shell{position:relative!important;width:100%!important;height:100vh!important;min-height:0!important;box-sizing:border-box;display:block!important;padding:0!important;background:linear-gradient(180deg,rgba(0,0,0,.12),transparent 35%,rgba(0,0,0,.18))}
+.org-lock-topbar{position:absolute!important;top:22px;left:26px;right:26px;display:flex!important;align-items:center;justify-content:space-between;z-index:2}
+.org-lock-brand{font-size:11px!important;letter-spacing:.14em!important;font-weight:700}
+.org-lock-brand-mark{width:23px!important;height:23px!important;border-radius:4px!important}
+.org-lock-status{font-size:9px!important;letter-spacing:.08em!important;border-radius:3px!important;padding:6px 9px!important;background:rgba(10,15,25,.28)!important}
+.org-lock-content{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;box-sizing:border-box;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;margin:0!important;padding:30px 16px 38px!important;text-align:center!important}
+.org-lock-content:before,.org-lock-content:after{content:none!important;display:none!important}
+.org-lock-clock,.org-lock-date{display:none!important}
+.org-lock-card{position:static!important;box-sizing:border-box;width:310px!important;max-width:calc(100vw - 32px)!important;min-width:0!important;margin:0!important;padding:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.org-lock-avatar{width:92px!important;height:92px!important;flex:0 0 auto;border-radius:50%!important;border:1px solid rgba(255,255,255,.65)!important;background:rgba(255,255,255,.13)!important;font-size:44px!important;box-shadow:0 3px 18px rgba(0,0,0,.18)!important}
+.org-lock-card h1{width:100%;font-size:24px!important;line-height:1.25;margin:16px 0 5px!important;font-weight:400!important;text-align:center!important;text-shadow:0 2px 12px #0005}
+.org-lock-hint{width:100%;font-size:13px!important;line-height:1.4;margin:0 0 19px!important;text-align:center!important;color:#fff!important;text-shadow:0 2px 10px #0006}
+.org-lock-pin-dots{display:none!important}
+.org-lock-pin{box-sizing:border-box;width:270px!important;max-width:100%;height:38px!important;margin:0 0 8px!important;padding:8px 11px!important;text-align:left!important;letter-spacing:.12em!important;border:1px solid rgba(255,255,255,.75)!important;border-radius:2px!important;background:rgba(12,18,29,.3)!important;color:#fff!important;font-size:14px!important}
+.org-lock-pin::placeholder{font-size:12px;letter-spacing:0;color:rgba(255,255,255,.88)}
+.org-lock-error{width:270px;max-width:100%;box-sizing:border-box;min-height:18px;font-size:11px;margin:0 0 3px!important;text-align:left!important;color:#fee2e2;text-shadow:0 1px 5px #000}
+.org-lock-unlock{align-self:flex-end!important;width:76px!important;height:32px!important;min-width:0!important;padding:6px 10px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:2px!important;background:rgba(30,64,175,.88)!important;color:#fff!important;font-size:12px!important;font-weight:600!important;box-shadow:none!important}
+.org-lock-actions{position:fixed!important;left:26px;bottom:20px;width:auto!important;box-sizing:border-box;display:flex!important;justify-content:flex-start!important;gap:8px!important;margin:0!important;padding:0!important;border:0!important}
+.org-lock-actions button{font-size:10px!important;padding:7px 10px!important;border:1px solid rgba(255,255,255,.25)!important;border-radius:3px!important;background:rgba(10,15,25,.25)!important;color:#fff!important}
+.org-lock-bottom{position:fixed!important;right:26px;bottom:24px;width:auto!important;padding:0!important;border:0!important;background:transparent!important;font-size:9px!important;letter-spacing:.08em!important;text-align:right!important;color:rgba(255,255,255,.88)!important}
+.org-lock-content+.org-lock-bottom{margin:0!important}
+@media(max-width:600px){
+ .org-lock-topbar{top:14px;left:14px;right:14px}
+ .org-lock-brand{font-size:9px!important}
+ .org-lock-brand-mark{width:20px!important;height:20px!important}
+ .org-lock-status{font-size:7px!important;padding:5px 6px!important}
+ .org-lock-content{padding:24px 12px 42px!important}
+ .org-lock-avatar{width:76px!important;height:76px!important;font-size:36px!important}
+ .org-lock-card h1{font-size:21px!important}
+ .org-lock-hint{font-size:12px!important}
+ .org-lock-pin{width:250px!important}
+ .org-lock-error{width:250px}
+ .org-lock-actions{left:12px;bottom:12px}
+ .org-lock-actions button{font-size:9px!important;padding:6px 7px!important}
+ .org-lock-bottom{right:12px;bottom:16px;font-size:7px!important}
+}
+
 </style>
 </head>
 <body>
