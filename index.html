@@ -358,6 +358,41 @@ button:disabled{opacity:.45;cursor:not-allowed}
  .org-lock-actions button{font-size:8px;padding:4px}
 }
 
+
+/* Final sign-in layout: Windows-style desktop account screen, not a phone/tablet lock screen */
+.org-lock-screen{position:fixed!important;inset:0!important;overflow:hidden!important;background-position:center!important;background-size:cover!important}
+.org-lock-shell{height:100vh!important;min-height:0!important;box-sizing:border-box;display:grid!important;grid-template-columns:1fr;grid-template-rows:42px minmax(0,1fr) 32px;gap:0;padding:18px 24px 12px!important;background:linear-gradient(180deg,rgba(2,6,23,.24),transparent 22%,rgba(2,6,23,.12) 75%,rgba(2,6,23,.38))}
+.org-lock-topbar{grid-column:1;grid-row:1;align-self:start;display:flex;justify-content:space-between;align-items:center}
+.org-lock-brand{font-size:11px;letter-spacing:.13em;font-weight:700}
+.org-lock-brand-mark{width:24px;height:24px;border-radius:4px}
+.org-lock-status{font-size:9px;letter-spacing:.08em;border-radius:3px;padding:6px 9px;background:rgba(15,23,42,.38)}
+.org-lock-content{grid-column:1;grid-row:2;position:static!important;box-sizing:border-box;width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;text-align:center!important}
+.org-lock-content:before,.org-lock-content:after{content:none!important;display:none!important}
+.org-lock-clock,.org-lock-date{display:none!important}
+.org-lock-card{position:static!important;grid-area:auto!important;z-index:auto;box-sizing:border-box;width:320px!important;max-width:calc(100vw - 36px)!important;min-width:0;margin:0!important;padding:24px 25px 21px!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:5px!important;background:rgba(16,24,39,.82)!important;box-shadow:0 18px 55px rgba(0,0,0,.32)!important;backdrop-filter:blur(22px)!important;-webkit-backdrop-filter:blur(22px)!important}
+.org-lock-avatar{width:64px!important;height:64px!important;flex:0 0 auto;border-radius:50%!important;border:1px solid rgba(255,255,255,.35)!important;background:rgba(255,255,255,.12)!important;font-size:31px!important;box-shadow:none!important}
+.org-lock-card h1{width:100%;font-size:21px!important;line-height:1.3;margin:13px 0 4px!important;font-weight:600!important;text-align:center!important}
+.org-lock-hint{width:100%;font-size:12px!important;line-height:1.45;margin:0 0 15px!important;text-align:center!important;color:#dbe4f0!important}
+.org-lock-pin-dots{display:none!important}
+.org-lock-pin{box-sizing:border-box;width:100%!important;height:40px!important;margin:0 0 8px!important;padding:9px 12px!important;text-align:left!important;letter-spacing:.12em!important;border:1px solid #8290a5!important;border-radius:3px!important;background:rgba(5,10,20,.72)!important;color:#fff!important;font-size:14px!important}
+.org-lock-pin::placeholder{font-size:12px;letter-spacing:0;color:#aebbd0}
+.org-lock-error{width:100%;box-sizing:border-box;min-height:18px;font-size:11px;margin:0 0 4px!important;text-align:left!important;color:#fecaca}
+.org-lock-unlock{align-self:stretch!important;width:100%!important;height:36px!important;min-width:0;padding:8px 14px!important;border:1px solid #8bbcff!important;border-radius:3px!important;background:#2563eb!important;color:#fff!important;font-size:12px!important;font-weight:600!important;box-shadow:none!important}
+.org-lock-actions{width:100%;box-sizing:border-box;display:flex!important;justify-content:center!important;flex-wrap:wrap;gap:7px!important;margin-top:15px!important;padding-top:12px!important;border-top:1px solid rgba(255,255,255,.17)}
+.org-lock-actions button{font-size:10px!important;padding:7px 9px!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:3px!important;background:rgba(255,255,255,.06)!important;color:#e5edf8!important}
+.org-lock-bottom{grid-column:1;grid-row:3;align-self:end;display:flex!important;justify-content:space-between!important;align-items:center;box-sizing:border-box;width:100%;padding:8px 2px 0!important;border-top:1px solid rgba(255,255,255,.2);font-size:9px!important;letter-spacing:.06em!important;text-align:left!important;color:rgba(255,255,255,.82)}
+.org-lock-content+.org-lock-bottom{margin-top:0!important}
+@media(max-width:600px){
+ .org-lock-shell{padding:14px 14px 10px!important;grid-template-rows:38px minmax(0,1fr) 28px}
+ .org-lock-brand{font-size:9px}
+ .org-lock-brand-mark{width:21px;height:21px}
+ .org-lock-status{font-size:8px;padding:5px 6px}
+ .org-lock-card{width:300px!important;max-width:calc(100vw - 28px)!important;padding:21px 18px 18px!important}
+ .org-lock-avatar{width:56px!important;height:56px!important}
+ .org-lock-card h1{font-size:19px!important}
+ .org-lock-bottom{font-size:8px!important}
+}
+
 </style>
 </head>
 <body>
