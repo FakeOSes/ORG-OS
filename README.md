@@ -1,6 +1,6 @@
 # **Org OS** 
 
-# V1.1 BETA LOGS
+# V1.0 BETA LOGS
 • Added a splashscreen
 
 • More stuff In Settings
