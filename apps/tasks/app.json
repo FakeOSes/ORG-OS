@@ -2,6 +2,8 @@
   "id": "tasks",
   "name": "Tasks",
   "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
   "description": "Organize to-dos with priorities, due dates, and filters.",
   "entry": "index.html",
   "category": "Productivity",
