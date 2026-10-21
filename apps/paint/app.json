@@ -1,0 +1,24 @@
+{
+  "id": "paint",
+  "name": "ORG Paint",
+  "version": "1.0.0",
+  "description": "Draw freely, pick colors, undo, and export your canvas.",
+  "entry": "index.html",
+  "category": "Creative",
+  "icon": "🎨",
+  "features": [
+    "light-dark-theme",
+    "widgets"
+  ],
+  "widgets": [
+    {
+      "id": "paint-overview",
+      "title": "ORG Paint widget",
+      "description": "Compact at-a-glance view provided by ORG Paint"
+    }
+  ],
+  "permissions": [
+    "local-image-files",
+    "download-export"
+  ]
+}
