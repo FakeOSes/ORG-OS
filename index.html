@@ -77,8 +77,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .terminal-line{display:flex;gap:8px;margin-top:5px}
 .terminal-line span{color:#86efac}
 .terminal-line input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#d1fae5;font:inherit}
-.settings-content{padding:20px}
-.setting{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid var(--border)}
+.settings-content{padding:20px;overflow:auto}
+.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
+.setting{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid var(--border)}
+.setting.full{grid-column:1 / -1}
 .setting small{display:block;color:var(--muted);margin-top:5px}
 .setting select{background:#263449;color:white;border:1px solid var(--border);padding:8px;border-radius:5px}
 .setting input[type=checkbox]{accent-color:var(--accent)}
@@ -122,7 +124,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .splash-progress{display:block;width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#fff,#d1d5db,#fff);box-shadow:0 0 18px rgba(255,255,255,.6);animation:splash-load 1.8s ease-in-out infinite alternate}
 @keyframes splash-load{0%{transform:translateX(-10%)}100%{transform:translateX(185%)}}
 
-@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:140px}.app-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){#task-search{display:none}.tray{right:5px;gap:4px}.task-button{min-width:35px;padding:0 7px}.task-apps{margin-right:auto}.window{min-width:0;resize:none}.note-sidebar{width:140px}.app-grid{grid-template-columns:repeat(2,1fr)}.settings-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -130,7 +132,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <div id="splash-screen" aria-live="polite" aria-label="ORG OS loading screen">
   <div class="splash-panel">
     <div class="splash-logo">
-      <img src="images.png" alt="ORG OS logo" />
+      <img src="./images.png" alt="ORG OS logo" />
     </div>
     <div class="splash-title">ORG OS</div>
     <div class="splash-subtitle">Starting system</div>
@@ -251,7 +253,7 @@ Type "help" to see available commands.
   </div>
 </section>
 
-<section class="window hidden" id="win-settings" style="left:calc(50% - 300px);top:calc(50% - 235px);width:600px;height:470px">
+<section class="window hidden" id="win-settings" style="left:calc(50% - 360px);top:calc(50% - 295px);width:720px;height:590px">
   <header class="titlebar">
     <span class="title-icon">⚙️</span><span class="window-title">Settings</span>
     <div class="window-controls">
@@ -261,36 +263,42 @@ Type "help" to see available commands.
     </div>
   </header>
   <div class="window-body settings-content">
-    <h2 style="margin-top:0">Personalization</h2>
-    <p style="color:var(--muted)">Customize your desktop.</p>
-    <div class="setting">
-      <div><strong>Accent color</strong><small>Choose an interface highlight.</small></div>
-      <div class="colors">
-        <button class="color-dot" style="background:#60a5fa" onclick="setAccent('#60a5fa','#2563eb')" aria-label="Blue"></button>
-        <button class="color-dot" style="background:#a78bfa" onclick="setAccent('#a78bfa','#6d28d9')" aria-label="Purple"></button>
-        <button class="color-dot" style="background:#34d399" onclick="setAccent('#34d399','#047857')" aria-label="Green"></button>
-        <button class="color-dot" style="background:#fb7185" onclick="setAccent('#fb7185','#be123c')" aria-label="Pink"></button>
-        <button class="color-dot" style="background:#fbbf24" onclick="setAccent('#fbbf24','#b45309')" aria-label="Yellow"></button>
+    <div class="settings-grid">
+      <div class="setting full">
+        <div><strong>Personalization</strong><small>Customize your desktop.</small></div>
+      </div>
+      <div class="setting full">
+        <div><strong>Accent color</strong><small>Choose an interface highlight.</small></div>
+        <div class="colors">
+          <button class="color-dot" style="background:#60a5fa" onclick="setAccent('#60a5fa','#2563eb')" aria-label="Blue"></button>
+          <button class="color-dot" style="background:#a78bfa" onclick="setAccent('#a78bfa','#6d28d9')" aria-label="Purple"></button>
+          <button class="color-dot" style="background:#34d399" onclick="setAccent('#34d399','#047857')" aria-label="Green"></button>
+          <button class="color-dot" style="background:#fb7185" onclick="setAccent('#fb7185','#be123c')" aria-label="Pink"></button>
+          <button class="color-dot" style="background:#fbbf24" onclick="setAccent('#fbbf24','#b45309')" aria-label="Yellow"></button>
+        </div>
+      </div>
+      <div class="setting full">
+        <div><strong>Wallpaper</strong><small>Choose a desktop background.</small></div>
+        <select id="wallpaper" onchange="setWallpaper(this.value)">
+          <option value="blue">Blue glow</option>
+          <option value="purple">Purple night</option>
+          <option value="green">Forest glow</option>
+          <option value="dark">Midnight</option>
+        </select>
+      </div>
+      <div class="setting">
+        <div><strong>Startup behavior</strong><small>Show welcome on next launch.</small></div>
+        <input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)">
+      </div>
+      <div class="setting">
+        <div><strong>Reset preferences</strong><small>Restore default appearance.</small></div>
+        <button class="soft-button" onclick="resetSettings()">Reset</button>
+      </div>
+      <div class="setting full">
+        <div><strong>Display</strong><small>Desktop theme and behavior.</small></div>
+        <div class="status">Preferences are saved in your browser.</div>
       </div>
     </div>
-    <div class="setting">
-      <div><strong>Wallpaper</strong><small>Choose a desktop background.</small></div>
-      <select id="wallpaper" onchange="setWallpaper(this.value)">
-        <option value="blue">Blue glow</option>
-        <option value="purple">Purple night</option>
-        <option value="green">Forest glow</option>
-        <option value="dark">Midnight</option>
-      </select>
-    </div>
-    <div class="setting">
-      <div><strong>Show welcome at startup</strong><small>Show Welcome on the next launch.</small></div>
-      <input id="welcome-setting" type="checkbox" checked onchange="saveWelcomeSetting(this.checked)">
-    </div>
-    <div class="setting">
-      <div><strong>Reset preferences</strong><small>Restore default appearance.</small></div>
-      <button class="soft-button" onclick="resetSettings()">Reset</button>
-    </div>
-    <p class="status">Preferences are saved in your browser.</p>
   </div>
 </section>
 
@@ -356,11 +364,14 @@ function normalizeGitHubUrl(value){
   if(typeof value!=="string")return value;
   const trimmed=value.trim();
   if(!trimmed)return trimmed;
+  if(/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed))return trimmed;
+  if(/^https?:\/\/github\.com\//i.test(trimmed)===false)return trimmed;
   const githubBlob=/^https?:\/\/github\.com\/(.+?)\/([^/]+)\/blob\/(.+?)\/(.+)$/i;
-  const m=trimmed.match(githubBlob);
+  const githubRaw=/^https?:\/\/github\.com\/(.+?)\/([^/]+)\/raw\/(.+)$/i;
+  const m=trimmed.match(githubBlob) || trimmed.match(githubRaw);
   if(m){
-    const [, owner, repo, branch, path]=m;
-    return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+    const [, owner, repo, path]=m;
+    return `https://raw.githubusercontent.com/${owner}/${repo}/${path}`;
   }
   return trimmed;
 }
