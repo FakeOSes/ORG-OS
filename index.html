@@ -389,7 +389,7 @@ if(lower.startsWith("open ")){const name=line.slice(5).trim(),key=findAppKey(nam
 if(lower.startsWith("close ")){const key=findAppKey(line.slice(6));if(key){closeApp(key);printTerminal("Closed "+APP_NAMES[key].title+".");}else printTerminal("App not found.");return;}
 if(lower.startsWith("minimize ")){const key=findAppKey(line.slice(9));if(key){minimizeApp(key);printTerminal("Minimized "+APP_NAMES[key].title+".");}else printTerminal("App not found.");return;}
 
-if((m=line.match(/^execute\s+installer\s+--(?:app\s+)?(.+)$/i))){let name=m[1].trim().replace(/^["']|["']$/g,"");if(name.toLowerCase()==="appname"){printTerminal("Replace AppName with the catalog item's name.");printTerminal("Example: execute installer --VUS-OS");return;}installByName(name);return;}
+
 if(lower.startsWith("pin ")){const key=findAppKey(line.slice(4));if(key){const pins=getPinnedKeys();if(pins.includes(key))printTerminal(APP_NAMES[key].title+" is already pinned.");else if(pins.length>=3)printTerminal("Only 3 apps can be pinned. Unpin one first.");else{togglePinnedApp(key);printTerminal("Pinned "+APP_NAMES[key].title+".");}}else printTerminal("App not found.");return;}
 if(lower.startsWith("unpin ")){const key=findAppKey(line.slice(6));if(key){if(getPinnedKeys().includes(key)){togglePinnedApp(key);printTerminal("Unpinned "+APP_NAMES[key].title+".");}else printTerminal("That app is not pinned.");}else printTerminal("App not found.");return;}
 if(lower.startsWith("theme ")){const color=line.slice(6).trim().toLowerCase();if(ACCENT_MAP[color]){setAccent(color);printTerminal("Accent color set to "+color+".");}else printTerminal("Unknown color. Options: "+Object.keys(ACCENT_MAP).join(", "));return;}
