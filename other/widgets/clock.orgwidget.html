@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="orgwidget:name" content="Digital Clock">
+<meta name="orgwidget:version" content="1.0">
+<meta name="orgwidget:icon" content="🕒">
+<meta name="orgwidget:width" content="2">
+<meta name="orgwidget:height" content="1">
+<style>
+*{box-sizing:border-box}body{margin:0;padding:18px;background:linear-gradient(145deg,#172554,#111827);color:#f8fafc;font:14px system-ui,sans-serif;border-radius:14px;min-height:130px}.label{font-size:11px;color:#93c5fd;text-transform:uppercase;letter-spacing:.12em}.clock{font-size:clamp(28px,7vw,42px);font-weight:650;letter-spacing:-.05em;margin-top:12px}.date{font-size:12px;color:#cbd5e1;margin-top:5px}
+</style>
+</head>
+<body>
+<div class="label">ORG official widget · Clock</div><div id="clock" class="clock">--:--</div><div id="date" class="date">Loading date…</div>
+<script>
+function tick(){const d=new Date();document.getElementById("clock").textContent=d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});document.getElementById("date").textContent=d.toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"});}tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
