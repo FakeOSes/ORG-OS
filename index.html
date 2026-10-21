@@ -10,7 +10,7 @@
 *{box-sizing:border-box}
 body{margin:0;font:14px "Segoe UI",system-ui,sans-serif;color:#f8fafc;overflow:hidden;background:#101b35;user-select:none}
 button,input,textarea,select{font:inherit}
-button{color:inherit;cursor:pointer}
+button{appearance:none;color:inherit;cursor:pointer;background-color:transparent;-webkit-appearance:none}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 #desktop{position:fixed;inset:0 0 52px;overflow:hidden;background-color:#101b35;background-image:linear-gradient(135deg, rgba(9,12,18,.28), rgba(17,24,39,.34)),url("./Wallpaper/Purple-drop.png");background-position:center center;background-size:cover;background-repeat:no-repeat}
 #desktop:before{content:"";position:absolute;width:65vw;height:65vw;max-width:850px;max-height:850px;right:8%;top:50%;transform:translateY(-50%) rotate(-30deg);border:1px solid #93c5fd24;border-radius:26px;pointer-events:none}
@@ -47,9 +47,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .window-controls .close:hover{background:#c42b1c}
 .window-body{flex:1;min-height:0;overflow:auto}
 .toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)}
-.toolbar button,.primary{border:1px solid var(--border);border-radius:5px;padding:7px 12px;background:#ffffff0d}
-.primary{background:var(--dark);border-color:transparent}
-.primary:hover{filter:brightness(1.15)}
+.toolbar button,.primary,.soft-button{appearance:none;border:1px solid var(--border);border-radius:6px;padding:8px 12px;background:#1a2639;color:#f1f5f9;font-weight:600}
+.primary{background:var(--dark);border-color:var(--accent);color:#fff}
+.primary:hover,.soft-button:hover,.toolbar button:hover{background:#2a3a52;border-color:var(--accent)}
 button:disabled{opacity:.45;cursor:not-allowed}
 .note-layout{display:flex;height:100%;min-height:0}
 .note-sidebar{width:175px;min-width:125px;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:10px;gap:7px}
@@ -268,7 +268,7 @@ Type "help" to see available commands.
 
 <section class="window hidden" id="win-store" style="left:calc(50% - 360px);top:calc(50% - 255px);width:720px;height:510px">
   <header class="titlebar">
-    <span class="title-icon">🛍️</span><span class="window-title">VUS Apps</span>
+    <span class="title-icon">🛍️</span><span class="window-title">VUS App Store</span>
     <div class="window-controls">
       <button onclick="minimizeApp('store')">—</button>
       <button onclick="maximizeApp('store')">□</button>
@@ -276,11 +276,7 @@ Type "help" to see available commands.
     </div>
   </header>
   <div class="window-body apps-content">
-    <input id="store-search" class="field" placeholder="Search apps, tools, hubs and links..." style="margin-bottom:14px">
-    <div class="apps-tabs" id="store-source-tabs" aria-label="App Store source">
-      <button class="selected" data-source="vus">VUS Apps</button>
-      <button data-source="org">ORG Apps</button>
-    </div>
+    <input id="store-search" class="field" placeholder="Search VUS apps, tools, hubs and links..." style="margin-bottom:14px">
     <div class="apps-tabs" id="apps-tabs" aria-label="VUS category filters">
       <button class="selected" data-category="all">All</button>
       <button data-category="apps">Apps</button>
@@ -293,9 +289,25 @@ Type "help" to see available commands.
   </div>
 </section>
 
+<section class="window hidden" id="win-orgstore" style="left:calc(50% - 340px);top:calc(50% - 235px);width:680px;height:470px">
+  <header class="titlebar">
+    <span class="title-icon">🏢</span><span class="window-title">ORG App Store</span>
+    <div class="window-controls">
+      <button onclick="minimizeApp('orgstore')">—</button>
+      <button onclick="maximizeApp('orgstore')">□</button>
+      <button class="close" onclick="closeApp('orgstore')">×</button>
+    </div>
+  </header>
+  <div class="window-body apps-content">
+    <input id="org-store-search" class="field" placeholder="Search ORG apps..." style="margin-bottom:14px">
+    <div class="status" style="margin-bottom:12px">Built-in applications included with ORG-OS</div>
+    <div id="org-store-grid" class="apps-grid"></div>
+  </div>
+</section>
+
 <script>
 const $=id=>document.getElementById(id);
-const APP_NAMES={welcome:{title:"Welcome",icon:"👋"},notes:{title:"Notes",icon:"📝"},terminal:{title:"Terminal",icon:"⌨️"},settings:{title:"Settings",icon:"⚙️"},store:{title:"App Store",icon:"🛍️"}};
+const APP_NAMES={welcome:{title:"Welcome",icon:"👋"},notes:{title:"Notes",icon:"📝"},terminal:{title:"Terminal",icon:"⌨️"},settings:{title:"Settings",icon:"⚙️"},store:{title:"VUS App Store",icon:"🛍️"},orgstore:{title:"ORG App Store",icon:"🏢"}};
 const ACCENT_MAP={blue:{accent:'#60a5fa',dark:'#2563eb'},purple:{accent:'#a78bfa',dark:'#6d28d9'},green:{accent:'#34d399',dark:'#047857'},pink:{accent:'#fb7185',dark:'#be123c'},amber:{accent:'#fbbf24',dark:'#b45309'},red:{accent:'#f87171',dark:'#b91c1c'},teal:{accent:'#2dd4bf',dark:'#0f766e'},slate:{accent:'#94a3b8',dark:'#334155'},black:{accent:'#111827',dark:'#020617'},white:{accent:'#f8fafc',dark:'#e2e8f0'}};
 const WALLPAPER_DEFAULT="purple-drop";
 const WALLPAPERS={
@@ -305,12 +317,13 @@ const WALLPAPERS={
   "mountain-view":{src:"https://raw.githubusercontent.com/avinstudios/ORG-OS/main/Wallpaper/MountainView.png",label:"Mountain view"}
 };
 let zIndex=200,activeNoteId=null,noteTimer;
-let storeCategory="all",storeSource="vus",storeItems=[],terminalHistory=[],terminalHistoryIndex=0;
+let storeCategory="all",storeItems=[],terminalHistory=[],terminalHistoryIndex=0;
 const ORG_APPS=[
 {name:"Welcome",description:"Get started with your ORG OS desktop.",icon:"👋",builtin:"welcome"},
 {name:"Notes",description:"Write and save notes on this desktop.",icon:"📝",builtin:"notes"},
 {name:"Terminal",description:"Run ORG Shell commands and manage apps.",icon:"⌨️",builtin:"terminal"},
-{name:"Settings",description:"Customize your desktop, accent color and wallpaper.",icon:"⚙️",builtin:"settings"}
+{name:"Settings",description:"Customize your desktop, accent color and wallpaper.",icon:"⚙️",builtin:"settings"},
+{name:"VUS App Store",description:"Browse and install applications from the VUS catalog.",icon:"🛍️",builtin:"store"}
 ];
 
 function safeGet(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}catch{return fallback}}
@@ -322,7 +335,7 @@ window.addEventListener("load",()=>setTimeout(hideSplash,1650));
 function getTopVisibleApp(){let topName="",topZ=-Infinity;document.querySelectorAll(".window").forEach(win=>{if(win.classList.contains("hidden"))return;const z=Number.parseInt(win.style.zIndex||"0",10)||0;if(z>=topZ){topZ=z;topName=win.id.replace(/^win-/,"");}});return topName;}
 function syncTaskbar(activeName){const visibleTop=getTopVisibleApp();if(!activeName||!$("win-"+activeName)||$("win-"+activeName).classList.contains("hidden"))activeName=visibleTop;else if(visibleTop&&Number.parseInt($("win-"+activeName).style.zIndex||"0",10)<Number.parseInt($("win-"+visibleTop).style.zIndex||"0",10))activeName=visibleTop;document.querySelectorAll(".task-button[data-app]").forEach(item=>{const name=item.dataset.app,win=$("win-"+name),visible=!!win&&!win.classList.contains("hidden"),running=!!win&&(visible||win.dataset.launched==="true");item.classList.toggle("running",running);item.classList.toggle("active",visible&&name===activeName);item.setAttribute("aria-label",APP_NAMES[name].title+(running?", running":""));item.title=APP_NAMES[name].title+(running?" — running":"");});}
 function focusApp(name){const win=$("win-"+name);if(!win||win.classList.contains("hidden"))return;win.style.zIndex=++zIndex;syncTaskbar(name);}
-function openApp(name){let win=$("win-"+name);if(!win){const installed=getInstalledApps().find(app=>app.appKey===name||app.key===name);if(installed){openInstalledApp(installed.key);return;}return;}win.dataset.launched="true";$("start-menu").classList.remove("open");$("notifications").classList.remove("open");win.classList.remove("hidden");win.style.zIndex=++zIndex;syncTaskbar(name);}
+function openApp(name){let win=$("win-"+name);if(!win){const installed=getInstalledApps().find(app=>app.appKey===name||app.key===name);if(installed){openInstalledApp(installed.key);return;}return;}if(name==="orgstore")renderOrgStore();if(name==="store")renderStore();win.dataset.launched="true";$("start-menu").classList.remove("open");$("notifications").classList.remove("open");win.classList.remove("hidden");win.style.zIndex=++zIndex;syncTaskbar(name);}
 function closeApp(name){const win=$("win-"+name);if(win){win.classList.add("hidden");win.dataset.launched="false";}syncTaskbar("");}
 function minimizeApp(name){const win=$("win-"+name);if(win)win.classList.add("hidden");syncTaskbar("");}
 function maximizeApp(name){const w=$("win-"+name);if(!w)return;if(!w.classList.contains("maximized")){w.dataset.oldStyle=JSON.stringify({left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height});w.classList.add("maximized");w.style.left="0";w.style.top="0";w.style.width="100%";w.style.height="100%"}else{w.classList.remove("maximized");const prev=JSON.parse(w.dataset.oldStyle||"{}" );w.style.left=prev.left||"";w.style.top=prev.top||"";w.style.width=prev.width||"";w.style.height=prev.height||""}focusApp(w.id.replace("win-",""))}
@@ -332,7 +345,7 @@ function toggleStart(){$("notifications").classList.remove("open");$("start-menu
 function toggleNotifications(){ $("start-menu").classList.remove("open"); $("notifications").classList.toggle("open"); }
 $("start-button").onclick=toggleStart;$("notify-button").onclick=toggleNotifications;
 function makeTaskButton(name){if(document.querySelector('.task-button[data-app="'+name+'"]'))return;const b=document.createElement("button");b.className="task-button";b.dataset.app=name;b.title=APP_NAMES[name].title;b.innerHTML='<span class="task-app-icon">'+APP_NAMES[name].icon+'</span><span class="task-running-indicator"></span>';b.setAttribute("aria-label",APP_NAMES[name].title);b.onclick=()=>{const win=$("win-"+name);if(!win)return;if(!win.classList.contains("hidden")&&getTopVisibleApp()===name){minimizeApp(name);}else if(!win.classList.contains("hidden")){focusApp(name);}else openApp(name);};document.getElementById("task-apps").appendChild(b)}
-registerInstalledApps();["welcome","notes","terminal","settings","store"].forEach(makeTaskButton);
+registerInstalledApps();["welcome","notes","terminal","settings","store","orgstore"].forEach(makeTaskButton);
 document.querySelectorAll(".window").forEach(win=>{win.addEventListener("pointerdown",()=>{if(win.classList.contains("hidden"))return;win.style.zIndex=++zIndex;syncTaskbar(win.id.replace("win-",""));});});
 document.querySelectorAll("[data-open]").forEach(b=>{b.addEventListener("dblclick",()=>openApp(b.dataset.open));b.addEventListener("click",()=>{if(matchMedia("(pointer: coarse)").matches)openApp(b.dataset.open);});});
 function getInstalledApps(){const items=safeGet("desktop.installedApps",[]);return Array.isArray(items)?items:[];}
@@ -385,10 +398,11 @@ const VUS_URL="https://raw.githubusercontent.com/Cra-Z-Gaming/VUS/refs/heads/mai
 function normalizeGitHubUrl(value){if(typeof value!=="string")return "";const trimmed=value.trim();if(!trimmed)return "";if(/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed))return trimmed;if(/^https?:\/\/github\.com\//i.test(trimmed)){const match=trimmed.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i);if(match)return "https://raw.githubusercontent.com/"+match[1]+"/"+match[2]+"/"+match[3]+"/"+match[4];}try{const parsed=new URL(trimmed);return ["https:","http:"].includes(parsed.protocol)?parsed.href:"";}catch{return "";}}
 function normalizeCatalog(data){const output=[];[["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{if(!Array.isArray(items))return;items.forEach(item=>{if(!item||!String(item.name||"").trim())return;const url=normalizeGitHubUrl(item.url);if(!url)return;output.push({category,name:String(item.name).trim(),description:item.description||item.desc||"",icon:item.icon||"🔧",url,installed:false})})});return output;}
 async function loadStore(){ $("store-status").textContent="Loading the VUS catalog…";try{const response=await fetch(VUS_URL,{cache:"no-store"});if(!response.ok)throw Error("Catalog request failed ("+response.status+")");const data=await response.json();storeItems=normalizeCatalog(data);renderStore();$("store-status").textContent="Catalog ready · "+storeItems.length+" items";}catch(err){console.error(err);$("store-status").textContent="Catalog could not load. Check your connection and retry.";const retry=document.createElement("button");retry.className="soft-button";retry.textContent="Retry";retry.onclick=loadStore;$("store-status").append(" ",retry);}}
-function renderStore(){const host=$("store-grid");host.replaceChildren();const q=$("store-search").value.trim().toLowerCase();const isOrg=storeSource==="org";$("apps-tabs").style.display=isOrg?"none":"flex";const items=(isOrg?ORG_APPS:storeItems).filter(a=>(isOrg||storeCategory==="all"||a.category===storeCategory)&&(`${a.name} ${a.description||""}`.toLowerCase().includes(q)));if(!items.length){const empty=document.createElement("div");empty.className="empty";empty.textContent=isOrg?"No ORG apps match your search.":storeItems.length?"No VUS apps match your search.":"VUS catalog is empty or still loading.";host.appendChild(empty);return;}const installed=getInstalledApps();items.forEach(app=>{const key=app.builtin||app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");const isBuiltin=!!app.builtin;const isInstalled=isBuiltin||installed.some(item=>item.key===key);const card=document.createElement("article");card.className="store-card";const title=document.createElement("h3");title.textContent=app.name;const desc=document.createElement("p");desc.textContent=app.description||"No description available.";const actions=document.createElement("div");actions.className="install-actions";const install=document.createElement("button");install.textContent=isBuiltin?"Open":isInstalled?"Launch":"Install";install.className=isInstalled?"store-launch-button":"store-install-button";install.onclick=()=>isBuiltin?openApp(app.builtin):isInstalled?openInstalledApp(key):installApp(app);const open=document.createElement("button");open.textContent=isOrg?"Details":"Open link";open.disabled=isOrg||!app.url;open.onclick=()=>{if(app.url)window.open(app.url,"_blank","noopener,noreferrer");};actions.append(install,open);card.append(title,desc,actions);if(isInstalled&&!isBuiltin){const label=document.createElement("div");label.className="installed-label";label.textContent="✓ Installed on this desktop";card.appendChild(label);const extra=document.createElement("div");extra.className="install-actions";const pin=document.createElement("button");pin.textContent=getPinnedKeys().includes("installed-"+key)?"★ Pinned":"Pin";pin.title="Pin this installed app to Start";pin.onclick=()=>{togglePinnedApp("installed-"+key);renderStore();};extra.appendChild(pin);card.appendChild(extra);}host.appendChild(card);});}
+function renderStore(){const host=$("store-grid");host.replaceChildren();const q=$("store-search").value.trim().toLowerCase();const items=storeItems.filter(a=>(storeCategory==="all"||a.category===storeCategory)&&(`${a.name} ${a.description||""}`.toLowerCase().includes(q)));if(!items.length){const empty=document.createElement("div");empty.className="empty";empty.textContent=storeItems.length?"No VUS apps match your search.":"VUS catalog is empty or still loading.";host.appendChild(empty);return;}const installed=getInstalledApps();items.forEach(app=>{const key=app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");const isInstalled=installed.some(item=>item.key===key);const card=document.createElement("article");card.className="store-card";const title=document.createElement("h3");title.textContent=app.name;const desc=document.createElement("p");desc.textContent=app.description||"No description available.";const actions=document.createElement("div");actions.className="install-actions";const install=document.createElement("button");install.textContent=isInstalled?"Launch":"Install";install.className=isInstalled?"store-launch-button":"store-install-button";install.onclick=()=>isInstalled?openInstalledApp(key):installApp(app);const open=document.createElement("button");open.textContent="Open link";open.disabled=!app.url;open.onclick=()=>{if(app.url)window.open(app.url,"_blank","noopener,noreferrer");};actions.append(install,open);card.append(title,desc,actions);if(isInstalled){const label=document.createElement("div");label.className="installed-label";label.textContent="✓ Installed on this desktop";card.appendChild(label);const extra=document.createElement("div");extra.className="install-actions";const pin=document.createElement("button");pin.textContent=getPinnedKeys().includes("installed-"+key)?"★ Pinned":"Pin";pin.title="Pin this installed app to Start";pin.onclick=()=>{togglePinnedApp("installed-"+key);renderStore();};extra.appendChild(pin);card.appendChild(extra);}host.appendChild(card);});}
+function renderOrgStore(){const host=$("org-store-grid");if(!host)return;host.replaceChildren();const q=$("org-store-search").value.trim().toLowerCase();ORG_APPS.filter(app=>`${app.name} ${app.description}`.toLowerCase().includes(q)).forEach(app=>{const card=document.createElement("article");card.className="store-card";const title=document.createElement("h3");title.textContent=app.name;const desc=document.createElement("p");desc.textContent=app.description;const actions=document.createElement("div");actions.className="install-actions";const open=document.createElement("button");open.className="store-launch-button";open.textContent="Open";open.onclick=()=>openApp(app.builtin);actions.appendChild(open);card.append(title,desc,actions);host.appendChild(card);});if(!host.children.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No ORG apps match your search.";host.appendChild(empty);}}
 $("store-search").addEventListener("input",renderStore);
 $("apps-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{storeCategory=b.dataset.category;$("apps-tabs").querySelectorAll("button").forEach(btn=>btn.classList.toggle("selected",btn===b));renderStore();});
-$("store-source-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{storeSource=b.dataset.source;$("store-source-tabs").querySelectorAll("button").forEach(btn=>btn.classList.toggle("selected",btn===b));$("store-search").placeholder=storeSource==="org"?"Search ORG apps...":"Search VUS apps, tools, hubs and links...";renderStore();});
+$("org-store-search").addEventListener("input",renderOrgStore);
 function installApp(app){if(!app||!app.name||!app.url){toast("This catalog item cannot be installed.");return;}const installed=getInstalledApps();const key=app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");if(installed.some(item=>item.key===key)){toast("Already installed.");openInstalledApp(key);return;}const record={key,name:app.name,url:app.url,description:app.description||"",icon:app.icon||"📦",category:app.category||"apps",appKey:"installed-"+key};installed.push(record);safeSet("desktop.installedApps",installed);registerInstalledApps();if(!getPinnedKeys().length)safeSet("desktop.pinnedApps",["notes","terminal","store"]);renderStore();renderPinned($("start-search").value);toast(app.name+" installed. Find it in Start.");}
 function openInstalledApp(key){const app=getInstalledApps().find(item=>item.key===key||item.appKey===key);if(!app){toast("Installed app not found.");return;}app.appKey=app.appKey||("installed-"+app.key);APP_NAMES[app.appKey]={title:app.name,icon:app.icon||"📦"};let win=$("win-"+app.appKey);if(!win){win=document.createElement("section");win.className="window hidden installed-app-window";win.id="win-"+app.appKey;win.style.cssText="left:calc(50% - 360px);top:calc(50% - 250px);width:720px;height:500px";const bar=document.createElement("header");bar.className="titlebar";bar.innerHTML='<span class="title-icon"></span><span class="window-title"></span><div class="window-controls"><button class="minimize">—</button><button class="maximize">□</button><button class="close">×</button></div>';bar.querySelector(".title-icon").textContent=app.icon||"📦";bar.querySelector(".window-title").textContent=app.name;bar.querySelector(".minimize").onclick=()=>minimizeApp(app.appKey);bar.querySelector(".maximize").onclick=()=>maximizeApp(app.appKey);bar.querySelector(".close").onclick=()=>closeApp(app.appKey);const body=document.createElement("div");body.className="window-body installed-app-body";const status=document.createElement("div");status.className="app-loading";status.textContent="Launching "+app.name+"…";const frame=document.createElement("iframe");frame.title=app.name;frame.setAttribute("sandbox","allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-presentation");frame.referrerPolicy="no-referrer";body.append(status,frame);win.append(bar,body);document.body.appendChild(win);win.addEventListener("pointerdown",()=>{if(win.classList.contains("hidden"))return;win.style.zIndex=++zIndex;syncTaskbar(app.appKey);});makeTaskButton(app.appKey);frame.addEventListener("load",()=>{status.textContent="";status.style.display="none";});if(/raw\.githubusercontent\.com/i.test(app.url)){fetch(app.url,{cache:"no-store"}).then(response=>{if(!response.ok)throw Error("Download failed");return response.text();}).then(html=>{const base=app.url.slice(0,app.url.lastIndexOf("/")+1);const baseTag='<base href="'+base.replace(/&/g,"&amp;").replace(/"/g,"&quot;")+'">';if(/<head[^>]*>/i.test(html))html=html.replace(/<head([^>]*)>/i,"<head$1>"+baseTag);else html=baseTag+html;frame.srcdoc=html;}).catch(error=>{status.textContent="Could not load app source. Opening the source URL instead…";frame.src=app.url;console.error(error);});}else{frame.src=app.url;}}openApp(app.appKey);}
 function printTerminal(text=""){$("terminal-output").textContent+=String(text)+"\n";$("terminal").scrollTop=$("terminal").scrollHeight;}
