@@ -337,6 +337,7 @@ Type "help" to see available commands.
                 <option value="purple-waves">Purple waves</option>
                 <option value="moon">Moon</option>
                 <option value="mountain-view">Mountain view</option>
+                <option value="mine">Mine</option>
               </select>
             </div>
           </div>
@@ -454,7 +455,8 @@ const WALLPAPERS={
   "purple-drop":{src:WALLPAPER_DIR+"Purple-drop.png",label:"Purple drop"},
   "purple-waves":{src:WALLPAPER_DIR+"Purple-waves.png",label:"Purple waves"},
   moon:{src:WALLPAPER_DIR+"Moon.png",label:"Moon"},
-  "mountain-view":{src:WALLPAPER_DIR+"MountainView.png",label:"Mountain view"}
+  "mountain-view":{src:WALLPAPER_DIR+"MountainView.png",label:"Mountain view"},
+  mine:{src:WALLPAPER_DIR+"Mine.png",label:"Mine"}
 };
 let zIndex=200,activeNoteId=null,noteTimer;
 let storeCategory="all",storeItems=[],terminalHistory=[],terminalHistoryIndex=0;
@@ -695,7 +697,7 @@ function setAccent(name){
   activeButtons.forEach(btn=>btn.classList.toggle("selected",btn.dataset.accent===name));
 }
 function setWallpaper(value){
-  const choice=WALLPAPERS[value]||WALLPAPERS["purple-drop"];
+  const choice=WALLPAPERS[value] || WALLPAPERS["purple-drop"];
   const wallpaperUrl = choice && choice.src ? choice.src : WALLPAPERS["purple-drop"].src;
   $("desktop").style.background=`linear-gradient(135deg, rgba(18,10,28,.52), rgba(18,10,28,.70)), url('${wallpaperUrl}') center / cover no-repeat`;
   $("desktop").style.backgroundColor="#130c28";
