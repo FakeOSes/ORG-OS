@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="orgwidget:name" content="System Status">
+<meta name="orgwidget:version" content="1.0">
+<meta name="orgwidget:icon" content="🖥️">
+<meta name="orgwidget:width" content="2">
+<meta name="orgwidget:height" content="1">
+<style>
+*{box-sizing:border-box}body{margin:0;padding:18px;background:linear-gradient(145deg,#064e3b,#111827);color:#f8fafc;font:13px system-ui,sans-serif;border-radius:14px}.title{font-weight:750;font-size:15px;margin-bottom:15px}.status{display:flex;align-items:center;gap:9px;margin:10px 0;color:#d1fae5}.dot{width:9px;height:9px;border-radius:50%;background:#34d399;box-shadow:0 0 12px #34d39988}.sub{font-size:11px;color:#a7f3d0;margin-top:14px}
+</style></head><body><div class="title">ORG-OS Status</div><div class="status"><span class="dot"></span> Desktop is running</div><div class="status"><span class="dot"></span> Widget system ready</div><div class="sub" id="stamp">Checked just now</div><script>document.getElementById("stamp").textContent="Updated "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});</script></body></html>
