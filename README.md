@@ -1,3 +1,5 @@
+# **Org OS** 
+
 # V1.1 BETA LOGS
 • Added a splashscreen
 
@@ -7,3 +9,5 @@
 
 --------------------------------------------
 More Coming soon...
+
+AND WE ARE GOING ON VUS HUB SOON
