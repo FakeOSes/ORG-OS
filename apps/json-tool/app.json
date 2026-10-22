@@ -1,0 +1,18 @@
+{
+  "id": "json-tool",
+  "name": "JSON Studio",
+  "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
+  "description": "Format, validate, and minify JSON data.",
+  "entry": "index.html",
+  "category": "Utilities",
+  "icon": "{ }",
+  "features": [
+    "standalone-window",
+    "local-browser-functionality"
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
