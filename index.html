@@ -1876,7 +1876,7 @@ const oldLoadOrgWidgetLibrary=loadOrgWidgetLibrary;
 loadOrgWidgetLibrary=async function(){await oldLoadOrgWidgetLibrary();autoLoadSavedDesktopWidgets();renderStartWidgets();};
 const oldSelectSettingsTab=selectSettingsTab;
 selectSettingsTab=function(tab){oldSelectSettingsTab(tab==="appearance"?"personalize":tab);if(tab==="personalize"||tab==="appearance"){const pane=$("settings-pane-appearance");if(pane)pane.classList.add("active");}if(tab==="general")refreshSystemOverview();};
-window.addEventListener("load",()=>{setTimeout(()=>{refreshSystemOverview();const panel=$("start-widget-settings");if(panel)panel.classList.add("hidden");const lib=$("orgwidget-gallery");if(lib)ensureOrgWidgetLibraryLoaded();},350);});
+window.addEventListener("load",()=>{setTimeout(()=>{refreshSystemOverview();const panel=$("start-widget-settings");if(panel)panel.classList.add("hidden");Array.from(document.querySelectorAll("#desktop .desktop-icon,#desktop .desktop-widget")).forEach(placeDesktopItemWithoutOverlap);const lib=$("orgwidget-gallery");if(lib)ensureOrgWidgetLibraryLoaded();},350);});
 
 </script>
 </body>
