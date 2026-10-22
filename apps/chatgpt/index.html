@@ -1,2 +1,53 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChatGPT — ORG-OS</title><style>
-:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#101318;color:#f4f6f8}*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}body{display:flex;flex-direction:column;background:#101318}.topbar{height:54px;flex:0 0 54px;display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid #ffffff17;background:#15191f}.mark{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#252b32;border:1px solid #ffffff18;font-size:21px}.brand{font-size:13px;font-weight:750}.brand small{display:block;margin-top:3px;font-size:10px;font-weight:500;color:#8d98a6}.actions{display:flex;gap:7px;margin-left:auto}.actions button{border:1px solid #ffffff20;border-radius:9px;padding:8px 11px;background:#ffffff08;color:#e8edf3;font:inherit;font-size:11px;font-weight:650;cursor:pointer}.actions button:hover{background:#ffffff15}.status{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#202a27;border-bottom:1px solid #30423a;color:#c9e8d8;font-size:11px;line-height:1.45}.dot{width:7px;height:7px;border-radius:50%;background:#65d69a;flex-shrink:0}main{position:relative;flex:1;min-height:0;background:#fff}iframe{display:block;width:100%;height:100%;border:0;background:#fff}.notice{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);width:min(600px,calc(100% - 28px));padding:12px 15px;border:1px solid #344155;border-radius:12px;background:#111923f2;color:#c8d1dd;font-size:11px;line-height:1.5;box-shadow:0 10px 35px #0005}.notice strong{color:#f8fafc}@media(max-width:520px){.topbar{padding:0 9px;gap:8px}.brand{font-size:12px}.actions button{padding:7px 8px;font-size:10px}.status{font-size:10px}}</style></head><body><header class="topbar"><div class="mark" aria-hidden="true">✳</div><div class="brand">ChatGPT <small>ORG-OS app window</small></div><div class="actions"><button id="reload" type="button">↻ Reload</button></div></header><div class="status"><span class="dot"></span><span>ChatGPT is loading inside this app window. No new tab is opened.</span></div><main><iframe id="chatgpt-frame" title="ChatGPT website" src="https://chatgpt.com/" allow="clipboard-read; clipboard-write; microphone; camera; geolocation; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="notice" id="embed-notice"><strong>If the page says it cannot be displayed:</strong> that restriction comes from ChatGPT's website security policy or browser privacy settings. ORG-OS cannot override those protections. Use Reload to try again.</div></main><script>const frame=document.getElementById("chatgpt-frame");document.getElementById("reload").addEventListener("click",()=>{frame.src="https://chatgpt.com/";});frame.addEventListener("load",()=>{document.getElementById("embed-notice").hidden=true;});</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>ChatGPT — ORG-OS</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0b1020;color:#f5f7fb}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0}
+body{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 18% 8%,#21446b77,transparent 38%),radial-gradient(ellipse at 85% 90%,#4c328055,transparent 35%),#0b1020}
+.shell{width:min(760px,100%);overflow:hidden;border:1px solid #ffffff1a;border-radius:24px;background:linear-gradient(150deg,#172235f5,#0d1423f5);box-shadow:0 35px 100px #0008}
+.topbar{display:flex;align-items:center;gap:12px;padding:17px 20px;border-bottom:1px solid #ffffff12;background:#ffffff05}
+.mark{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#8bd5ff,#6d8aff 65%,#ad83ff);color:#0a1020;font-size:24px;font-weight:800}
+.brand{font-weight:750;font-size:15px;letter-spacing:-.02em}.brand small{display:block;margin-top:3px;font-size:11px;font-weight:500;color:#9aa8bd}
+.pill{margin-left:auto;padding:7px 10px;border:1px solid #ffffff18;border-radius:999px;background:#ffffff08;color:#aebbd0;font-size:10px;font-weight:700}
+main{padding:clamp(24px,6vw,54px)}
+.eyebrow{display:flex;align-items:center;gap:8px;color:#9fc9ff;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.spark{width:7px;height:7px;border-radius:50%;background:#83c5ff;box-shadow:0 0 14px #83c5ff}
+h1{max-width:550px;margin:18px 0 14px;font-size:clamp(32px,6vw,49px);line-height:1.05;letter-spacing:-.055em}
+p{max-width:570px;color:#b2bfd2;font-size:14px;line-height:1.75}
+.warning{display:flex;gap:13px;margin:25px 0;padding:16px;border:1px solid #f5bf6333;border-radius:15px;background:#f5bf630b}
+.warning-icon{flex:0 0 28px;display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:#f5bf6318;color:#ffd38b;font-weight:900}
+.warning strong{display:block;margin:2px 0 5px;color:#ffdaa0;font-size:12px}
+.warning span{display:block;color:#c1c9d7;font-size:12px;line-height:1.6}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+button,a{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:0 17px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff08;color:#f5f7fb;font:inherit;font-size:12px;font-weight:750;text-decoration:none;cursor:pointer;transition:transform .15s,background .15s}
+.primary{border-color:transparent;background:linear-gradient(100deg,#91d5ff,#9baeff);color:#091322;box-shadow:0 8px 25px #739fff2b}
+button:hover,a:hover{transform:translateY(-1px);background-color:#ffffff13}.primary:hover{background:linear-gradient(100deg,#a5ddff,#b0baff)}
+footer{padding:14px 20px;border-top:1px solid #ffffff12;color:#7f8da3;font-size:10px;line-height:1.6}
+@media(max-width:520px){body{padding:12px}.shell{border-radius:18px}.topbar{padding:14px}.pill{font-size:9px}main{padding:25px 19px}.actions{display:grid}.actions>*{width:100%}}
+</style>
+</head>
+<body>
+<section class="shell" aria-labelledby="title">
+<header class="topbar"><div class="mark" aria-hidden="true">✳</div><div class="brand">ChatGPT<small>ORG-OS app</small></div><span class="pill">WEB SERVICE</span></header>
+<main>
+<div class="eyebrow"><span class="spark"></span> Your AI assistant</div>
+<h1 id="title">ChatGPT, ready when you are.</h1>
+<p>ChatGPT blocks being embedded in some websites and app windows. ORG-OS respects that security rule, so this app gives you a clean launch screen instead of a broken “refused to connect” frame.</p>
+<div class="warning"><div class="warning-icon">i</div><div><strong>Why doesn't ChatGPT show right here?</strong><span>The ChatGPT website controls whether it can load inside another page. ORG-OS cannot disable or bypass that protection. To use the full ChatGPT interface, open the official site directly.</span></div></div>
+<div class="actions"><button class="primary" id="open-chatgpt" type="button">Open ChatGPT <span aria-hidden="true">↗</span></button><button id="copy-url" type="button">Copy website address</button></div>
+<p id="status" role="status" aria-live="polite"></p>
+</main>
+<footer>Official destination: chatgpt.com · Your ORG-OS desktop remains separate from the ChatGPT website.</footer>
+</section>
+<script>
+document.getElementById("open-chatgpt").addEventListener("click",()=>{const w=window.open("https://chatgpt.com/","_blank","noopener,noreferrer");if(!w){document.getElementById("status").textContent="Your browser blocked the new tab. Allow pop-ups for ORG-OS, then try again, or open https://chatgpt.com/ directly."; }});
+document.getElementById("copy-url").addEventListener("click",async()=>{const status=document.getElementById("status");try{await navigator.clipboard.writeText("https://chatgpt.com/");status.textContent="Copied https://chatgpt.com/";}catch(e){status.textContent="Website address: https://chatgpt.com/";}});
+</script>
+</body>
+</html>
