@@ -8,7 +8,7 @@
       :root {
         --bg: #f5efe7;
         --bg-2: #fdfaf5;
-        --panel: rgba(255, 255, 255, 0.84);
+        --panel: rgba(255, 255, 255, 0.82);
         --card: #ffffff;
         --ink: #1f1a17;
         --muted: #685d55;
@@ -22,6 +22,7 @@
         --shadow-soft: 0 10px 24px rgba(43, 28, 20, 0.06);
         --search-bg: rgba(255,255,255,0.75);
         --modal-bg: rgba(16, 12, 10, 0.62);
+        --chip: #fff6ef;
       }
 
       body[data-theme="dark"] {
@@ -41,6 +42,7 @@
         --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.2);
         --search-bg: rgba(25, 31, 29, 0.9);
         --modal-bg: rgba(3, 5, 4, 0.7);
+        --chip: rgba(242, 155, 108, 0.12);
       }
 
       * { box-sizing: border-box; }
@@ -129,12 +131,7 @@
         color: var(--muted);
       }
 
-      .icon-btn,
-      .cta,
-      .secondary-btn,
-      .favorite-btn,
-      .modal-close,
-      .view-btn {
+      .icon-btn, .cta, .secondary-btn, .favorite-btn, .modal-close, .view-btn {
         cursor: pointer;
       }
 
@@ -193,14 +190,14 @@
         border-color: var(--accent);
       }
 
-      .intro {
+      .featured {
         display: grid;
-        grid-template-columns: 1.3fr 0.7fr;
+        grid-template-columns: 1.15fr 0.85fr;
         gap: 20px;
         margin-bottom: 28px;
       }
 
-      .intro-card,
+      .feature-pane,
       .stats-card {
         background: var(--panel);
         border: 1px solid var(--line);
@@ -208,26 +205,73 @@
         box-shadow: var(--shadow);
       }
 
-      .intro-card {
-        padding: 28px;
-        background: linear-gradient(135deg, rgba(255,244,230,0.9) 0%, rgba(255,255,255,0.65) 100%);
+      .feature-pane {
+        position: relative;
+        overflow: hidden;
+        padding: 26px 24px;
+        background: linear-gradient(135deg, rgba(254, 202, 141, 0.32) 0%, rgba(255, 255, 255, 0.82) 100%);
       }
 
-      body[data-theme="dark"] .intro-card {
-        background: linear-gradient(135deg, rgba(49,41,37,0.95) 0%, rgba(28,35,32,0.9) 100%);
+      body[data-theme="dark"] .feature-pane {
+        background: linear-gradient(135deg, rgba(232, 142, 77, 0.18) 0%, rgba(28,35,32,0.95) 100%);
       }
 
-      .intro-card h2 {
-        margin: 0 0 12px;
-        font-size: clamp(1.6rem, 2vw, 2.2rem);
-        letter-spacing: -0.04em;
+      .feature-pane::before {
+        content: "✨";
+        position: absolute;
+        right: 18px;
+        top: 18px;
+        font-size: 2.3rem;
+        opacity: 0.8;
       }
 
-      .intro-card p {
-        margin: 0;
-        font-size: 1.04rem;
-        line-height: 1.7;
+      .feature-pane h2 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: clamp(2rem, 3vw, 2.8rem);
+        letter-spacing: -0.06em;
+      }
+
+      .feature-pane p {
+        margin: 0 0 18px;
         color: var(--muted);
+        line-height: 1.7;
+        max-width: 62ch;
+      }
+
+      .feature-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+
+      .feature-meta span {
+        border-radius: 999px;
+        background: var(--chip);
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        font-weight: 700;
+        font-size: 0.76rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink);
+      }
+
+      .feature-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .secondary-btn,
+      .view-btn {
+        border: 1px solid var(--line);
+        background: var(--soft);
+        color: var(--ink);
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-weight: 700;
       }
 
       .stats-card {
@@ -275,10 +319,15 @@
         border-radius: 28px;
         overflow: hidden;
         box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(12px) scale(0.985);
+        transition: opacity 0.25s ease, transform 0.25s ease;
       }
 
       .recipe-card.is-visible {
         display: block;
+        opacity: 1;
+        transform: translateY(0) scale(1);
       }
 
       .card-actions {
@@ -300,7 +349,7 @@
       }
 
       .favorite-btn.is-favorited {
-        background: rgba(255, 255, 255, 0.96);
+        background: rgba(255,255,255,0.96);
         color: #db4d4d;
         border-color: rgba(255,255,255,0.96);
       }
@@ -321,6 +370,10 @@
       .recipe-card[data-color="blue"] .recipe-visual { background: linear-gradient(135deg, #6f9dd6, #3d6db1); }
       .recipe-card[data-color="rose"] .recipe-visual { background: linear-gradient(135deg, #cb876d, #8f5642); }
       .recipe-card[data-color="teal"] .recipe-visual { background: linear-gradient(135deg, #5ab9a5, #2d7f72); }
+      .recipe-card[data-color="purple"] .recipe-visual { background: linear-gradient(135deg, #ab8fe2, #6d5ab5); }
+      .recipe-card[data-color="coral"] .recipe-visual { background: linear-gradient(135deg, #f39d7a, #d96b45); }
+      .recipe-card[data-color="mint"] .recipe-visual { background: linear-gradient(135deg, #9ad6bb, #5b987d); }
+      .recipe-card[data-color="sunset"] .recipe-visual { background: linear-gradient(135deg, #ffb26d, #ed7d53); }
 
       .recipe-info {
         padding: 20px;
@@ -362,27 +415,11 @@
         line-height: 1.6;
       }
 
-      .details {
-        display: none;
-      }
-
       .card-buttons {
         margin-top: 12px;
       }
 
-      .view-btn,
-      .secondary-btn {
-        border: 1px solid var(--line);
-        background: var(--soft);
-        color: var(--ink);
-        padding: 10px 14px;
-        border-radius: 12px;
-        font-weight: 700;
-      }
-
-      .hidden {
-        display: none !important;
-      }
+      .hidden { display: none !important; }
 
       .modal {
         position: fixed;
@@ -394,9 +431,7 @@
         padding: 20px;
       }
 
-      .modal[hidden] {
-        display: none;
-      }
+      .modal[hidden] { display: none; }
 
       .modal-backdrop {
         position: absolute;
@@ -454,16 +489,37 @@
         color: var(--muted);
       }
 
-      .modal-body ul,
+      .ingredient-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .ingredient-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--soft);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 10px;
+      }
+
+      .ingredient-list input {
+        accent-color: var(--accent);
+        width: 18px;
+        height: 18px;
+      }
+
       .modal-body ol {
         margin: 0;
         padding-left: 18px;
         line-height: 1.8;
       }
 
-      .modal-body li + li {
-        margin-top: 4px;
-      }
+      .modal-body li + li { margin-top: 4px; }
 
       .modal-meta {
         display: flex;
@@ -485,7 +541,7 @@
       }
 
       @media (max-width: 900px) {
-        .intro { grid-template-columns: 1fr; }
+        .featured { grid-template-columns: 1fr; }
         .recipe-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       }
 
@@ -528,24 +584,32 @@
       <nav class="filters" aria-label="Recipe categories">
         <button class="filter is-active" type="button" data-filter="all">All</button>
         <button class="filter" type="button" data-filter="breakfast">Breakfast</button>
+        <button class="filter" type="button" data-filter="lunch">Lunch</button>
         <button class="filter" type="button" data-filter="dinner">Dinner</button>
         <button class="filter" type="button" data-filter="vegetarian">Vegetarian</button>
         <button class="filter" type="button" data-filter="dessert">Dessert</button>
+        <button class="filter" type="button" data-filter="favorites">Favorites</button>
       </nav>
 
-      <section class="intro">
-        <div class="intro-card">
-          <h2>Fresh ideas for everyday cooking.</h2>
-          <p>
-            A simple recipe box built for busy nights, weekend brunches, and cozy desserts. Search by name,
-            save favorites, and open any recipe for full details.
-          </p>
+      <section class="featured">
+        <div class="feature-pane">
+          <div class="feature-meta">
+            <span id="featuredCategory">Featured</span>
+            <span id="featuredTime">30 min</span>
+            <span id="featuredDifficulty">Easy</span>
+          </div>
+          <h2 id="featuredTitle">Citrus Salmon Bowl</h2>
+          <p id="featuredDescription">A bright and balanced bowl with flaky salmon, quinoa, greens, and a lemony dressing.</p>
+          <div class="feature-actions">
+            <button class="secondary-btn" type="button" id="featuredViewBtn">View recipe</button>
+            <button class="secondary-btn" type="button" id="featuredFavoriteBtn">Save favorite</button>
+          </div>
         </div>
 
         <div class="stats-card">
           <div class="stats-grid">
             <div class="stat">
-              <strong>6</strong>
+              <strong id="statRecipes">50</strong>
               <span>Recipes</span>
             </div>
             <div class="stat">
@@ -553,132 +617,18 @@
               <span>Fastest</span>
             </div>
             <div class="stat">
-              <strong>4</strong>
+              <strong>6</strong>
               <span>Categories</span>
             </div>
             <div class="stat">
               <strong>100%</strong>
-              <span>Home-made</span>
+              <span>Fresh</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="recipeGrid" class="recipe-grid" aria-live="polite">
-        <article class="recipe-card is-visible" data-id="lemon-herb-chicken" data-category="dinner" data-name="Lemon Herb Chicken" data-color="gold">
-          <div class="card-actions">
-            <button class="favorite-btn" type="button" aria-label="Favorite Lemon Herb Chicken" data-recipe-id="lemon-herb-chicken">♡</button>
-          </div>
-          <div class="recipe-visual" aria-hidden="true">🍋</div>
-          <div class="recipe-info">
-            <div class="recipe-meta">
-              <span class="tag">Dinner</span>
-              <span>45 min</span>
-              <span>Easy</span>
-            </div>
-            <h3>Lemon Herb Chicken</h3>
-            <p>Pan-seared chicken breasts with garlic, fresh herbs, and roasted vegetables.</p>
-            <div class="card-buttons">
-              <button class="view-btn" type="button" data-recipe-id="lemon-herb-chicken">View recipe</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="recipe-card is-visible" data-id="chickpea-coconut-curry" data-category="vegetarian" data-name="Chickpea Coconut Curry" data-color="green">
-          <div class="card-actions">
-            <button class="favorite-btn" type="button" aria-label="Favorite Chickpea Coconut Curry" data-recipe-id="chickpea-coconut-curry">♡</button>
-          </div>
-          <div class="recipe-visual" aria-hidden="true">🥥</div>
-          <div class="recipe-info">
-            <div class="recipe-meta">
-              <span class="tag">Vegetarian</span>
-              <span>30 min</span>
-              <span>Easy</span>
-            </div>
-            <h3>Chickpea Coconut Curry</h3>
-            <p>A creamy, warming curry with chickpeas, spinach, and coconut milk.</p>
-            <div class="card-buttons">
-              <button class="view-btn" type="button" data-recipe-id="chickpea-coconut-curry">View recipe</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="recipe-card is-visible" data-id="mushroom-spinach-pasta" data-category="dinner" data-name="Mushroom Spinach Pasta" data-color="orange">
-          <div class="card-actions">
-            <button class="favorite-btn" type="button" aria-label="Favorite Mushroom Spinach Pasta" data-recipe-id="mushroom-spinach-pasta">♡</button>
-          </div>
-          <div class="recipe-visual" aria-hidden="true">🍝</div>
-          <div class="recipe-info">
-            <div class="recipe-meta">
-              <span class="tag">Dinner</span>
-              <span>20 min</span>
-              <span>Easy</span>
-            </div>
-            <h3>Mushroom Spinach Pasta</h3>
-            <p>Garlicky pasta tossed with mushrooms, spinach, parmesan, and lemon.</p>
-            <div class="card-buttons">
-              <button class="view-btn" type="button" data-recipe-id="mushroom-spinach-pasta">View recipe</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="recipe-card is-visible" data-id="berry-overnight-oats" data-category="breakfast" data-name="Berry Overnight Oats" data-color="blue">
-          <div class="card-actions">
-            <button class="favorite-btn" type="button" aria-label="Favorite Berry Overnight Oats" data-recipe-id="berry-overnight-oats">♡</button>
-          </div>
-          <div class="recipe-visual" aria-hidden="true">🥣</div>
-          <div class="recipe-info">
-            <div class="recipe-meta">
-              <span class="tag">Breakfast</span>
-              <span>10 min</span>
-              <span>Simple</span>
-            </div>
-            <h3>Berry Overnight Oats</h3>
-            <p>Make-ahead oats with oats, yogurt, chia seeds, and fresh berries.</p>
-            <div class="card-buttons">
-              <button class="view-btn" type="button" data-recipe-id="berry-overnight-oats">View recipe</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="recipe-card is-visible" data-id="chocolate-chip-cookies" data-category="dessert" data-name="Chocolate Chip Cookies" data-color="rose">
-          <div class="card-actions">
-            <button class="favorite-btn" type="button" aria-label="Favorite Chocolate Chip Cookies" data-recipe-id="chocolate-chip-cookies">♡</button>
-          </div>
-          <div class="recipe-visual" aria-hidden="true">🍪</div>
-          <div class="recipe-info">
-            <div class="recipe-meta">
-              <span class="tag">Dessert</span>
-              <span>25 min</span>
-              <span>Easy</span>
-            </div>
-            <h3>Chocolate Chip Cookies</h3>
-            <p>Classic chewy cookies loaded with dark chocolate and a little sea salt.</p>
-            <div class="card-buttons">
-              <button class="view-btn" type="button" data-recipe-id="chocolate-chip-cookies">View recipe</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="recipe-card is-visible" data-id="sheet-pan-salmon" data-category="dinner" data-name="Sheet Pan Salmon" data-color="teal">
-          <div class="card-actions">
-            <button class="favorite-btn" type="button" aria-label="Favorite Sheet Pan Salmon" data-recipe-id="sheet-pan-salmon">♡</button>
-          </div>
-          <div class="recipe-visual" aria-hidden="true">🐟</div>
-          <div class="recipe-info">
-            <div class="recipe-meta">
-              <span class="tag">Dinner</span>
-              <span>35 min</span>
-              <span>Medium</span>
-            </div>
-            <h3>Sheet Pan Salmon</h3>
-            <p>Roasted salmon with asparagus, potatoes, and a lemon-dill finish.</p>
-            <div class="card-buttons">
-              <button class="view-btn" type="button" data-recipe-id="sheet-pan-salmon">View recipe</button>
-            </div>
-          </div>
-        </article>
-      </section>
+      <section id="recipeGrid" class="recipe-grid" aria-live="polite"></section>
     </div>
 
     <div id="recipeModal" class="modal" hidden>
@@ -690,196 +640,150 @@
     </div>
 
     <script>
-      const recipeDetails = {
-        'lemon-herb-chicken': {
-          title: 'Lemon Herb Chicken',
-          category: 'Dinner',
-          time: '45 min',
-          difficulty: 'Easy',
-          description: 'Pan-seared chicken breasts with garlic, fresh herbs, and roasted vegetables.',
-          ingredients: [
-            '4 boneless chicken breasts',
-            '2 tbsp olive oil',
-            '3 garlic cloves, minced',
-            '1 lemon, zest and juice',
-            '1 tsp dried oregano',
-            '2 cups green beans and baby potatoes',
-            'Salt and pepper to taste'
-          ],
-          method: [
-            'Season chicken with salt, pepper, oregano, and lemon zest.',
-            'Sear in olive oil for 5–6 minutes per side until golden.',
-            'Roast the potatoes and beans until tender, then toss with garlic and lemon juice.',
-            'Serve the chicken over the vegetables and finish with extra herbs.'
-          ]
-        },
-        'chickpea-coconut-curry': {
-          title: 'Chickpea Coconut Curry',
-          category: 'Vegetarian',
-          time: '30 min',
-          difficulty: 'Easy',
-          description: 'A creamy, warming curry with chickpeas, spinach, and coconut milk.',
-          ingredients: [
-            '2 tbsp coconut oil',
-            '1 onion, diced',
-            '3 garlic cloves, minced',
-            '1 tbsp ginger, grated',
-            '2 tsp curry powder',
-            '1 can chickpeas, drained',
-            '1 can coconut milk',
-            '2 cups spinach',
-            'Salt to taste'
-          ],
-          method: [
-            'Cook onion in coconut oil until softened.',
-            'Add garlic, ginger, and curry powder; cook for 1 minute.',
-            'Stir in chickpeas and coconut milk, then simmer for 12 minutes.',
-            'Add spinach, season to taste, and serve with rice.'
-          ]
-        },
-        'mushroom-spinach-pasta': {
-          title: 'Mushroom Spinach Pasta',
-          category: 'Dinner',
-          time: '20 min',
-          difficulty: 'Easy',
-          description: 'Garlicky pasta tossed with mushrooms, spinach, parmesan, and lemon.',
-          ingredients: [
-            '12 oz spaghetti',
-            '2 tbsp butter',
-            '2 cups mushrooms, sliced',
-            '3 garlic cloves, chopped',
-            '3 cups baby spinach',
-            '1/2 cup parmesan',
-            '1 tbsp lemon juice',
-            'Reserved pasta water'
-          ],
-          method: [
-            'Cook pasta until al dente and reserve a little pasta water.',
-            'Brown mushrooms in butter, then add garlic and spinach.',
-            'Toss the pasta with the vegetables, parmesan, and lemon juice.',
-            'Add a splash of pasta water until glossy and creamy.'
-          ]
-        },
-        'berry-overnight-oats': {
-          title: 'Berry Overnight Oats',
-          category: 'Breakfast',
-          time: '10 min',
-          difficulty: 'Simple',
-          description: 'Make-ahead oats with oats, yogurt, chia seeds, and fresh berries.',
-          ingredients: [
-            '1/2 cup rolled oats',
-            '1/2 cup milk',
-            '1/3 cup Greek yogurt',
-            '1 tbsp chia seeds',
-            '1 tsp honey',
-            '1/2 cup berries',
-            'Optional: nuts or granola'
-          ],
-          method: [
-            'Mix oats, milk, yogurt, chia, and honey in a jar.',
-            'Cover and refrigerate overnight.',
-            'Top with berries in the morning.',
-            'Add nuts or granola for extra crunch.'
-          ]
-        },
-        'chocolate-chip-cookies': {
-          title: 'Chocolate Chip Cookies',
-          category: 'Dessert',
-          time: '25 min',
-          difficulty: 'Easy',
-          description: 'Classic chewy cookies loaded with dark chocolate and a little sea salt.',
-          ingredients: [
-            '1 cup unsalted butter, softened',
-            '3/4 cup brown sugar',
-            '1/2 cup white sugar',
-            '2 eggs',
-            '2 1/4 cups flour',
-            '1 tsp baking soda',
-            '1 cup chocolate chips',
-            'Pinch of sea salt'
-          ],
-          method: [
-            'Cream butter with both sugars until fluffy.',
-            'Beat in eggs, then add flour and baking soda.',
-            'Fold in the chocolate chips.',
-            'Bake at 375°F for 9–11 minutes until edges are golden.'
-          ]
-        },
-        'sheet-pan-salmon': {
-          title: 'Sheet Pan Salmon',
-          category: 'Dinner',
-          time: '35 min',
-          difficulty: 'Medium',
-          description: 'Roasted salmon with asparagus, potatoes, and a lemon-dill finish.',
-          ingredients: [
-            '4 salmon fillets',
-            '1 lb baby potatoes, halved',
-            '1 bunch asparagus',
-            '2 tbsp olive oil',
-            '1 lemon, sliced',
-            '2 tbsp dill, chopped',
-            'Salt and pepper to taste'
-          ],
-          method: [
-            'Roast the potatoes at 400°F for 15 minutes.',
-            'Add salmon and asparagus to the pan with olive oil and lemon slices.',
-            'Roast until salmon is flaky and vegetables are tender.',
-            'Finish with dill and serve immediately.'
-          ]
-        }
-      };
+      const recipes = [
+        { id: 'citrus-salmon-bowl', title: 'Citrus Salmon Bowl', category: 'dinner', time: '30 min', difficulty: 'Easy', icon: '🐟', description: 'A bright and balanced bowl with flaky salmon, quinoa, greens, and a lemony dressing.', ingredients: ['4 salmon fillets', '1 cup quinoa', '2 cups kale', '1 avocado', '1 orange', '2 tbsp olive oil', '1 lemon', 'Salt and pepper'], method: ['Cook quinoa according to the package directions.', 'Season salmon with salt, pepper, and orange zest.', 'Roast salmon until flaky and toss greens with olive oil.', 'Assemble bowls with quinoa, greens, avocado, and salmon. Finish with lemon juice.'] },
+        { id: 'berry-overnight-oats', title: 'Berry Overnight Oats', category: 'breakfast', time: '10 min', difficulty: 'Easy', icon: '🥣', description: 'A creamy overnight oat jar with chia, yogurt, and fresh berries.', ingredients: ['1/2 cup rolled oats', '1/2 cup milk', '1/3 cup yogurt', '1 tbsp chia seeds', '1 tsp honey', '1/2 cup berries', 'Pinch of cinnamon'], method: ['Stir oats, milk, yogurt, chia, honey, and cinnamon together.', 'Cover and refrigerate overnight.', 'Top with berries before serving.'] },
+        { id: 'chickpea-coconut-curry', title: 'Chickpea Coconut Curry', category: 'vegetarian', time: '25 min', difficulty: 'Easy', icon: '🥥', description: 'Creamy coconut curry with chickpeas, spinach, and warming spices.', ingredients: ['1 tbsp coconut oil', '1 onion', '3 garlic cloves', '1 tbsp ginger', '2 tsp curry powder', '1 can chickpeas', '1 can coconut milk', '2 cups spinach'], method: ['Cook onion in coconut oil until soft.', 'Add garlic, ginger, and curry powder, then stir in chickpeas and coconut milk.', 'Simmer 12 minutes, add spinach, and serve over rice.'] },
+        { id: 'lemon-herb-chicken', title: 'Lemon Herb Chicken', category: 'dinner', time: '45 min', difficulty: 'Easy', icon: '🍋', description: 'Tender chicken breasts with roasted vegetables and bright lemon herb flavor.', ingredients: ['4 chicken breasts', '2 tbsp olive oil', '3 garlic cloves', '1 lemon', '1 tsp oregano', '2 cups green beans', '1 lb baby potatoes'], method: ['Season chicken with lemon zest, herbs, salt, and pepper.', 'Sear in olive oil until browned.', 'Roast vegetables until tender, then serve with chicken and lemon juice.'] },
+        { id: 'mushroom-spinach-pasta', title: 'Mushroom Spinach Pasta', category: 'dinner', time: '20 min', difficulty: 'Easy', icon: '🍝', description: 'A fast pasta tossed with mushrooms, garlic, spinach, and parmesan.', ingredients: ['12 oz pasta', '2 tbsp butter', '2 cups mushrooms', '3 garlic cloves', '3 cups spinach', '1/2 cup parmesan', '1 tbsp lemon juice'], method: ['Boil pasta until al dente.', 'Sauté mushrooms and garlic in butter.', 'Add spinach and toss with pasta, parmesan, and lemon juice.'] },
+        { id: 'chocolate-chip-cookies', title: 'Chocolate Chip Cookies', category: 'dessert', time: '25 min', difficulty: 'Easy', icon: '🍪', description: 'Classic chewy cookies with a crisp edge and melted chocolate pockets.', ingredients: ['1 cup butter', '3/4 cup brown sugar', '1/2 cup white sugar', '2 eggs', '2 1/4 cups flour', '1 tsp baking soda', '1 cup chocolate chips'], method: ['Cream butter and sugars.', 'Mix in eggs and dry ingredients.', 'Fold in chocolate chips and bake at 375°F for 9–11 minutes.'] },
+        { id: 'sheet-pan-salmon', title: 'Sheet Pan Salmon', category: 'dinner', time: '35 min', difficulty: 'Medium', icon: '🐟', description: 'Salmon, potatoes, and asparagus on one pan with dill and lemon.', ingredients: ['4 salmon fillets', '1 lb baby potatoes', '1 bunch asparagus', '2 tbsp olive oil', '1 lemon', '2 tbsp dill'], method: ['Roast potatoes 15 minutes first.', 'Add salmon and asparagus and roast until done.', 'Finish with dill and lemon.'] },
+        { id: 'avocado-toast-bowl', title: 'Avocado Toast Bowl', category: 'breakfast', time: '15 min', difficulty: 'Easy', icon: '🥑', description: 'A deconstructed avocado toast with greens, egg, and crunchy seeds.', ingredients: ['2 slices sourdough', '1 avocado', '2 eggs', '2 cups greens', '1 tbsp pumpkin seeds', '1 tsp chili flakes', 'Salt and pepper'], method: ['Toast bread and crumble into chunks.', 'Top greens with avocado, egg, and seeds.', 'Season and serve immediately.'] },
+        { id: 'garden-wrap', title: 'Garden Veggie Wrap', category: 'lunch', time: '15 min', difficulty: 'Easy', icon: '🌯', description: 'A fresh wrap packed with hummus, greens, and roasted vegetables.', ingredients: ['4 tortillas', '1/2 cup hummus', '1 cup spinach', '1/2 cucumber', '1 carrot', '1/2 bell pepper', '1/4 red onion'], method: ['Spread hummus across tortillas.', 'Add vegetables and roll tightly.', 'Slice in half and serve.'] },
+        { id: 'peach-yogurt-parfait', title: 'Peach Yogurt Parfait', category: 'breakfast', time: '10 min', difficulty: 'Easy', icon: '🍑', description: 'Layered yogurt, peaches, granola, and honey for a quick breakfast.', ingredients: ['1 cup yogurt', '1 peach', '1/3 cup granola', '1 tbsp honey', '1 tbsp nuts'], method: ['Layer yogurt, peach slices, granola, and honey.', 'Repeat in a jar and serve chilled.'] },
+        { id: 'sweet-potato-burrito-bowl', title: 'Sweet Potato Burrito Bowl', category: 'lunch', time: '30 min', difficulty: 'Easy', icon: '🥔', description: 'Roasted sweet potatoes, black beans, rice, and fresh salsa.', ingredients: ['2 sweet potatoes', '1 can black beans', '1 cup rice', '1 cup corn', '1 avocado', '1/2 cup salsa', '1 lime'], method: ['Roast diced sweet potatoes until tender.', 'Warm beans and rice.', 'Layer rice, beans, sweet potatoes, corn, avocado, and salsa.'] },
+        { id: 'banana-oat-pancakes', title: 'Banana Oat Pancakes', category: 'breakfast', time: '20 min', difficulty: 'Easy', icon: '🍌', description: 'Fluffy pancakes with banana and oats for a wholesome breakfast.', ingredients: ['2 bananas', '2 eggs', '1/2 cup oats', '1/2 tsp cinnamon', '1 tsp baking powder', '1 tbsp butter'], method: ['Blend bananas, eggs, oats, cinnamon, and baking powder.', 'Cook on a skillet until golden on both sides.'] },
+        { id: 'garlic-lime-shrimp', title: 'Garlic Lime Shrimp', category: 'dinner', time: '20 min', difficulty: 'Easy', icon: '🍤', description: 'Fast seared shrimp with garlic, lime, and a little chili heat.', ingredients: ['1 lb shrimp', '2 tbsp butter', '3 garlic cloves', '1 lime', '1 tsp chili flakes', 'Salt and pepper'], method: ['Sauté garlic in butter.', 'Cook shrimp until pink and opaque.', 'Add lime juice and chili before serving.'] },
+        { id: 'apple-cinnamon-oatmeal', title: 'Apple Cinnamon Oatmeal', category: 'breakfast', time: '15 min', difficulty: 'Easy', icon: '🍏', description: 'Warm oatmeal with apples, cinnamon, and toasted pecans.', ingredients: ['1/2 cup oats', '1 cup milk', '1 apple', '1/2 tsp cinnamon', '2 tbsp pecans', '1 tbsp maple syrup'], method: ['Cook oats in milk until creamy.', 'Stir in diced apple and cinnamon.', 'Top with pecans and maple syrup.'] },
+        { id: 'caprese-salad', title: 'Caprese Salad', category: 'lunch', time: '10 min', difficulty: 'Easy', icon: '🍅', description: 'Classic mozzarella, tomato, basil, and balsamic salad.', ingredients: ['2 tomatoes', '1 ball mozzarella', 'Fresh basil', '1 tbsp balsamic glaze', '1 tbsp olive oil', 'Salt and pepper'], method: ['Slice tomatoes and mozzarella.', 'Layer with basil.', 'Drizzle with olive oil and balsamic before serving.'] },
+        { id: 'blueberry-muffins', title: 'Blueberry Muffins', category: 'dessert', time: '30 min', difficulty: 'Medium', icon: '🫐', description: 'Tender bakery-style muffins with juicy blueberries.', ingredients: ['1 1/2 cups flour', '1/2 cup sugar', '2 tsp baking powder', '1 egg', '1/2 cup milk', '1/3 cup melted butter', '1 cup blueberries'], method: ['Mix dry ingredients.', 'Add wet ingredients and fold in blueberries.', 'Bake at 375°F for 18–20 minutes.'] },
+        { id: 'caesar-quinoa-salad', title: 'Caesar Quinoa Salad', category: 'lunch', time: '20 min', difficulty: 'Easy', icon: '🥗', description: 'Quinoa salad with romaine, parmesan, and a creamy Caesar dressing.', ingredients: ['1 cup cooked quinoa', '2 cups romaine', '1/2 cup parmesan', '1/2 cup chickpeas', '1/4 cup Caesar dressing', 'Croutons'], method: ['Combine quinoa, romaine, parmesan, and chickpeas.', 'Toss with dressing.', 'Top with croutons before serving.'] },
+        { id: 'hummus-pita-bowl', title: 'Hummus Pita Bowl', category: 'lunch', time: '15 min', difficulty: 'Easy', icon: '🫓', description: 'Warm pita, hummus, and crunchy vegetables in a simple grain bowl.', ingredients: ['1 pita', '1/2 cup hummus', '1 cup cucumber', '1/2 tomato', '1/4 red onion', '2 tbsp feta'], method: ['Warm pita lightly.', 'Arrange hummus, sliced vegetables, and feta in a bowl.', 'Serve with extra herbs and lemon.'] },
+        { id: 'strawberry-shortcake', title: 'Strawberry Shortcake', category: 'dessert', time: '35 min', difficulty: 'Medium', icon: '🍓', description: 'Soft biscuits layered with whipped cream and macerated berries.', ingredients: ['1 cup flour', '1/3 cup sugar', '1 tbsp baking powder', '1/2 cup cream', '2 cups strawberries', '1 cup whipped cream'], method: ['Bake shortcakes until golden.', 'Slice and top with whipped cream and berries.', 'Serve immediately.'] },
+        { id: 'tofu-veggie-stir-fry', title: 'Tofu Veggie Stir-Fry', category: 'vegetarian', time: '20 min', difficulty: 'Easy', icon: '🥬', description: 'Quick tofu and vegetable stir-fry with savory soy ginger sauce.', ingredients: ['14 oz tofu', '2 cups broccoli', '1 bell pepper', '2 carrots', '2 tbsp soy sauce', '1 tbsp ginger', '1 tsp sesame oil'], method: ['Sear tofu until browned.', 'Stir-fry vegetables with ginger and sauce.', 'Add tofu back and toss until glazed.'] },
+        { id: 'banana-bread', title: 'Banana Bread', category: 'dessert', time: '50 min', difficulty: 'Medium', icon: '🍌', description: 'Moist loaf cake with overripe bananas and warm vanilla notes.', ingredients: ['3 ripe bananas', '1/3 cup butter', '1/2 cup sugar', '1 egg', '1 1/2 cups flour', '1 tsp baking soda'], method: ['Mash bananas and mix with butter, sugar, and egg.', 'Fold in flour and baking soda.', 'Bake at 350°F for 50–60 minutes.'] },
+        { id: 'greek-salad-wrap', title: 'Greek Salad Wrap', category: 'lunch', time: '15 min', difficulty: 'Easy', icon: '🥙', description: 'A fresh wrap with cucumbers, feta, olives, and greens.', ingredients: ['4 wraps', '1 cup mixed greens', '1/2 cucumber', '1/2 tomato', '1/4 cup olives', '1/4 cup feta', '1 tbsp vinaigrette'], method: ['Add greens and vegetables to wraps.', 'Top with feta and olives.', 'Roll tightly and serve.'] },
+        { id: 'frittata-slice', title: 'Veggie Frittata', category: 'breakfast', time: '25 min', difficulty: 'Easy', icon: '🍳', description: 'A simple eggs-and-vegetable skillet baked until fluffy.', ingredients: ['6 eggs', '1/2 cup milk', '1 bell pepper', '1 cup spinach', '1/2 onion', '1/4 cup cheese', 'Salt and pepper'], method: ['Sauté vegetables.', 'Whisk eggs with milk and cheese.', 'Pour into skillet and bake until set.'] },
+        { id: 'smashed-potato-salad', title: 'Smashed Potato Salad', category: 'lunch', time: '30 min', difficulty: 'Easy', icon: '🥔', description: 'Tender smashed potatoes with herbs and a yogurt dressing.', ingredients: ['1 lb baby potatoes', '1/4 cup yogurt', '1 tbsp dill', '1 tbsp mustard', '1 tsp lemon juice'], method: ['Boil potatoes until tender.', 'Smash gently and toss with dressing.', 'Serve warm or chilled.'] },
+        { id: 'lemon-bars', title: 'Lemon Bars', category: 'dessert', time: '40 min', difficulty: 'Medium', icon: '🍋', description: 'Buttery shortbread topped with bright lemon custard.', ingredients: ['1 cup flour', '1/2 cup butter', '1/4 cup sugar', '3 eggs', '1 cup sugar', '1/4 cup lemon juice'], method: ['Bake shortbread crust until lightly golden.', 'Whisk eggs, sugar, and lemon juice and pour over top.', 'Bake again and cool before slicing.'] },
+        { id: 'lentil-soup', title: 'Red Lentil Soup', category: 'dinner', time: '35 min', difficulty: 'Easy', icon: '🥣', description: 'A comforting soup of lentils, carrots, and warming spices.', ingredients: ['1 cup red lentils', '1 carrot', '1 onion', '2 garlic cloves', '4 cups broth', '1 tsp cumin', '1 tbsp olive oil'], method: ['Sauté onion, carrot, and garlic.', 'Add cumin, lentils, and broth.', 'Simmer until lentils soften and soup thickens.'] },
+        { id: 'cinnamon-rolls', title: 'Cinnamon Rolls', category: 'breakfast', time: '55 min', difficulty: 'Medium', icon: '🍥', description: 'Soft swirled rolls with cinnamon sugar and cream cheese glaze.', ingredients: ['2 cups flour', '1 packet yeast', '1/2 cup warm milk', '1 egg', '1/4 cup butter', '1/3 cup brown sugar', '2 tbsp cinnamon'], method: ['Make dough and let it rise.', 'Roll out, spread cinnamon sugar, and roll into a log.', 'Bake until golden and glaze with cream cheese icing.'] },
+        { id: 'pesto-chicken-salad', title: 'Pesto Chicken Salad', category: 'lunch', time: '20 min', difficulty: 'Easy', icon: '🥗', description: 'Chicken, greens, and tomatoes tossed with basil pesto.', ingredients: ['2 cups grilled chicken', '2 cups arugula', '1 cup tomatoes', '2 tbsp pesto', '1/4 cup parmesan', '1 tbsp lemon'], method: ['Toss chicken and greens with pesto.', 'Add tomatoes and parmesan.', 'Finish with lemon and serve.'] },
+        { id: 'stuffed-peppers', title: 'Stuffed Peppers', category: 'dinner', time: '45 min', difficulty: 'Medium', icon: '🫑', description: 'Bell peppers filled with rice, beans, cheese, and herbs.', ingredients: ['4 bell peppers', '1 cup rice', '1 can beans', '1/2 cup cheese', '1/2 onion', '1 tomato', '2 tbsp herbs'], method: ['Roast peppers briefly.', 'Mix rice, beans, onion, and tomato.', 'Stuff peppers, top with cheese, and bake until tender.'] },
+        { id: 'cocoa-nib-energy-bites', title: 'Cocoa Energy Bites', category: 'dessert', time: '15 min', difficulty: 'Easy', icon: '🍫', description: 'No-bake bites made with oats, peanut butter, and cocoa.', ingredients: ['1 cup oats', '1/2 cup peanut butter', '2 tbsp cocoa', '2 tbsp honey', '1 tbsp chia seeds', '1 tbsp milk'], method: ['Mix all ingredients until sticky.', 'Roll into bite-sized balls.', 'Chill for 10 minutes before eating.'] },
+        { id: 'cucumber-radish-salad', title: 'Cucumber Radish Salad', category: 'lunch', time: '10 min', difficulty: 'Easy', icon: '🥒', description: 'Fresh and crisp salad with herbs and a light vinegar dressing.', ingredients: ['1 cucumber', '1 bunch radishes', '2 tbsp dill', '1 tbsp vinegar', '1 tbsp olive oil', 'Salt and pepper'], method: ['Slice cucumber and radishes.', 'Toss with dill, vinegar, and olive oil.', 'Season and serve cold.'] },
+        { id: 'baked-oatmeal', title: 'Baked Oatmeal', category: 'breakfast', time: '35 min', difficulty: 'Easy', icon: '🥣', description: 'Warm baked oats with apples, cinnamon, and raisins.', ingredients: ['2 cups oats', '1 apple', '1 cup milk', '1 egg', '1/4 cup raisins', '1 tsp cinnamon'], method: ['Mix ingredients in a baking dish.', 'Bake until set and lightly golden.', 'Serve warm.'] },
+        { id: 'turkey-veggie-meatballs', title: 'Turkey Veggie Meatballs', category: 'dinner', time: '30 min', difficulty: 'Medium', icon: '🍲', description: 'Lean turkey meatballs with hidden vegetables and tomato sauce.', ingredients: ['1 lb ground turkey', '1 carrot', '1 zucchini', '1 egg', '1/2 cup breadcrumbs', '2 cups marinara'], method: ['Mix turkey, grated veggies, egg, and breadcrumbs.', 'Form meatballs and bake until cooked.', 'Serve with marinara and pasta or rice.'] },
+        { id: 'coconut-berry-smoothie', title: 'Coconut Berry Smoothie', category: 'breakfast', time: '10 min', difficulty: 'Easy', icon: '🥤', description: 'Creamy coconut smoothie with berries and banana for a quick start.', ingredients: ['1 banana', '1 cup berries', '1/2 cup coconut milk', '1/2 cup yogurt', '1/2 cup ice', '1 tbsp honey'], method: ['Blend everything until smooth.', 'Pour into a glass and enjoy cold.'] },
+        { id: 'broccoli-cheddar-soup', title: 'Broccoli Cheddar Soup', category: 'lunch', time: '25 min', difficulty: 'Easy', icon: '🥦', description: 'Creamy broccoli soup with cheddar and a little nutmeg.', ingredients: ['2 cups broccoli', '1 onion', '2 cups broth', '1 cup milk', '1 cup cheddar', '1 tbsp butter'], method: ['Sauté onion and broccoli in butter.', 'Add broth and simmer until tender.', 'Blend partly, stir in cheddar, and serve.'] },
+        { id: 'ricotta-toast', title: 'Ricotta Toast', category: 'breakfast', time: '10 min', difficulty: 'Easy', icon: '🍞', description: 'Warm toast with whipped ricotta, honey, and berries.', ingredients: ['2 slices bread', '1/2 cup ricotta', '1/2 cup berries', '1 tbsp honey', '1 tbsp nuts'], method: ['Toast bread.', 'Spread ricotta and top with berries and honey.', 'Finish with nuts.'] },
+        { id: 'one-pan-fajitas', title: 'One-Pan Chicken Fajitas', category: 'dinner', time: '25 min', difficulty: 'Easy', icon: '🌮', description: 'Chicken and peppers sizzling with fajita seasoning and lime.', ingredients: ['1 lb chicken breast', '2 peppers', '1 onion', '2 tbsp fajita seasoning', '1 lime', '6 tortillas'], method: ['Cook chicken with peppers and onion.', 'Season with fajita spice and lime juice.', 'Serve in tortillas with your favorite toppings.'] },
+        { id: 'herbed-potato-bites', title: 'Herbed Potato Bites', category: 'dessert', time: '30 min', difficulty: 'Easy', icon: '🥔', description: 'Crispy roasted potato bites with rosemary and garlic.', ingredients: ['1 lb potatoes', '1 tbsp olive oil', '1 tsp rosemary', '2 garlic cloves', 'Salt and pepper'], method: ['Cube potatoes and toss with oil, rosemary, and garlic.', 'Roast until crisp and golden.', 'Serve warm with dipping sauce.'] },
+        { id: 'pesto-basil-zooodles', title: 'Pesto Zucchini Noodles', category: 'vegetarian', time: '15 min', difficulty: 'Easy', icon: '🥒', description: 'Light and fresh zucchini noodles tossed with basil pesto.', ingredients: ['3 zucchini', '1/4 cup pesto', '1/2 cup cherry tomatoes', '1/4 cup parmesan', '1 tbsp pine nuts'], method: ['Spiralize zucchini into noodles.', 'Toss with pesto and tomatoes.', 'Top with parmesan and pine nuts.'] },
+        { id: 'grilled-cheese-tomato-soup', title: 'Grilled Cheese & Tomato Soup', category: 'lunch', time: '20 min', difficulty: 'Easy', icon: '🥪', description: 'Classic comfort combo for cooler afternoons.', ingredients: ['2 slices bread', '2 slices cheddar', '1 tbsp butter', '1 cup tomato soup'], method: ['Butter bread and grill with cheese inside.', 'Toast until golden.', 'Serve with tomato soup.'] },
+        { id: 'protein-yogurt-bowl', title: 'Protein Yogurt Bowl', category: 'breakfast', time: '10 min', difficulty: 'Easy', icon: '🥣', description: 'High-protein yogurt with granola, fruit, and nut butter.', ingredients: ['1 cup Greek yogurt', '1/2 cup granola', '1 banana', '1 tbsp peanut butter', '2 tbsp chia seeds'], method: ['Spoon yogurt into a bowl.', 'Top with granola, banana, peanut butter, and chia seeds.'] },
+        { id: 'veggie-rice-paper-rolls', title: 'Veggie Rice Paper Rolls', category: 'lunch', time: '20 min', difficulty: 'Medium', icon: '🍃', description: 'Fresh rice paper rolls with herbs, veggies, and dipping sauce.', ingredients: ['8 rice paper sheets', '1 cup noodles', '1 cucumber', '1 carrot', '1/2 cup herbs', '1/4 cup peanut sauce'], method: ['Soak rice paper and fill with noodles and vegetables.', 'Roll tightly and serve with peanut sauce.'] },
+        { id: 'pear-ginger-crisp', title: 'Pear Ginger Crisp', category: 'dessert', time: '40 min', difficulty: 'Easy', icon: '🍐', description: 'Warm baked pears topped with oat crumble and ginger.', ingredients: ['4 pears', '1/2 cup oats', '1/4 cup flour', '2 tbsp brown sugar', '1 tsp ginger', '2 tbsp butter'], method: ['Slice pears and place in a baking dish.', 'Mix oats, flour, sugar, ginger, and butter for crumble.', 'Bake until bubbling and golden.'] },
+        { id: 'vegetable-pizza', title: 'Vegetable Pizza', category: 'dinner', time: '30 min', difficulty: 'Easy', icon: '🍕', description: 'Homemade pizza topped with vegetables and mozzarella.', ingredients: ['1 pizza dough', '1/2 cup pizza sauce', '1 cup mozzarella', '1/2 bell pepper', '1/2 onion', '1/2 cup mushrooms', 'Olives'], method: ['Stretch dough and add sauce and cheese.', 'Top with vegetables and bake until crust is golden.', 'Slice and serve hot.'] },
+        { id: 'coconut-rice-pudding', title: 'Coconut Rice Pudding', category: 'dessert', time: '35 min', difficulty: 'Easy', icon: '🥥', description: 'Slow-cooked rice pudding with vanilla and coconut milk.', ingredients: ['1/2 cup rice', '2 cups milk', '1/2 cup coconut milk', '2 tbsp sugar', '1 tsp vanilla', 'Pinch of cinnamon'], method: ['Simmer rice in milk and coconut milk until tender.', 'Stir in sugar and vanilla.', 'Serve warm with cinnamon.'] },
+        { id: 'sweet-chili-tofu-bowl', title: 'Sweet Chili Tofu Bowl', category: 'vegetarian', time: '25 min', difficulty: 'Easy', icon: '🥢', description: 'Crispy tofu, rice, greens, and sweet chili glaze.', ingredients: ['14 oz tofu', '1 cup rice', '2 cups greens', '2 tbsp sweet chili sauce', '1 tbsp soy sauce', '1 tsp sesame seeds'], method: ['Pan-sear tofu until crisp.', 'Cook rice and greens.', 'Toss tofu with sweet chili and soy sauce and serve over rice.'] },
+        { id: 'mango-lime-salsa', title: 'Mango Lime Salsa', category: 'lunch', time: '10 min', difficulty: 'Easy', icon: '🥭', description: 'Fresh salsa with mango, lime, and chili for tacos or salads.', ingredients: ['1 mango', '1/2 red onion', '1 lime', '1 chili', 'Fresh cilantro'], method: ['Dice mango and onion.', 'Mix with lime juice, chili, and cilantro.', 'Serve with chips, tacos, or grilled dishes.'] },
+        { id: 'roasted-chickpeas', title: 'Roasted Chickpeas', category: 'snack', time: '25 min', difficulty: 'Easy', icon: '🫘', description: 'Crunchy roasted chickpeas with smoky seasoning.', ingredients: ['1 can chickpeas', '1 tbsp olive oil', '1 tsp paprika', '1/2 tsp garlic powder', 'Salt'], method: ['Dry chickpeas well and toss with oil and seasonings.', 'Roast until crunchy.', 'Cool and serve as a snack.'] }
+      ];
 
-      const cards = document.querySelectorAll('.recipe-card');
       const filters = document.querySelectorAll('.filter');
+      const recipeGrid = document.getElementById('recipeGrid');
       const searchInput = document.getElementById('searchInput');
       const themeToggle = document.getElementById('themeToggle');
       const favoritesCount = document.getElementById('favoritesCount');
       const modal = document.getElementById('recipeModal');
       const modalContent = document.getElementById('modalContent');
-      const favoriteButtons = document.querySelectorAll('.favorite-btn');
-      const viewButtons = document.querySelectorAll('.view-btn');
-
-      const savedTheme = localStorage.getItem('recipe-box-theme');
-      if (savedTheme === 'dark') {
-        document.body.setAttribute('data-theme', 'dark');
-        themeToggle.textContent = '☀️';
-      }
+      const featuredTitle = document.getElementById('featuredTitle');
+      const featuredCategory = document.getElementById('featuredCategory');
+      const featuredTime = document.getElementById('featuredTime');
+      const featuredDifficulty = document.getElementById('featuredDifficulty');
+      const featuredDescription = document.getElementById('featuredDescription');
+      const featuredViewBtn = document.getElementById('featuredViewBtn');
+      const featuredFavoriteBtn = document.getElementById('featuredFavoriteBtn');
 
       const state = {
         filter: 'all',
         query: '',
-        favorites: JSON.parse(localStorage.getItem('recipe-box-favorites') || '[]')
+        favorites: JSON.parse(localStorage.getItem('recipe-box-favorites') || '[]'),
+        featuredId: 'citrus-salmon-bowl'
       };
 
       function updateFavoritesCount() {
         favoritesCount.textContent = String(state.favorites.length);
       }
 
-      function syncFavoriteUI() {
-        document.querySelectorAll('.favorite-btn').forEach((button) => {
-          const id = button.dataset.recipeId;
-          const isFavorite = state.favorites.includes(id);
-          button.classList.toggle('is-favorited', isFavorite);
-          button.textContent = isFavorite ? '♥' : '♡';
-          button.setAttribute('aria-pressed', isFavorite ? 'true' : 'false');
-        });
-      }
-
-      function updateCards() {
-        const query = state.query.trim().toLowerCase();
-
-        cards.forEach((card) => {
-          const category = card.dataset.category;
-          const name = card.dataset.name.toLowerCase();
-          const matchesFilter = state.filter === 'all' || state.filter === category;
-          const matchesSearch = !query || name.includes(query);
-          const visible = matchesFilter && matchesSearch;
-          card.classList.toggle('is-visible', visible);
-        });
-      }
-
       function saveFavorites() {
         localStorage.setItem('recipe-box-favorites', JSON.stringify(state.favorites));
+      }
+
+      function setFeatured() {
+        const recipe = recipes.find((entry) => entry.id === state.featuredId) || recipes[0];
+        featuredTitle.textContent = recipe.title;
+        featuredCategory.textContent = recipe.category.toUpperCase();
+        featuredTime.textContent = recipe.time;
+        featuredDifficulty.textContent = recipe.difficulty;
+        featuredDescription.textContent = recipe.description;
+        featuredViewBtn.dataset.recipeId = recipe.id;
+        featuredFavoriteBtn.dataset.recipeId = recipe.id;
+        const favorite = state.favorites.includes(recipe.id);
+        featuredFavoriteBtn.textContent = favorite ? 'Saved' : 'Save favorite';
+      }
+
+      function renderCards() {
+        const query = state.query.trim().toLowerCase();
+
+        recipeGrid.innerHTML = recipes
+          .filter((recipe) => {
+            const matchesFilter = state.filter === 'all'
+              ? true
+              : state.filter === 'favorites'
+                ? state.favorites.includes(recipe.id)
+                : recipe.category === state.filter;
+
+            const matchesQuery = !query || `${recipe.title} ${recipe.description}`.toLowerCase().includes(query);
+            return matchesFilter && matchesQuery;
+          })
+          .map((recipe) => {
+            const isFav = state.favorites.includes(recipe.id);
+            return `
+              <article class="recipe-card is-visible" data-id="${recipe.id}" data-category="${recipe.category}" data-name="${recipe.title}" data-color="${['gold', 'green', 'orange', 'blue', 'rose', 'teal', 'purple', 'coral', 'mint', 'sunset'][Math.abs(recipe.title.length) % 10]}">
+                <div class="card-actions">
+                  <button class="favorite-btn ${isFav ? 'is-favorited' : ''}" type="button" aria-label="Favorite ${recipe.title}" data-recipe-id="${recipe.id}">${isFav ? '♥' : '♡'}</button>
+                </div>
+                <div class="recipe-visual" aria-hidden="true">${recipe.icon}</div>
+                <div class="recipe-info">
+                  <div class="recipe-meta">
+                    <span class="tag">${recipe.category}</span>
+                    <span>${recipe.time}</span>
+                    <span>${recipe.difficulty}</span>
+                  </div>
+                  <h3>${recipe.title}</h3>
+                  <p>${recipe.description}</p>
+                  <div class="card-buttons">
+                    <button class="view-btn" type="button" data-recipe-id="${recipe.id}">View recipe</button>
+                  </div>
+                </div>
+              </article>
+            `;
+          })
+          .join('');
+
+        attachCardEvents();
+      }
+
+      function attachCardEvents() {
+        document.querySelectorAll('.favorite-btn').forEach((button) => {
+          button.addEventListener('click', () => toggleFavorite(button.dataset.recipeId));
+        });
+
+        document.querySelectorAll('.view-btn').forEach((button) => {
+          button.addEventListener('click', () => openModal(button.dataset.recipeId));
+        });
       }
 
       function toggleFavorite(recipeId) {
@@ -891,11 +795,12 @@
         }
         saveFavorites();
         updateFavoritesCount();
-        syncFavoriteUI();
+        setFeatured();
+        renderCards();
       }
 
       function openModal(recipeId) {
-        const recipe = recipeDetails[recipeId];
+        const recipe = recipes.find((item) => item.id === recipeId);
         if (!recipe) return;
 
         modalContent.innerHTML = `
@@ -910,8 +815,13 @@
           <div class="modal-body">
             <div>
               <h3>Ingredients</h3>
-              <ul>
-                ${recipe.ingredients.map((item) => `<li>${item}</li>`).join('')}
+              <ul class="ingredient-list">
+                ${recipe.ingredients.map((item) => `
+                  <li>
+                    <input type="checkbox" aria-label="Ingredient: ${item}" />
+                    <label>${item}</label>
+                  </li>
+                `).join('')}
               </ul>
             </div>
             <div>
@@ -933,16 +843,16 @@
         button.addEventListener('click', () => {
           state.filter = button.dataset.filter;
           filters.forEach((btn) => btn.classList.toggle('is-active', btn === button));
-          updateCards();
+          renderCards();
         });
       });
 
       searchInput.addEventListener('input', (event) => {
         state.query = event.target.value;
-        updateCards();
+        renderCards();
       });
 
-      themeToggle.addEventListener('click', () => {
+      document.getElementById('themeToggle').addEventListener('click', () => {
         const isDark = document.body.getAttribute('data-theme') === 'dark';
         const nextTheme = isDark ? 'light' : 'dark';
         document.body.setAttribute('data-theme', nextTheme);
@@ -950,14 +860,14 @@
         themeToggle.textContent = nextTheme === 'dark' ? '☀️' : '🌙';
       });
 
-      favoriteButtons.forEach((button) => {
-        button.addEventListener('click', () => toggleFavorite(button.dataset.recipeId));
-      });
+      const savedTheme = localStorage.getItem('recipe-box-theme');
+      if (savedTheme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀️';
+      }
 
-      viewButtons.forEach((button) => {
-        button.addEventListener('click', () => openModal(button.dataset.recipeId));
-      });
-
+      featuredViewBtn.addEventListener('click', () => openModal(featuredViewBtn.dataset.recipeId));
+      featuredFavoriteBtn.addEventListener('click', () => toggleFavorite(featuredFavoriteBtn.dataset.recipeId));
       document.querySelector('.modal-backdrop').addEventListener('click', closeModal);
       document.querySelector('.modal-close').addEventListener('click', closeModal);
       document.addEventListener('keydown', (event) => {
@@ -965,8 +875,8 @@
       });
 
       updateFavoritesCount();
-      syncFavoriteUI();
-      updateCards();
+      setFeatured();
+      renderCards();
     </script>
   </body>
 </html>
