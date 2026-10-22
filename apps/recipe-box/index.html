@@ -1543,11 +1543,13 @@
       searchInput.addEventListener('input', (event) => {
         state.query = event.target.value;
         renderCards();
+        if (document.getElementById('recipeCategoryPage')) openCategoryPage(state.filter);
       });
 
       sortSelect.addEventListener('change', (event) => {
         state.sort = event.target.value;
         renderCards();
+        if (document.getElementById('recipeCategoryPage')) openCategoryPage(state.filter);
       });
 
       themeToggle.addEventListener('click', () => {
