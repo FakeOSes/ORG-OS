@@ -1274,7 +1274,38 @@ function loadSettings(){setAccent(safeGet("desktop.accentName","blue"));const wa
 Array.from(document.querySelectorAll(".color-dot")).forEach(dot=>dot.addEventListener("click",()=>setAccent(dot.dataset.accent)));
 
 
-function showOrgStorePage(page){const discover=$("org-store-discover-page"),updates=$("org-store-updates-page");if(!discover||!updates)return;discover.classList.remove("store-detail-active");const detail=$("org-store-detail-page");if(detail)detail.remove();const showUpdates=page==="updates";discover.classList.toggle("hidden",showUpdates);updates.classList.toggle("hidden",!showUpdates);document.querySelectorAll(".org-store-nav").forEach(x=>x.classList.toggle("active",x.dataset.storePage===page));}
+
+function renderOrgStoreUpdates(){
+ const host=$("org-store-updates-page");if(!host)return;
+ host.replaceChildren();
+ const heading=document.createElement("div");heading.className="org-updates-heading";
+ const eyebrow=document.createElement("span");eyebrow.className="store-eyebrow";eyebrow.textContent="ORG STORE · UPDATES";
+ const title=document.createElement("h2");title.textContent="App updates";
+ const intro=document.createElement("p");intro.textContent="Review installed apps and refresh the catalog. Installed apps load their latest published files when launched.";
+ heading.append(eyebrow,title,intro);
+ const toolbar=document.createElement("div");toolbar.className="org-update-toolbar";
+ const check=document.createElement("button");check.type="button";check.className="store-install-button";check.textContent="↻ Refresh app catalog";
+ check.onclick=()=>{loadAppCatalog();renderOrgStoreUpdates();toast("App catalog refreshed.");};
+ toolbar.append(check);
+ const list=document.createElement("div");list.className="org-update-list";
+ const installed=getInstalledApps();
+ if(!installed.length){const empty=document.createElement("div");empty.className="store-empty";empty.textContent="No standalone apps installed yet. Visit Discover to browse and install apps.";list.append(empty);}
+ installed.forEach(app=>{
+  const card=document.createElement("section");card.className="org-update-card";
+  const icon=document.createElement("div");icon.className="org-update-icon";icon.textContent=app.icon||"📦";
+  const info=document.createElement("div");info.className="org-update-info";
+  const name=document.createElement("strong");name.textContent=app.name;
+  const desc=document.createElement("p");desc.textContent=app.description||"Installed ORG-OS app.";
+  const small=document.createElement("small");small.textContent="Latest published file loads when opened";
+  info.append(name,desc,small);
+  const state=document.createElement("span");state.className="org-update-state";state.textContent="Ready";
+  const open=document.createElement("button");open.type="button";open.className="soft-button";open.textContent="Open app";open.onclick=()=>openInstalledApp(app.key);
+  card.append(icon,info,state,open);list.append(card);
+ });
+ const foot=document.createElement("p");foot.className="org-updates-footnote";foot.textContent="ORG-OS currently loads the latest published app file when you launch it; a separate background updater is not available yet.";
+ host.append(heading,toolbar,list,foot);
+}
+function showOrgStorePage(page){const discover=$("org-store-discover-page"),updates=$("org-store-updates-page");if(!discover||!updates)return;discover.classList.remove("store-detail-active");const detail=$("org-store-detail-page");if(detail)detail.remove();const showUpdates=page==="updates";discover.classList.toggle("hidden",showUpdates);updates.classList.toggle("hidden",!showUpdates);document.querySelectorAll(".org-store-nav").forEach(x=>x.classList.toggle("active",x.dataset.storePage===page));if(showUpdates)renderOrgStoreUpdates();}
 function toggleStoreTheme(){const current=safeGet("desktop.storeTheme","dark"),next=current==="dark"?"light":"dark";safeSet("desktop.storeTheme",next);applyStoreTheme(next);}function applyStoreTheme(theme){const root=$("win-orgstore");if(!root)return;root.dataset.storeTheme=theme==="light"?"light":"dark";const b=$("org-store-theme-toggle");if(b){b.textContent=theme==="light"?"🌙 Dark store":"☀️ Light store";b.setAttribute("aria-pressed",String(theme==="dark"));}}
 function renderOrgStore(){applyStoreTheme(safeGet("desktop.storeTheme","dark"));const host=$("org-store-grid");if(!host)return;host.replaceChildren();const q=($("org-store-search")?.value||"").trim().toLowerCase(),category=$("org-store-category")?.value||"all";let count=0;const installed=getInstalledApps();const makeCard=(app,isBuiltin)=>{const key=isBuiltin?app.builtin:(app.key||app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""));const isInstalled=!isBuiltin&&installed.some(item=>item.key===key);const card=document.createElement("article");card.className="store-card store-card-modern store-card-clickable";card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","View details for "+app.name);card.onclick=()=>showStoreDetails(app,isBuiltin,isInstalled,key);card.onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target===card){e.preventDefault();showStoreDetails(app,isBuiltin,isInstalled,key);}};const top=document.createElement("div");top.className="store-card-top";const icon=document.createElement("div");icon.className="store-app-icon";icon.textContent=app.icon||"📦";const tag=document.createElement("span");tag.className="store-category-tag";tag.textContent=isBuiltin?"System":(app.category||"Apps");top.append(icon,tag);const title=document.createElement("h3");title.textContent=app.name;const desc=document.createElement("p");desc.textContent=app.description||"No description available.";const hint=document.createElement("div");hint.className="store-card-detail-hint";hint.innerHTML='<span>View app details</span><span aria-hidden="true">↗</span>';card.append(top,title,desc,hint);if(isBuiltin||isInstalled){const label=document.createElement("div");label.className="installed-label";label.textContent=isBuiltin?"Included with ORG-OS":"✓ Installed";card.append(label);}host.appendChild(card);count++;};ORG_APPS.filter(app=>(app.name+" "+app.description).toLowerCase().includes(q)&&(category==="all"||category==="system")).forEach(app=>makeCard(app,true));storeItems.filter(app=>(app.name+" "+(app.description||"")).toLowerCase().includes(q)&&(category==="all"||category===String(app.category||"apps").toLowerCase())).forEach(app=>makeCard(app,false));if(!count){const empty=document.createElement("div");empty.className="empty store-empty";empty.textContent="No apps match your search. Try another name or category.";host.appendChild(empty);}const status=$("org-store-status");if(status)status.textContent=count+" "+(count===1?"app":"apps")+(category==="all"?" available":" in "+category);}
 function getStoreAppFeatures(app){const key=String(app.key||app.builtin||"").toLowerCase();const catalog={chatgpt:["Open ChatGPT in a new tab","Use your existing ChatGPT account","Secure sign-in through ChatGPT"],welcome:["Guided desktop introduction","Quick links to core ORG-OS features"],notes:["Create and edit notes","Automatic local saving","Export notes as text"],terminal:["Run ORG Shell commands","Install catalog apps","Manage apps and desktop settings"],settings:["Personalize themes and wallpaper","Manage accounts and desktop preferences"],files:["Create folders and text files","Rename, edit, move, and delete local items"],calendar:["Monthly calendar view","Saved appointments and event planning"],paint:["Drawing and erasing tools","Undo support","Export artwork as PNG"],music:["Play local audio files","Track queue and playback controls"],tasks:["Create and complete tasks","Priority and completion filters"],photos:["Browse local image files","Thumbnail gallery and image preview"],weather:["City-based weather dashboard","Live conditions require a connected weather source"],monitor:["Inspect browser capabilities","Review available desktop windows"],calculator:["Calculator keypad and keyboard support","Calculation history"],clock:["Live digital clock","Stopwatch","Countdown timer"],pomodoro:["Focused work sessions","Short breaks and session progress"],markdown:["Markdown editor","Live formatted preview"],"json-tool":["Format and validate JSON","Minify JSON for compact output"],"unit-converter":["Convert common length units","Convert weight and temperature"],"csv-explorer":["Import CSV files locally","Preview rows and summarize columns","Export CSV data"],"regex-playground":["Test regular expressions","Highlight matches and inspect capture groups"],"typing-lab":["Typing speed practice","Accuracy and progress feedback"],"system-cleanup":["Inspect browser storage usage","Clear selected local data"],"habit-tracker":["Daily habit checklist","Track streaks and routine progress"],"budget-buddy":["Record spending entries","Review spending and remaining budget"],"password-studio":["Generate random passwords locally","Choose length and character types"],"reading-log":["Maintain a personal bookshelf","Track pages read and completion"],"text-diff":["Compare two text blocks","Spot differences between versions"],"svg-workshop":["Create editable vector shapes","Customize colors and text","Export SVG artwork"],"link-vault":["Save labeled links","Search saved links"],"random-picker":["Create a custom list","Randomly pick an item"],"recipe-box":["Save and search recipes","Track ingredients and cooking steps"],"color-contrast":["Preview foreground and background colors","Check text contrast"]};const features=Array.isArray(app.features)?app.features:Array.isArray(app.includes)?app.includes:(catalog[key]||["Designed for ORG-OS","Opens in its own desktop window"]);const widgets=Array.isArray(app.widgets)?app.widgets:Array.isArray(app.includesWidgets)?app.includesWidgets:(key==="clock"?["Clock widget"]:[]);return{features:features.map(String),widgets:widgets.map(w=>typeof w==="string"?w:(w.name||w.title||"Widget"))};}
@@ -1748,6 +1779,14 @@ input,textarea,select{border-radius:10px}
 #start-menu .start-main-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
 #start-menu .start-app-wrap{min-width:0!important}
 #start-menu .start-pinned-item{aspect-ratio:1/1;justify-content:center}
+
+
+#win-orgstore .org-update-toolbar{display:flex;justify-content:flex-end;padding:0 28px 18px}
+#win-orgstore .org-update-list{display:flex;flex-direction:column;gap:10px;padding:0 28px}
+#win-orgstore .org-update-card{display:flex;align-items:center;gap:14px;min-width:0}
+#win-orgstore .org-update-info{flex:1;min-width:0}
+#win-orgstore .org-update-card .soft-button{flex-shrink:0}
+@media(max-width:760px){#win-orgstore .org-update-toolbar,#win-orgstore .org-update-list{padding-left:12px;padding-right:12px}#win-orgstore .org-update-card{flex-wrap:wrap}}
 
 </style>
 </body>
