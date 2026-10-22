@@ -1,0 +1,18 @@
+{
+  "id": "markdown",
+  "name": "Markdown Studio",
+  "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
+  "description": "Write Markdown and preview formatted notes side by side.",
+  "entry": "index.html",
+  "category": "Productivity",
+  "icon": "📝",
+  "features": [
+    "standalone-window",
+    "local-browser-functionality"
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
