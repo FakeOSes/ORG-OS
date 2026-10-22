@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="icon" type="image/png" href="./images.png">
-<title>Desktop</title>
+<title>ORG OS 1.1</title>
 <style>
 :root{--accent:#60a5fa;--dark:#2563eb;--panel:rgba(25,34,49,.94);--border:rgba(255,255,255,.13);--muted:#aab6c8;--accent-soft:rgba(96,165,250,.18);--accent-strong:#dbeafe;--accent-contrast:#ffffff}
 *{box-sizing:border-box}
@@ -851,6 +851,7 @@ Type "help" to see available commands.
 </div>
 </section>
 
+<script src="./org-core.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const APP_NAMES={welcome:{title:"Welcome",icon:"👋"},notes:{title:"Notes",icon:"📝"},terminal:{title:"Terminal",icon:"⌨️"},settings:{title:"Settings",icon:"⚙️"},orgstore:{title:"ORG App Store",icon:"🏢"},files:{title:"Files",icon:"📁"}};
@@ -876,7 +877,7 @@ const ORG_APPS=[
 // Local Files app: browser-local folders and text files.
 let filesCurrentFolder="root",filesSelectedId=null,filesOpenFileId=null;
 function getFilesTree(){let tree=safeGet("desktop.filesTree",null);if(!tree||!Array.isArray(tree.items))tree={items:[{id:"root",name:"Home",type:"folder",parentId:null,content:"",createdAt:Date.now()}]};if(!tree.items.some(x=>x.id==="root"))tree.items.unshift({id:"root",name:"Home",type:"folder",parentId:null,content:"",createdAt:Date.now()});return tree;}
-function saveFilesTree(tree){safeSet("desktop.filesTree",tree);}
+function saveFilesTree(tree){safeSet("desktop.filesTree",tree);if(window.ORGCore)ORGCore.emit("files:changed",{count:tree.items.length});}
 function fileById(id,tree=getFilesTree()){return tree.items.find(item=>item.id===id)||null;}
 function fileChildren(id,tree=getFilesTree()){return tree.items.filter(item=>item.parentId===id).sort((a,b)=>a.type===b.type?a.name.localeCompare(b.name):a.type==="folder"?-1:1);}
 function fileUniqueName(name,parentId,exceptId=null,tree=getFilesTree()){let candidate=name,n=2;while(tree.items.some(item=>item.parentId===parentId&&item.id!==exceptId&&item.name.toLowerCase()===candidate.toLowerCase())){const dot=name.lastIndexOf(".");candidate=dot>0?name.slice(0,dot)+" ("+n+")"+name.slice(dot):name+" ("+n+")";n++;}return candidate;}
@@ -894,7 +895,12 @@ function fileShowItemMenu(id,x,y){const item=fileById(id);if(!item)return;filesS
 
 function profileScopedKey(key){if(!/^desktop\\./.test(key)||key==="desktop.installedApps"||key==="desktop.profiles"||key==="desktop.activeProfile")return key;return "desktop.profile."+getActiveProfileId()+"."+key.slice("desktop.".length);}
 function safeGet(key,fallback){try{const scoped=profileScopedKey(key);let v=localStorage.getItem(scoped);if(v!==null)return JSON.parse(v);v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}catch{return fallback}}
-function safeSet(key,value){try{localStorage.setItem(profileScopedKey(key),JSON.stringify(value))}catch{toast("Browser storage is unavailable.")}}
+function safeSet(key,value){try{localStorage.setItem(profileScopedKey(key),JSON.stringify(value));if(window.ORGCore)ORGCore.emit("storage:written",{key:String(key)});return true}catch(error){if(window.ORGCore)ORGCore.reportError(error,"storage:set:"+key);toast("Browser storage is unavailable.");return false}}
+if(window.ORGCore){
+  ORGCore.registerService("storage",{get:function(key,fallback){return safeGet(key,fallback)},set:function(key,value){return safeSet(key,value)}},{version:"1.0.0",description:"Profile-aware browser storage adapter"});
+  ORGCore.registerService("files",{getTree:function(){return getFilesTree()},saveTree:function(tree){saveFilesTree(tree)},getItem:function(id){return fileById(id)}},{version:"1.0.0",description:"ORG virtual file tree"});
+  ORGCore.registerService("desktop",{getElement:function(id){return $(id)},getActiveApp:function(){return getTopVisibleApp()}},{version:"1.0.0",description:"Desktop shell accessors"});
+}
 function toast(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2400)}
 function hideSplash(){const splash=$("splash-screen");if(!splash)return;splash.classList.add("hidden");setTimeout(()=>splash.remove(),800)}
 window.addEventListener("load",()=>setTimeout(()=>{hideSplash();setTimeout(()=>lockOrgOS(getActiveProfileId()),800)},1650));
