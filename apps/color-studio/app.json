@@ -1,0 +1,18 @@
+{
+  "id": "color-studio",
+  "name": "Color Studio",
+  "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
+  "description": "Explore colors, copy HEX values, and build palettes.",
+  "entry": "index.html",
+  "category": "Creative",
+  "icon": "🎨",
+  "features": [
+    "standalone-window",
+    "local-browser-functionality"
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
