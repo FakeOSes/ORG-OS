@@ -1,0 +1,18 @@
+{
+  "id": "scratchpad",
+  "name": "Scratchpad",
+  "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
+  "description": "A quick autosaving text space for thoughts and snippets.",
+  "entry": "index.html",
+  "category": "Productivity",
+  "icon": "📋",
+  "features": [
+    "standalone-window",
+    "local-browser-functionality"
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
