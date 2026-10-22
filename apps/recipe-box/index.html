@@ -723,7 +723,19 @@
       .recipe-empty-state strong{display:block;color:var(--ink);font-size:1.2rem;margin-bottom:7px}
       @media(max-width:620px){.recipe-form-grid{grid-template-columns:1fr}.recipe-field-wide{grid-column:auto}.recipe-field{font-size:.8rem}.recipe-field input,.recipe-field select,.recipe-field textarea{padding:11px}}
 
-    </style>
+    
+/* Category buttons open a dedicated collection page instead of jumping down the home screen. */
+.category-page-overlay{position:fixed;inset:0;z-index:700;overflow-y:auto;padding:clamp(16px,3vw,34px);background:var(--bg);color:var(--ink)}
+.category-page-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px;margin-bottom:26px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.category-page-header h2{margin:3px 0;font-size:clamp(26px,4vw,40px);letter-spacing:-.04em}
+.category-page-header p{margin:0}
+.category-page-subtitle{color:var(--muted);font-size:13px}
+.category-page-count{padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted)}
+.category-page-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.category-page-grid .recipe-card{min-height:210px}
+@media(max-width:650px){.category-page-header{grid-template-columns:1fr auto;gap:12px}.category-page-header>div{grid-column:1/-1;grid-row:2}.category-page-header .category-back{grid-column:1;grid-row:1;justify-self:start}.category-page-count{grid-column:2;grid-row:1}.category-page-grid{grid-template-columns:minmax(0,1fr)}}
+
+</style>
   </head>
   <body data-theme="light">
     <div class="page">
@@ -1008,6 +1020,121 @@
           ingredients: ['2 bananas', '2 eggs', '1/2 cup oats', '1 tsp cinnamon', '1 tsp baking powder', '1 tbsp butter'],
           method: ['Blend bananas, eggs, oats, cinnamon, and baking powder.', 'Cook on a skillet until golden on both sides.']
         }
+
+        {
+          id: 'green-matcha-cookies', title: 'Green Matcha Cookies', category: 'dessert', time: 28, rating: 4.9, difficulty: 'Easy', icon: '🍵', color: 'green',
+          description: 'Soft green tea cookies with a gentle matcha flavor and crisp edges.',
+          ingredients: ['1 1/2 cups all-purpose flour', '1 tbsp matcha powder', '1/2 tsp baking soda', '1/2 cup softened butter', '3/4 cup sugar', '1 egg', '1 tsp vanilla', '1/2 cup white chocolate chips'],
+          method: ['Heat the oven to 350°F (175°C) and line a baking tray with parchment.', 'Whisk flour, matcha, and baking soda in a bowl.', 'In another bowl, beat butter and sugar until fluffy, then mix in the egg and vanilla.', 'Stir in the dry ingredients until a dough forms, then fold in white chocolate chips.', 'Scoop tablespoon-sized portions onto the tray, leaving space between each.', 'Bake for 9–11 minutes until the edges are set. Cool on the tray for 5 minutes before moving to a rack.']
+        },
+        {
+          id: 'blueberry-lemon-muffins', title: 'Blueberry Lemon Muffins', category: 'breakfast', time: 30, rating: 4.8, difficulty: 'Easy', icon: '🫐', color: 'blue',
+          description: 'Tender muffins bursting with blueberries and fresh lemon zest.',
+          ingredients: ['2 cups flour', '3/4 cup sugar', '2 tsp baking powder', '2 eggs', '3/4 cup milk', '1/3 cup oil', '1 cup blueberries', '1 lemon zest'],
+          method: ['Heat oven to 375°F (190°C) and line a muffin tin.', 'Mix flour, sugar, and baking powder.', 'Whisk eggs, milk, oil, and lemon zest, then fold into the dry mix.', 'Gently fold in blueberries and divide into muffin cups.', 'Bake 18–22 minutes until golden and a toothpick comes out clean.']
+        },
+        {
+          id: 'cinnamon-french-toast', title: 'Cinnamon French Toast', category: 'breakfast', time: 15, rating: 4.7, difficulty: 'Easy', icon: '🍞', color: 'gold',
+          description: 'Golden slices with cinnamon, vanilla, and a little maple syrup.',
+          ingredients: ['4 thick bread slices', '2 eggs', '1/3 cup milk', '1 tsp cinnamon', '1 tsp vanilla', '1 tbsp butter', 'maple syrup'],
+          method: ['Whisk eggs, milk, cinnamon, and vanilla in a shallow dish.', 'Dip each bread slice briefly on both sides.', 'Melt butter in a skillet over medium heat.', 'Cook bread 2–3 minutes per side until golden and cooked through.', 'Serve warm with maple syrup and fruit.']
+        },
+        {
+          id: 'apple-cinnamon-oatmeal', title: 'Apple Cinnamon Oatmeal', category: 'breakfast', time: 12, rating: 4.6, difficulty: 'Easy', icon: '🍎', color: 'rose',
+          description: 'Creamy oats topped with tender cinnamon apples and crunchy nuts.',
+          ingredients: ['1 cup rolled oats', '2 cups milk or water', '1 apple diced', '1/2 tsp cinnamon', '1 tsp maple syrup', '2 tbsp chopped walnuts'],
+          method: ['Simmer oats with milk or water according to package directions.', 'Cook diced apple with cinnamon and a splash of water until tender.', 'Spoon apples over oatmeal and finish with maple syrup and walnuts.']
+        },
+        {
+          id: 'veggie-quesadillas', title: 'Veggie Quesadillas', category: 'lunch', time: 20, rating: 4.7, difficulty: 'Easy', icon: '🫓', color: 'orange',
+          description: 'Crispy tortillas filled with peppers, beans, corn, and melted cheese.',
+          ingredients: ['4 flour tortillas', '1 bell pepper diced', '1/2 cup corn', '1/2 cup black beans', '1 cup shredded cheese', '1 tsp cumin', 'salsa to serve'],
+          method: ['Sauté pepper and corn until tender, then stir in beans and cumin.', 'Scatter cheese and vegetables over half of each tortilla and fold.', 'Cook in a dry skillet 2–3 minutes per side until crisp and cheese melts.', 'Cut into wedges and serve with salsa.']
+        },
+        {
+          id: 'tomato-mozzarella-panini', title: 'Tomato Mozzarella Panini', category: 'lunch', time: 15, rating: 4.6, difficulty: 'Easy', icon: '🥪', color: 'rose',
+          description: 'Toasty bread with juicy tomato, mozzarella, basil, and pesto.',
+          ingredients: ['4 slices sourdough', '1 tomato sliced', '4 oz mozzarella', '2 tbsp pesto', 'fresh basil', 'olive oil'],
+          method: ['Spread pesto on the inside of each bread slice.', 'Layer tomato, mozzarella, and basil between the slices.', 'Brush the outside lightly with olive oil.', 'Press in a panini maker or skillet until the bread is crisp and cheese melts.']
+        },
+        {
+          id: 'crispy-chickpea-salad', title: 'Crispy Chickpea Salad', category: 'lunch', time: 25, rating: 4.8, difficulty: 'Easy', icon: '🥗', color: 'green',
+          description: 'Crunchy spiced chickpeas over greens with cucumber and lemon dressing.',
+          ingredients: ['1 can chickpeas drained', '1 tsp paprika', '1 tbsp olive oil', '4 cups mixed greens', '1 cucumber', '1/2 cup cherry tomatoes', '1 lemon', '2 tbsp yogurt'],
+          method: ['Pat chickpeas dry, toss with paprika and oil, and roast at 400°F (200°C) for 20 minutes.', 'Whisk lemon juice with yogurt and a little water.', 'Toss greens, cucumber, and tomatoes with dressing.', 'Top with warm crispy chickpeas and serve.']
+        },
+        {
+          id: 'turkey-avocado-sandwich', title: 'Turkey Avocado Sandwich', category: 'lunch', time: 10, rating: 4.5, difficulty: 'Easy', icon: '🥑', color: 'mint',
+          description: 'A fresh sandwich with turkey, creamy avocado, lettuce, and mustard.',
+          ingredients: ['4 bread slices', '6 oz sliced turkey', '1 avocado', 'lettuce leaves', '1 tomato', '2 tsp mustard'],
+          method: ['Mash avocado with a squeeze of lemon and spread over bread.', 'Layer turkey, lettuce, and tomato.', 'Add mustard, close the sandwich, and slice to serve.']
+        },
+        {
+          id: 'creamy-tomato-soup', title: 'Creamy Tomato Soup', category: 'dinner', time: 30, rating: 4.8, difficulty: 'Easy', icon: '🍅', color: 'rose',
+          description: 'A cozy tomato soup with garlic, herbs, and a splash of cream.',
+          ingredients: ['1 tbsp olive oil', '1 onion chopped', '3 garlic cloves', '2 cans crushed tomatoes', '2 cups vegetable broth', '1 tsp dried basil', '1/3 cup cream'],
+          method: ['Soften onion in olive oil, then add garlic for 30 seconds.', 'Add tomatoes, broth, and basil; simmer for 20 minutes.', 'Blend carefully until smooth, then stir in cream.', 'Season to taste and serve with toasted bread.']
+        },
+        {
+          id: 'honey-garlic-tofu', title: 'Honey Garlic Tofu', category: 'vegetarian', time: 25, rating: 4.8, difficulty: 'Easy', icon: '🍯', color: 'gold',
+          description: 'Crisp tofu cubes tossed in a sticky honey-garlic sauce.',
+          ingredients: ['14 oz firm tofu', '2 tbsp cornstarch', '1 tbsp oil', '2 garlic cloves', '2 tbsp soy sauce', '1 tbsp honey', '1 tsp rice vinegar', 'sesame seeds'],
+          method: ['Press tofu dry and cut into cubes.', 'Toss tofu with cornstarch and pan-fry in oil until crisp.', 'Mix garlic, soy sauce, honey, and vinegar in a small bowl.', 'Pour sauce into the pan and toss until glossy and thick.', 'Sprinkle with sesame seeds and serve with rice.']
+        },
+        {
+          id: 'roasted-vegetable-tacos', title: 'Roasted Vegetable Tacos', category: 'vegetarian', time: 35, rating: 4.7, difficulty: 'Easy', icon: '🌮', color: 'orange',
+          description: 'Colorful roasted vegetables tucked into warm tortillas with lime crema.',
+          ingredients: ['1 zucchini', '1 bell pepper', '1 red onion', '1 tbsp olive oil', '1 tsp cumin', '8 small tortillas', '1/2 cup yogurt', '1 lime'],
+          method: ['Heat oven to 425°F (220°C). Chop vegetables and toss with oil and cumin.', 'Roast for 20–25 minutes, turning once.', 'Mix yogurt with lime juice and a pinch of salt.', 'Fill warm tortillas with vegetables and drizzle with lime crema.']
+        },
+        {
+          id: 'spinach-feta-stuffed-peppers', title: 'Spinach Feta Stuffed Peppers', category: 'vegetarian', time: 40, rating: 4.8, difficulty: 'Medium', icon: '🫑', color: 'green',
+          description: 'Sweet bell peppers filled with spinach, rice, herbs, and tangy feta.',
+          ingredients: ['4 bell peppers', '2 cups cooked rice', '2 cups spinach', '1/2 cup crumbled feta', '2 garlic cloves', '1 tbsp olive oil', '1 tsp oregano'],
+          method: ['Heat oven to 375°F (190°C) and halve peppers lengthwise.', 'Sauté garlic and spinach in olive oil until wilted.', 'Mix spinach with rice, feta, and oregano.', 'Fill pepper halves and bake in a covered dish for 25–30 minutes until tender.']
+        },
+        {
+          id: 'teriyaki-chicken-rice', title: 'Teriyaki Chicken Rice Bowl', category: 'dinner', time: 30, rating: 4.8, difficulty: 'Medium', icon: '🍚', color: 'gold',
+          description: 'Savory-sweet chicken with rice, broccoli, and sesame.',
+          ingredients: ['1 lb chicken thigh pieces', '2 cups cooked rice', '2 cups broccoli', '1/4 cup soy sauce', '2 tbsp honey', '1 tsp grated ginger', '1 garlic clove', 'sesame seeds'],
+          method: ['Mix soy sauce, honey, ginger, and garlic.', 'Cook chicken in a skillet until browned and cooked through.', 'Add sauce and simmer until glossy and the chicken reaches 165°F (74°C).', 'Steam broccoli and serve everything over rice with sesame seeds.']
+        },
+        {
+          id: 'baked-ziti', title: 'Baked Ziti', category: 'dinner', time: 45, rating: 4.8, difficulty: 'Medium', icon: '🍝', color: 'orange',
+          description: 'Pasta baked with tomato sauce, ricotta, mozzarella, and herbs.',
+          ingredients: ['12 oz ziti', '3 cups marinara sauce', '1 cup ricotta', '2 cups mozzarella', '1/4 cup parmesan', '1 tsp Italian seasoning'],
+          method: ['Heat oven to 375°F (190°C). Boil pasta until just shy of tender.', 'Mix pasta with marinara, ricotta, and Italian seasoning.', 'Transfer to a baking dish, top with mozzarella and parmesan.', 'Bake for 20–25 minutes until bubbling and golden.']
+        },
+        {
+          id: 'lemon-blueberry-yogurt-cake', title: 'Lemon Blueberry Yogurt Cake', category: 'dessert', time: 50, rating: 4.8, difficulty: 'Medium', icon: '🍰', color: 'blue',
+          description: 'A moist yogurt cake with blueberries and a bright lemon glaze.',
+          ingredients: ['1 1/2 cups flour', '3/4 cup sugar', '2 eggs', '3/4 cup plain yogurt', '1/3 cup oil', '1 tsp baking powder', '1 cup blueberries', '1 lemon'],
+          method: ['Heat oven to 350°F (175°C) and grease a loaf pan.', 'Whisk sugar, eggs, yogurt, and oil until smooth.', 'Fold in flour and baking powder, then gently fold in blueberries.', 'Bake 40–45 minutes until a toothpick comes out clean.', 'Cool, then drizzle with lemon juice mixed with a little powdered sugar.']
+        },
+        {
+          id: 'peanut-butter-energy-bites', title: 'Peanut Butter Energy Bites', category: 'dessert', time: 15, rating: 4.7, difficulty: 'Easy', icon: '🥜', color: 'gold',
+          description: 'No-bake oat bites with peanut butter, honey, and mini chocolate chips.',
+          ingredients: ['1 cup rolled oats', '1/2 cup peanut butter', '1/3 cup honey', '2 tbsp mini chocolate chips', '1 tbsp chia seeds'],
+          method: ['Stir oats, peanut butter, honey, chocolate chips, and chia seeds together.', 'Chill for 15 minutes so the mixture firms up.', 'Roll into small balls and refrigerate in a sealed container.']
+        },
+        {
+          id: 'strawberry-banana-smoothie', title: 'Strawberry Banana Smoothie', category: 'breakfast', time: 5, rating: 4.7, difficulty: 'Easy', icon: '🍓', color: 'rose',
+          description: 'A creamy fruit smoothie for busy mornings.',
+          ingredients: ['1 banana', '1 cup strawberries', '3/4 cup milk', '1/2 cup yogurt', '1 tsp honey (optional)'],
+          method: ['Add banana, strawberries, milk, and yogurt to a blender.', 'Blend until smooth, adding a splash of milk if needed.', 'Taste and add honey if desired, then serve cold.']
+        },
+        {
+          id: 'garlic-butter-green-beans', title: 'Garlic Butter Green Beans', category: 'vegetarian', time: 15, rating: 4.6, difficulty: 'Easy', icon: '🫛', color: 'green',
+          description: 'Bright green beans sautéed with garlic and a little lemon.',
+          ingredients: ['1 lb green beans trimmed', '1 tbsp butter', '2 garlic cloves minced', '1 tbsp water', '1 tsp lemon juice', 'salt and pepper'],
+          method: ['Steam green beans with the water in a covered skillet for 4–5 minutes.', 'Uncover, add butter and garlic, and sauté for 2 minutes.', 'Season with lemon juice, salt, and pepper, then serve.']
+        },
+        {
+          id: 'cocoa-banana-bread', title: 'Chocolate Banana Bread', category: 'dessert', time: 55, rating: 4.8, difficulty: 'Easy', icon: '🍌', color: 'orange',
+          description: 'A soft banana loaf with cocoa and chocolate chips.',
+          ingredients: ['3 ripe bananas', '1/3 cup melted butter', '3/4 cup sugar', '1 egg', '1 tsp vanilla', '1 cup flour', '1/4 cup cocoa powder', '1 tsp baking soda', '1/2 cup chocolate chips'],
+          method: ['Heat oven to 350°F (175°C) and grease a loaf pan.', 'Mash bananas and mix with butter, sugar, egg, and vanilla.', 'Fold in flour, cocoa, and baking soda, then add chocolate chips.', 'Bake 50–60 minutes until a toothpick comes out with a few moist crumbs.', 'Cool before slicing.']
+        }
       ];
 
       const filters = document.querySelectorAll('.filter');
@@ -1266,6 +1393,32 @@
         });
       }
 
+
+      function openCategoryPage(filter) {
+        const oldPage = document.getElementById('recipeCategoryPage');
+        if (oldPage) oldPage.remove();
+        const labels = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', vegetarian: 'Vegetarian', dessert: 'Desserts', favorites: 'Saved recipes' };
+        const page = document.createElement('section');
+        page.id = 'recipeCategoryPage';
+        page.className = 'category-page-overlay';
+        page.innerHTML = '<header class="category-page-header"><button type="button" class="secondary-btn category-back">← All recipes</button><div><p class="eyebrow">RECIPE COLLECTION</p><h2>' + escapeHTML(labels[filter] || filter) + '</h2><p class="category-page-subtitle">Explore recipes in this collection.</p></div><span class="category-page-count">' + getVisibleRecipes().length + ' recipes</span></header><div class="recipe-grid category-page-grid"></div>';
+        const grid = page.querySelector('.category-page-grid');
+        grid.innerHTML = recipeGrid.innerHTML;
+        page.querySelector('.category-back').addEventListener('click', () => {
+          page.remove();
+          state.filter = 'all';
+          filters.forEach((button) => button.classList.toggle('is-active', button.dataset.filter === 'all'));
+          renderAll();
+        });
+        grid.querySelectorAll('[data-view-id]').forEach(button => button.addEventListener('click', () => openModal(button.dataset.viewId)));
+        grid.querySelectorAll('[data-shop-id]').forEach(button => button.addEventListener('click', () => addIngredientsToShopping(button.dataset.shopId)));
+        grid.querySelectorAll('[data-favorite-id]').forEach(button => button.addEventListener('click', () => {
+          toggleFavorite(button.dataset.favoriteId);
+          openCategoryPage(filter);
+        }));
+        document.body.appendChild(page);
+      }
+
       function openModal(id) {
         const recipe = getRecipeById(id);
         state.recent = mergeUnique(state.recent, recipe.id);
@@ -1380,6 +1533,11 @@
           state.filter = button.dataset.filter;
           filters.forEach((btn) => btn.classList.toggle('is-active', btn === button));
           renderCards();
+          if (state.filter === 'all') {
+            document.getElementById('recipeCategoryPage')?.remove();
+          } else {
+            openCategoryPage(state.filter);
+          }
         });
       });
 
