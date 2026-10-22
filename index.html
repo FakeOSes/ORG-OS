@@ -1082,6 +1082,15 @@ function applyOrgLanguage(lang){
  const select=$("setting-language");if(select)select.value=lang;const label=$("settings-locale-label");if(label)label.textContent=({en:"Language applies immediately.",pl:"Język zmienia się natychmiast.",es:"El idioma se aplica inmediatamente.",fr:"La langue est appliquée immédiatement.",de:"Die Sprache wird sofort übernommen.",pt:"O idioma é aplicado imediatamente."})[lang];
 }
 function setOrgLanguage(lang){applyOrgLanguage(lang);toast(({en:"Language updated.",pl:"Zmieniono język.",es:"Idioma actualizado.",fr:"Langue mise à jour.",de:"Sprache aktualisiert.",pt:"Idioma atualizado."})[lang]||"Language updated.");}
+function translateOrgNode(root,lang){
+ const translateText=node=>{const raw=node.nodeValue||"",lead=raw.match(/^\s*/)?.[0]||"",trail=raw.match(/\s*$/)?.[0]||"",core=raw.trim();if(core)node.nodeValue=lead+orgTranslateValue(core,lang)+trail;};
+ if(root.nodeType===Node.TEXT_NODE){if(!root.parentElement?.closest("script,style,textarea,option,code"))translateText(root);return;}
+ if(root.nodeType!==Node.ELEMENT_NODE||root.matches("script,style,textarea,option,code"))return;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){return node.nodeValue.trim()&&!node.parentElement?.closest("script,style,textarea,option,code")?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+ const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);nodes.forEach(translateText);
+}
+if(!window.__orgLanguageObserver){window.__orgLanguageObserver=new MutationObserver(mutations=>{const lang=orgCurrentLanguage();if(lang==="en")return;mutations.forEach(m=>m.addedNodes.forEach(n=>translateOrgNode(n,lang)));});window.__orgLanguageObserver.observe(document.body,{childList:true,subtree:true});}
+
 
 function setTimeFormat(enabled){safeSet("desktop.time24",!!enabled);updateClock();updateStartClock();renderWidgets();toast("Clock format updated.");}
 function formatDesktopTime(date){return date.toLocaleTimeString([],safeGet("desktop.time24",false)?{hour:"2-digit",minute:"2-digit",hour12:false}:{hour:"numeric",minute:"2-digit"});}
@@ -1359,7 +1368,7 @@ function lockOrgOS(targetId=getActiveProfileId()){
 }
 function requestLock(){lockOrgOS(getActiveProfileId());}
 
-function initialize(){registerInstalledApps();loadSettings();loadAppCatalog();ensureOrgWidgetLibraryLoaded();renderPinned();renderRecentSearches();updateStartClock();setInterval(updateStartClock,30000);const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);if(show)openApp("welcome");else closeApp("welcome");$("dont-show").checked=!show;renderNotes();}
+function initialize(){registerInstalledApps();loadSettings();loadAppCatalog();ensureOrgWidgetLibraryLoaded();renderPinned();renderRecentSearches();updateStartClock();setInterval(updateStartClock,30000);const show=safeGet("desktop.showWelcome",true)&&!safeGet("desktop.welcomed",false);if(show)openApp("welcome");else closeApp("welcome");$("dont-show").checked=!show;renderNotes();applyOrgLanguage(orgCurrentLanguage());}
 setupProfiles();
 initialize();
 openApp('welcome');
