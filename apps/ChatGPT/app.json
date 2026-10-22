@@ -1,0 +1,18 @@
+{
+  "id": "chatgpt",
+  "name": "ChatGPT",
+  "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
+  "description": "ChatGPT in ORG OS.",
+  "entry": "index.html",
+  "category": "Utilities",
+  "icon": "🤖",
+  "features": [
+    "standalone-window",
+    "local-browser-functionality"
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
