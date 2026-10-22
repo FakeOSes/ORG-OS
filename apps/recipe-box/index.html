@@ -421,27 +421,33 @@
 
       .recipe-grid {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 22px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        align-items: stretch;
       }
 
       .recipe-card {
         display: none;
         position: relative;
+        grid-template-columns: minmax(112px, 0.72fr) minmax(0, 1.28fr);
+        min-width: 0;
+        min-height: 245px;
         background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 28px;
+        border-radius: 22px;
         overflow: hidden;
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow-soft);
         opacity: 0;
-        transform: translateY(12px) scale(0.985);
-        transition: opacity 0.25s ease, transform 0.25s ease;
+        transform: translateY(8px);
+        transition: opacity 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
       }
+      .recipe-card:hover { box-shadow: var(--shadow); }
+      .recipe-card.is-visible { display: grid; }
 
       .recipe-card.is-visible {
-        display: block;
+        display: grid;
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
       }
 
       .card-actions {
@@ -469,7 +475,8 @@
       }
 
       .recipe-visual {
-        height: 200px;
+        height: 100%;
+        min-height: 245px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -492,8 +499,14 @@
       .recipe-card[data-color="berry"] .recipe-visual { background: linear-gradient(135deg, #ff93a8, #b14d7f); }
 
       .recipe-info {
-        padding: 20px;
+        min-width: 0;
+        padding: 22px 18px;
+        align-self: center;
       }
+      .recipe-info h3 { font-size: clamp(1.15rem, 1.55vw, 1.55rem); line-height: 1.12; overflow-wrap: anywhere; }
+      .recipe-info p { font-size: .9rem; }
+      .recipe-card .favorite-btn { background: rgba(18,18,18,.35); }
+      .recipe-card .card-actions { top: 10px; right: 10px; }
 
       .recipe-meta {
         display: flex;
@@ -667,10 +680,9 @@
         margin-top: 24px;
       }
 
-      @media (max-width: 900px) {
-        .featured,
-        .utility-area { grid-template-columns: 1fr; }
-        .recipe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      @media (max-width: 1040px) {
+        .featured, .utility-area { grid-template-columns: 1fr; }
+        .recipe-grid { grid-template-columns: minmax(0, 1fr); }
       }
 
       @media (max-width: 620px) {
@@ -686,7 +698,12 @@
           min-width: 0;
           flex: 1 1 auto;
         }
-        .recipe-grid { grid-template-columns: 1fr; }
+        .recipe-grid { grid-template-columns: minmax(0, 1fr); }
+        .recipe-card { grid-template-columns: 104px minmax(0, 1fr); min-height: 220px; border-radius: 18px; }
+        .recipe-visual { min-height: 220px; font-size: 3rem; }
+        .recipe-info { padding: 16px 12px; }
+        .recipe-meta { gap: 5px; font-size: .65rem; }
+        .recipe-info p { font-size: .82rem; }
         .modal-body { grid-template-columns: 1fr; }
       }
 
@@ -1017,9 +1034,28 @@
       const recentList = document.getElementById('recentList');
       const shoppingList = document.getElementById('shoppingList');
 
+      // Sandboxed ORG-OS app windows may have an opaque origin where localStorage throws.
+      // Keep the app fully usable with a session-memory fallback when browser storage is blocked.
+      const recipeMemoryStore = Object.create(null);
+      const recipeStorage = {
+        get(key) {
+          try {
+            const value = localStorage.getItem(key);
+            if (value !== null) recipeMemoryStore[key] = value;
+            return value !== null ? value : (Object.prototype.hasOwnProperty.call(recipeMemoryStore, key) ? recipeMemoryStore[key] : null);
+          } catch {
+            return Object.prototype.hasOwnProperty.call(recipeMemoryStore, key) ? recipeMemoryStore[key] : null;
+          }
+        },
+        set(key, value) {
+          const text = String(value);
+          recipeMemoryStore[key] = text;
+          try { localStorage.setItem(key, text); } catch { /* session-only fallback is intentional */ }
+        }
+      };
       const readArray = (key, fallback = []) => {
         try {
-          const value = JSON.parse(localStorage.getItem(key) || 'null');
+          const value = JSON.parse(recipeStorage.get(key) || 'null');
           return Array.isArray(value) ? value : fallback;
         } catch {
           return fallback;
@@ -1031,7 +1067,7 @@
         if (recipe && recipe.id && recipe.title && !recipes.some((existing) => existing.id === recipe.id)) recipes.push({ ...recipe, custom: true });
       });
       function persistCustomRecipes() {
-        localStorage.setItem('recipe-box-custom-recipes', JSON.stringify(recipes.filter((recipe) => recipe.custom)));
+        recipeStorage.set('recipe-box-custom-recipes', JSON.stringify(recipes.filter((recipe) => recipe.custom)));
       }
 
       const state = {
@@ -1042,23 +1078,23 @@
         featuredId: 'citrus-salmon-bowl',
         recent: readArray('recipe-box-recent'),
         shopping: readArray('recipe-box-shopping'),
-        theme: localStorage.getItem('recipe-box-theme') || 'light'
+        theme: recipeStorage.get('recipe-box-theme') || 'light'
       };
 
       function persistFavorites() {
-        localStorage.setItem('recipe-box-favorites', JSON.stringify(state.favorites));
+        recipeStorage.set('recipe-box-favorites', JSON.stringify(state.favorites));
       }
 
       function persistRecent() {
-        localStorage.setItem('recipe-box-recent', JSON.stringify(state.recent));
+        recipeStorage.set('recipe-box-recent', JSON.stringify(state.recent));
       }
 
       function persistShopping() {
-        localStorage.setItem('recipe-box-shopping', JSON.stringify(state.shopping));
+        recipeStorage.set('recipe-box-shopping', JSON.stringify(state.shopping));
       }
 
       function persistTheme() {
-        localStorage.setItem('recipe-box-theme', state.theme);
+        recipeStorage.set('recipe-box-theme', state.theme);
       }
 
       function updateFavoritesCount() {
