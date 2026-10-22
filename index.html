@@ -1867,6 +1867,20 @@ input,textarea,select{border-radius:10px}
 #win-orgstore .org-update-card .soft-button{flex-shrink:0}
 @media(max-width:760px){#win-orgstore .org-update-toolbar,#win-orgstore .org-update-list{padding-left:12px;padding-right:12px}#win-orgstore .org-update-card{flex-wrap:wrap}}
 
+/* FINAL Start menu repair: large square tiles and square icon wells, overriding older layout patches. */
+#start-menu .start-main-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important}
+#start-menu .start-main-grid .app-tile{aspect-ratio:1/1!important;min-height:104px!important;height:auto!important;width:100%!important;padding:10px 5px!important;gap:9px!important;border-radius:14px!important;border:1px solid #ffffff10!important;background:linear-gradient(145deg,#ffffff09,#ffffff03)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important}
+#start-menu .start-main-grid .app-tile:hover{background:var(--accent-soft)!important;border-color:var(--accent)!important;transform:translateY(-1px)}
+#start-menu .start-main-grid .app-tile .icon{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;aspect-ratio:1/1!important;flex:0 0 48px!important;border-radius:12px!important;font-size:27px!important;background:linear-gradient(145deg,#ffffff16,#ffffff06)!important;border:1px solid #ffffff13!important}
+#start-menu .start-main-grid .app-tile-name{font-size:11px!important;max-width:100%;line-height:1.25}
+#start-menu .start-pinned-item{border-radius:12px!important}
+#start-menu .start-pinned-icon{width:43px!important;height:43px!important;border-radius:12px!important}
+#win-orgstore .store-card-clickable{transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+#win-orgstore .store-card-clickable:hover{transform:translateY(-2px);box-shadow:0 12px 28px #0002;border-color:var(--accent)!important}
+#win-orgstore .store-detail-actions .store-install-button{min-width:118px}
+#win-orgstore .store-detail-actions .soft-button{min-height:40px}
+@media(max-width:600px){#start-menu .start-main-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}#start-menu .start-main-grid .app-tile{min-height:92px!important}}
+
 </style>
 <script>
 
