@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>ORG OS Beta Updates</title>
+<style>
+:root{color-scheme:dark;--bg:#080d19;--panel:#111a2b;--line:#26344b;--muted:#9aa9c0;--text:#f4f7ff;--blue:#79a7ff;--purple:#b39aff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 15% 0%,#1b3261 0,transparent 43%),radial-gradient(ellipse at 100% 20%,#35215c 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:42px 0 60px}.top{display:flex;align-items:center;gap:12px;margin-bottom:38px}.logo{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#6097ff,#9775ff);font-weight:900;font-size:19px;box-shadow:0 8px 26px #4c78ff35}.brand{font-size:13px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}.brand strong{display:block;color:var(--text);font-size:17px;letter-spacing:0;text-transform:none}
+.hero{padding:34px;border:1px solid #6d8de344;border-radius:24px;background:linear-gradient(135deg,#172745eF,#15192bea);box-shadow:0 24px 70px #0003}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;color:#a9c6ff;text-transform:uppercase}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.06;letter-spacing:-.045em;margin:13px 0}.hero p{max-width:650px;color:#bdc9dd;margin:0}.status{display:flex;align-items:center;gap:9px;margin-top:22px;color:#dce6f7;font-size:13px}.dot{width:8px;height:8px;border-radius:50%;background:#f5bd58;box-shadow:0 0 0 4px #f5bd5818}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.button{border:1px solid #4a5d7c;border-radius:11px;background:#202f4a;color:white;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}.button.primary{background:linear-gradient(120deg,#477df4,#8065e9);border-color:transparent}.button:disabled{opacity:.55;cursor:wait}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}.card{padding:21px;border:1px solid var(--line);border-radius:17px;background:#101827d9}.card h2{font-size:16px;margin:0 0 7px}.card p,.card li{font-size:13px;color:var(--muted)}.card p{margin:0}.card ul{padding-left:18px;margin:10px 0 0}.releases{margin-top:16px}.release{padding:15px 0;border-top:1px solid var(--line)}.release:first-child{border-top:0}.release strong{display:block}.release small{color:var(--muted)}.release a{color:#a9c6ff}.foot{margin-top:24px;color:#8493aa;font-size:12px}.foot a{color:#a9c6ff}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><div class="logo">O</div><div class="brand">ORG OS<strong>Beta Update Center</strong></div></header>
+<section class="hero">
+<div class="eyebrow">Developer channel · ORG OS 1+</div>
+<h1>Try what’s next.</h1>
+<p>Check for published ORG OS prereleases and preview notes before trying beta builds. Beta versions can contain unfinished features or bugs.</p>
+<div class="status"><span class="dot" id="status-dot"></span><span id="status-text">Beta channel ready · Not checked yet</span></div>
+<div class="actions"><button class="button primary" id="check-button" type="button">↻ Check for beta updates</button><a class="button" href="https://github.com/avinstudios/ORG-OS/releases" target="_blank" rel="noopener">All releases ↗</a><a class="button" href="https://github.com/avinstudios/ORG-OS" target="_blank" rel="noopener">Source repository ↗</a></div>
+</section>
+<div class="grid">
+<section class="card"><h2>How beta updates work</h2><p>This page checks GitHub for releases marked as prereleases. If a beta build is published, its release notes and download links will appear below.</p></section>
+<section class="card"><h2>Before installing</h2><p>ORG OS runs in your browser. To use changes published to the main GitHub Pages site, reload ORG OS after deployment. This page does not silently replace your current desktop.</p></section>
+</div>
+<section class="card releases" aria-live="polite" style="margin-top:16px"><h2>Available beta releases</h2><div id="release-list"><p>Press “Check for beta updates” to look for prereleases.</p></div></section>
+<div class="foot">ORG OS · Beta channel · <a href="./index.html">Return to ORG OS</a></div>
+</main>
+<script>
+const checkButton=document.getElementById("check-button");
+const statusText=document.getElementById("status-text");
+const statusDot=document.getElementById("status-dot");
+const releaseList=document.getElementById("release-list");
+function safeDate(value){const date=new Date(value);return Number.isNaN(date.getTime())?"Date unavailable":date.toLocaleString();}
+async function checkBetaUpdates(){
+ checkButton.disabled=true;checkButton.textContent="Checking…";statusText.textContent="Contacting GitHub releases…";statusDot.style.background="#79a7ff";releaseList.replaceChildren();
+ try{
+  const response=await fetch("https://api.github.com/repos/avinstudios/ORG-OS/releases?per_page=30",{headers:{Accept:"application/vnd.github+json"}});
+  if(!response.ok)throw new Error("GitHub returned HTTP "+response.status);
+  const releases=await response.json();const betas=Array.isArray(releases)?releases.filter(item=>item.prerelease&&!item.draft):[];
+  if(!betas.length){statusText.textContent="Check complete · No published beta releases found";statusDot.style.background="#f5bd58";const p=document.createElement("p");p.textContent="There are no published prereleases right now. When a GitHub release is marked as a prerelease, it will show up here.";releaseList.append(p);}
+  else{statusText.textContent="Check complete · "+betas.length+" beta release"+(betas.length===1?"":"s")+" found";statusDot.style.background="#64dca0";betas.forEach(item=>{const article=document.createElement("article");article.className="release";const title=document.createElement("strong");title.textContent=item.name||item.tag_name||"ORG OS beta";const date=document.createElement("small");date.textContent=(item.tag_name||"Unlabelled version")+" · Published "+safeDate(item.published_at);const notes=document.createElement("p");notes.textContent=(item.body||"No release notes were provided.").slice(0,1200);notes.style.whiteSpace="pre-wrap";const link=document.createElement("a");link.href=item.html_url;link.target="_blank";link.rel="noopener";link.textContent="View release and assets ↗";article.append(title,date,notes,link);releaseList.append(article);});}
+ }catch(error){statusText.textContent="Could not check releases · Try again later";statusDot.style.background="#ff7a8a";const p=document.createElement("p");p.textContent="GitHub's release API could not be reached. Check your connection or open the releases page directly.";const link=document.createElement("a");link.href="https://github.com/avinstudios/ORG-OS/releases";link.target="_blank";link.rel="noopener";link.textContent="Open GitHub releases ↗";link.style.color="#a9c6ff";releaseList.append(p,link);}
+ finally{checkButton.disabled=false;checkButton.textContent="↻ Check for beta updates";}
+}
+checkButton.addEventListener("click",checkBetaUpdates);
+</script>
+</body>
+</html>
