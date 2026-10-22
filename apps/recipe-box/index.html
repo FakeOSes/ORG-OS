@@ -735,6 +735,7 @@
 .category-page-grid .recipe-card{min-height:210px}
 @media(max-width:650px){.category-page-header{grid-template-columns:1fr auto;gap:12px}.category-page-header>div{grid-column:1/-1;grid-row:2}.category-page-header .category-back{grid-column:1;grid-row:1;justify-self:start}.category-page-count{grid-column:2;grid-row:1}.category-page-grid{grid-template-columns:minmax(0,1fr)}}
 
+.ingredient-finder-dialog{max-width:760px!important}.ingredient-finder-label{display:block;font-size:12px;font-weight:750;margin:4px 0 8px}.ingredient-finder-input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);outline-color:var(--accent)}.ingredient-finder-hints{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}.ingredient-finder-hints button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 11px;font-size:11px}.ingredient-finder-results{display:grid;gap:8px;max-height:35vh;overflow:auto}.ingredient-finder-result{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text)}.ingredient-finder-result:hover{border-color:var(--accent)}.ingredient-finder-result-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--surface);font-size:23px;flex-shrink:0}.ingredient-finder-result-copy{flex:1;min-width:0}.ingredient-finder-result-copy strong,.ingredient-finder-result-copy small{display:block}.ingredient-finder-result-copy small{margin-top:4px;color:var(--muted)}.ingredient-finder-empty{padding:16px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px}
 </style>
   </head>
   <body data-theme="light">
@@ -750,6 +751,7 @@
             <span>🔎</span>
             <input id="searchInput" type="search" placeholder="Search recipes..." />
           </label>
+          <button id="ingredientFinderBtn" class="secondary-btn" type="button">🥕 Ingredient finder</button>
           <button id="addRecipeBtn" class="secondary-btn" type="button">＋ Add recipe</button>
           <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode">🌙</button>
           <button id="savedFilterBtn" class="cta" type="button" aria-pressed="false">♡ Saved <span id="favoritesCount">0</span></button>
@@ -862,7 +864,8 @@
       </div>
     </div>
 
-    <script>
+    <div id="ingredientFinderModal" class="modal" hidden><div class="modal-backdrop" data-close-ingredient-finder="true"></div><div class="modal-dialog ingredient-finder-dialog" role="dialog" aria-modal="true" aria-labelledby="ingredientFinderTitle"><button class="modal-close" type="button" id="ingredientFinderClose" aria-label="Close ingredient finder">×</button><div class="modal-header"><div class="modal-meta"><span>COOKING TOOL</span><span>INGREDIENT FINDER</span></div><h2 id="ingredientFinderTitle">What’s in your kitchen?</h2><p>Enter ingredients you have, separated by commas. Recipe Box will find recipes that use them.</p></div><label class="ingredient-finder-label" for="ingredientFinderInput">Ingredients you have</label><input id="ingredientFinderInput" class="ingredient-finder-input" type="text" placeholder="eggs, rice, tomatoes, spinach" autocomplete="off"><div class="ingredient-finder-hints"><button type="button" data-ingredient-suggestion="eggs, milk, flour">Baking basics</button><button type="button" data-ingredient-suggestion="rice, beans, tomatoes">Pantry staples</button><button type="button" data-ingredient-suggestion="spinach, chickpeas, onion">Vegetarian</button></div><div id="ingredientFinderResults" class="ingredient-finder-results" aria-live="polite"></div></div></div>
+<script>
       const recipes = [
         {
           id: 'citrus-salmon-bowl',
@@ -1019,12 +1022,6 @@
           description: 'Fluffy pancakes with banana and oats for a wholesome breakfast.',
           ingredients: ['2 bananas', '2 eggs', '1/2 cup oats', '1 tsp cinnamon', '1 tsp baking powder', '1 tbsp butter'],
           method: ['Blend bananas, eggs, oats, cinnamon, and baking powder.', 'Cook on a skillet until golden on both sides.']
-        },
-        {
-          id: 'green-matcha-cookies', title: 'Green Matcha Cookies', category: 'dessert', time: 28, rating: 4.9, difficulty: 'Easy', icon: '🍵', color: 'green',
-          description: 'Soft green tea cookies with a gentle matcha flavor and crisp edges.',
-          ingredients: ['1 1/2 cups all-purpose flour', '1 tbsp matcha powder', '1/2 tsp baking soda', '1/2 cup softened butter', '3/4 cup sugar', '1 egg', '1 tsp vanilla', '1/2 cup white chocolate chips'],
-          method: ['Heat the oven to 350°F (175°C) and line a baking tray with parchment.', 'Whisk flour, matcha, and baking soda in a bowl.', 'In another bowl, beat butter and sugar until fluffy, then mix in the egg and vanilla.', 'Stir in the dry ingredients until a dough forms, then fold in white chocolate chips.', 'Scoop tablespoon-sized portions onto the tray, leaving space between each.', 'Bake for 9–11 minutes until the edges are set. Cool on the tray for 5 minutes before moving to a rack.']
         },
         {
           id: 'blueberry-lemon-muffins', title: 'Blueberry Lemon Muffins', category: 'breakfast', time: 30, rating: 4.8, difficulty: 'Easy', icon: '🫐', color: 'blue',
@@ -1595,6 +1592,7 @@
 
       setTheme(state.theme);
       renderAll();
-    </script>
+    const ingredientFinderModal=document.getElementById('ingredientFinderModal'),ingredientFinderInput=document.getElementById('ingredientFinderInput'),ingredientFinderResults=document.getElementById('ingredientFinderResults');function renderIngredientFinder(){if(!ingredientFinderResults)return;const terms=String(ingredientFinderInput.value||'').toLowerCase().split(/[,;\n]+/).map(v=>v.trim()).filter(Boolean);const ranked=recipes.map(recipe=>{const ingredients=(recipe.ingredients||[]).map(v=>String(v).toLowerCase());const matched=terms.filter(term=>ingredients.some(item=>item.includes(term)||term.split(/\s+/).some(word=>word.length>2&&item.includes(word))));return {recipe,matched};}).filter(item=>!terms.length||item.matched.length>0).sort((a,b)=>b.matched.length-a.matched.length||a.recipe.time-b.recipe.time).slice(0,12);if(!ranked.length){ingredientFinderResults.innerHTML='<div class="ingredient-finder-empty">No recipes matched those ingredients yet. Try a simpler ingredient name or another combination.</div>';return;}ingredientFinderResults.innerHTML=ranked.map(({recipe,matched})=>'<button class="ingredient-finder-result" type="button" data-finder-recipe="'+escapeHTML(recipe.id)+'"><span class="ingredient-finder-result-icon">'+escapeHTML(recipe.icon||'🍽️')+'</span><span class="ingredient-finder-result-copy"><strong>'+escapeHTML(recipe.title)+'</strong><small>'+(terms.length?matched.length+' ingredient match'+(matched.length===1?'':'es')+' · ':'')+escapeHTML(recipe.time)+' min · '+escapeHTML(recipe.difficulty||'Easy')+'</small></span><span aria-hidden="true">→</span></button>').join('');ingredientFinderResults.querySelectorAll('[data-finder-recipe]').forEach(button=>button.addEventListener('click',()=>{ingredientFinderModal.hidden=true;openModal(button.dataset.finderRecipe);}));}function closeIngredientFinder(){ingredientFinderModal.hidden=true;}document.getElementById('ingredientFinderBtn').addEventListener('click',()=>{ingredientFinderModal.hidden=false;renderIngredientFinder();ingredientFinderInput.focus();});document.getElementById('ingredientFinderClose').addEventListener('click',closeIngredientFinder);ingredientFinderModal.querySelector('[data-close-ingredient-finder]').addEventListener('click',closeIngredientFinder);ingredientFinderInput.addEventListener('input',renderIngredientFinder);ingredientFinderModal.querySelectorAll('[data-ingredient-suggestion]').forEach(button=>button.addEventListener('click',()=>{ingredientFinderInput.value=button.dataset.ingredientSuggestion;renderIngredientFinder();}));document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ingredientFinderModal.hidden)closeIngredientFinder();});
+</script>
   </body>
 </html>
