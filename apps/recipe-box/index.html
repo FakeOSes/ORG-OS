@@ -1106,7 +1106,7 @@
         recentList.innerHTML = recentRecipes.length
           ? recentRecipes.map((recipe) => `
               <li>
-                <span>${recipe.title}</span>
+                <span>${escapeHTML(recipe.title)}</span>
                 <button type="button" class="recent-btn" data-recipe-id="${recipe.id}">Open</button>
               </li>
             `).join('')
@@ -1123,15 +1123,18 @@
           return;
         }
 
-        shoppingList.innerHTML = state.shopping.map((item, index) => `
+        shoppingList.innerHTML = state.shopping.map((item, index) => {
+          const safeItem = escapeHTML(item);
+          return `
           <li>
             <label class="label">
               <input type="checkbox" data-shopping-index="${index}" checked />
-              <span>${item}</span>
+              <span>${safeItem}</span>
             </label>
-            <button class="remove" type="button" data-remove-index="${index}" aria-label="Remove ${item}">&times;</button>
+            <button class="remove" type="button" data-remove-index="${index}" aria-label="Remove ${safeItem}">&times;</button>
           </li>
-        `).join('');
+        `;
+        }).join('');
 
         shoppingList.querySelectorAll('[data-shopping-index]').forEach((checkbox) => {
           checkbox.addEventListener('change', (event) => {
@@ -1388,8 +1391,8 @@
         event.preventDefault();
         const data = new FormData(newRecipeForm);
         const title = String(data.get('title') || '').trim();
-        const ingredients = String(data.get('ingredients') || '').split(/\\n|,/).map((item) => item.trim()).filter(Boolean);
-        const method = String(data.get('method') || '').split(/\\n/).map((item) => item.trim()).filter(Boolean);
+        const ingredients = String(data.get('ingredients') || '').split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean);
+        const method = String(data.get('method') || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
         if (!title || !ingredients.length || !method.length) { newRecipeError.textContent = 'Add a recipe name, at least one ingredient, and at least one method step.'; return; }
         const recipe = { id: 'custom-' + Date.now(), title, category: String(data.get('category') || 'dinner'), time: Math.max(1, Number(data.get('time')) || 25), rating: 5, difficulty: 'Personal', icon: String(data.get('icon') || '🍽️'), color: String(data.get('color') || 'coral'), description: String(data.get('description') || '').trim() || 'A personal recipe saved to your collection.', ingredients, method, custom: true };
         recipes.unshift(recipe);
