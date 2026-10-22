@@ -1051,37 +1051,59 @@ function setupDesktopItemDrag(el,id,handle){
  if(grip.dataset.orgDragReady==="true")return;
  grip.dataset.orgDragReady="true";
  let active=null,suppressClickUntil=0;
- grip.addEventListener("click",e=>{if(Date.now()<suppressClickUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
+ grip.addEventListener("click",e=>{
+  if(Date.now()<suppressClickUntil){e.preventDefault();e.stopImmediatePropagation();}
+ },true);
  grip.addEventListener("pointerdown",e=>{
-  if(e.button!==0||active||e.target.closest("button,iframe,input,select,textarea,a,[contenteditable=true]"))return;
+  // Desktop icons are buttons too: only ignore nested controls, not the icon itself.
+  if(e.button!==0||active||e.target.closest("iframe,input,select,textarea,a,[contenteditable=true],button:not(.desktop-icon)"))return;
   const area=$("desktop");if(!area)return;
-  const startX=e.clientX,startY=e.clientY,left=parseFloat(el.style.left)||0,top=parseFloat(el.style.top)||0;
+  const bounds=desktopBounds();
+  const startX=e.clientX,startY=e.clientY;
+  const left=parseFloat(el.style.left)||0,top=parseFloat(el.style.top)||0;
   active={pointerId:e.pointerId,startX,startY,left,top,moved:false};
-  el.classList.add("is-dragging");area.classList.add("desktop-grid-active");
+  el.classList.add("is-dragging");
+  area.classList.add("desktop-grid-active");
   try{grip.setPointerCapture(e.pointerId);}catch(_){}
   const move=ev=>{
    if(!active||ev.pointerId!==active.pointerId)return;
    const dx=ev.clientX-active.startX,dy=ev.clientY-active.startY;
    if(Math.hypot(dx,dy)>4)active.moved=true;
    if(!active.moved)return;
-   const bounds=desktopBounds();
-   el.style.left=Math.max(0,Math.min(Math.max(0,bounds.width-el.offsetWidth),active.left+dx))+"px";
-   el.style.top=Math.max(0,Math.min(Math.max(0,bounds.height-el.offsetHeight),active.top+dy))+"px";
+   const b=desktopBounds();
+   el.style.left=Math.max(0,Math.min(Math.max(0,b.width-el.offsetWidth),active.left+dx))+"px";
+   el.style.top=Math.max(0,Math.min(Math.max(0,b.height-el.offsetHeight),active.top+dy))+"px";
    ev.preventDefault();
   };
-  const finish=ev=>{
-   if(!active||ev.pointerId!==active.pointerId)return;
-   const didMove=active.moved;active=null;
-   el.classList.remove("is-dragging");area.classList.remove("desktop-grid-active");
-   if(didMove){snapDesktopItem(el);storeDesktopItem(el,id);suppressClickUntil=Date.now()+450;}
+  const cleanup=()=>{
    document.removeEventListener("pointermove",move,true);
    document.removeEventListener("pointerup",finish,true);
    document.removeEventListener("pointercancel",finish,true);
-   try{if(grip.hasPointerCapture(e.pointerId))grip.releasePointerCapture(e.pointerId);}catch(_){}
+   document.removeEventListener("lostpointercapture",lost,true);
+  };
+  const finish=ev=>{
+   if(!active||ev.pointerId!==active.pointerId)return;
+   const didMove=active.moved;
+   active=null;
+   el.classList.remove("is-dragging");
+   area.classList.remove("desktop-grid-active");
+   if(didMove){
+    snapDesktopItem(el);
+    storeDesktopItem(el,id);
+    suppressClickUntil=Date.now()+450;
+   }
+   cleanup();
+   try{if(grip.hasPointerCapture(ev.pointerId))grip.releasePointerCapture(ev.pointerId);}catch(_){}
+  };
+  const lost=ev=>{
+   if(!active||ev.pointerId!==active.pointerId)return;
+   // Pointer capture can be lost while dragging; finalize cleanly and preserve the last position.
+   finish(ev);
   };
   document.addEventListener("pointermove",move,true);
   document.addEventListener("pointerup",finish,true);
   document.addEventListener("pointercancel",finish,true);
+  document.addEventListener("lostpointercapture",lost,true);
   e.preventDefault();
  });
 }
