@@ -1,0 +1,18 @@
+{
+  "id": "system-cleanup",
+  "name": "Storage Explorer",
+  "version": "1.0.0",
+  "minimumOSVersion": "1.0.0",
+  "compatibleOS": "ORG OS 1+",
+  "description": "Review ORG OS browser storage and clear selected local data.",
+  "entry": "index.html",
+  "category": "System",
+  "icon": "🗄️",
+  "features": [
+    "standalone-window",
+    "local-browser-functionality"
+  ],
+  "permissions": [
+    "local-storage"
+  ]
+}
