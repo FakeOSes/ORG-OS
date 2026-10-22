@@ -689,6 +689,23 @@
         .recipe-grid { grid-template-columns: 1fr; }
         .modal-body { grid-template-columns: 1fr; }
       }
+
+      /* Add-recipe form complements the existing Recipe Box visual system */
+      .recipe-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
+      .recipe-field{display:grid;gap:7px;min-width:0;color:var(--muted);font-size:.82rem;font-weight:700}
+      .recipe-field-wide{grid-column:1/-1}
+      .recipe-field small{font-size:.72rem;font-weight:400;color:var(--muted)}
+      .recipe-field input,.recipe-field select,.recipe-field textarea{width:100%;min-width:0;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:var(--search-bg);color:var(--ink);outline:none}
+      .recipe-field textarea{resize:vertical;line-height:1.5}
+      .recipe-field input:focus,.recipe-field select:focus,.recipe-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+      .form-intro{color:var(--muted);line-height:1.55;margin:7px 0 0}
+      .recipe-form-error{min-height:18px;margin:10px 0 0;color:#c2410c;font-size:.82rem}
+      body[data-theme="dark"] .recipe-form-error{color:#fdba74}
+      #savedFilterBtn[aria-pressed="true"]{background:var(--accent);color:white;border-color:var(--accent)}
+      .recipe-empty-state{grid-column:1/-1;padding:35px 20px;text-align:center;border:1px dashed var(--line);border-radius:22px;color:var(--muted);background:var(--panel)}
+      .recipe-empty-state strong{display:block;color:var(--ink);font-size:1.2rem;margin-bottom:7px}
+      @media(max-width:620px){.recipe-form-grid{grid-template-columns:1fr}.recipe-field-wide{grid-column:auto}.recipe-field{font-size:.8rem}.recipe-field input,.recipe-field select,.recipe-field textarea{padding:11px}}
+
     </style>
   </head>
   <body data-theme="light">
@@ -704,8 +721,9 @@
             <span>🔎</span>
             <input id="searchInput" type="search" placeholder="Search recipes..." />
           </label>
+          <button id="addRecipeBtn" class="secondary-btn" type="button">＋ Add recipe</button>
           <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode">🌙</button>
-          <button class="cta" type="button">Saved <span id="favoritesCount">0</span></button>
+          <button id="savedFilterBtn" class="cta" type="button" aria-pressed="false">♡ Saved <span id="favoritesCount">0</span></button>
         </div>
       </header>
 
@@ -789,6 +807,29 @@
       <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <button class="modal-close" type="button" aria-label="Close recipe details">×</button>
         <div id="modalContent"></div>
+      </div>
+    </div>
+
+
+    <div id="newRecipeModal" class="modal" hidden>
+      <div class="modal-backdrop" id="newRecipeBackdrop"></div>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="newRecipeTitle">
+        <button id="newRecipeClose" class="modal-close" type="button" aria-label="Close add recipe form">×</button>
+        <div class="modal-header"><div class="modal-meta"><span>YOUR COLLECTION</span><span>NEW RECIPE</span></div><h2 id="newRecipeTitle">Add a recipe</h2><p class="form-intro">Keep your own favorite meals right here in Recipe Box.</p></div>
+        <form id="newRecipeForm">
+          <div class="recipe-form-grid">
+            <label class="recipe-field recipe-field-wide">Recipe name<input name="title" required maxlength="90" placeholder="e.g. Creamy tomato pasta"></label>
+            <label class="recipe-field">Category<select name="category"><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner" selected>Dinner</option><option value="vegetarian">Vegetarian</option><option value="dessert">Dessert</option></select></label>
+            <label class="recipe-field">Prep time (minutes)<input name="time" type="number" min="1" max="1440" value="25" required></label>
+            <label class="recipe-field">Recipe visual<select name="icon"><option>🍝</option><option>🥗</option><option>🍲</option><option>🥪</option><option>🥞</option><option>🍪</option><option>🍓</option><option>🥑</option><option>🍕</option><option>🍜</option><option>🍰</option></select></label>
+            <label class="recipe-field">Card color<select name="color"><option value="coral">Coral</option><option value="teal">Teal</option><option value="green">Garden</option><option value="gold">Golden</option><option value="lavender">Lavender</option><option value="berry">Berry</option><option value="sunset">Sunset</option><option value="blue">Blue</option></select></label>
+            <label class="recipe-field recipe-field-wide">Short description<textarea name="description" rows="2" maxlength="240" placeholder="What makes this recipe special?"></textarea></label>
+            <label class="recipe-field recipe-field-wide">Ingredients <small>One ingredient per line</small><textarea name="ingredients" rows="4" required placeholder="2 cups pasta&#10;1 tbsp olive oil&#10;1 clove garlic"></textarea></label>
+            <label class="recipe-field recipe-field-wide">Method <small>One step per line</small><textarea name="method" rows="4" required placeholder="Boil the pasta until tender.&#10;Cook the garlic in olive oil.&#10;Mix together and serve."></textarea></label>
+          </div>
+          <p id="newRecipeError" class="recipe-form-error" role="status"></p>
+          <div class="modal-footer"><button class="secondary-btn" type="button" id="cancelNewRecipe">Cancel</button><button class="cta" type="submit">Save recipe</button></div>
+        </form>
       </div>
     </div>
 
@@ -957,6 +998,12 @@
       const searchInput = document.getElementById('searchInput');
       const themeToggle = document.getElementById('themeToggle');
       const favoritesCount = document.getElementById('favoritesCount');
+      const savedFilterBtn = document.getElementById('savedFilterBtn');
+      const addRecipeBtn = document.getElementById('addRecipeBtn');
+      const newRecipeModal = document.getElementById('newRecipeModal');
+      const newRecipeForm = document.getElementById('newRecipeForm');
+      const newRecipeError = document.getElementById('newRecipeError');
+      const statRecipes = document.getElementById('statRecipes');
       const modal = document.getElementById('recipeModal');
       const modalContent = document.getElementById('modalContent');
       const featuredTitle = document.getElementById('featuredTitle');
@@ -978,6 +1025,14 @@
           return fallback;
         }
       };
+
+      const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+      readArray('recipe-box-custom-recipes').forEach((recipe) => {
+        if (recipe && recipe.id && recipe.title && !recipes.some((existing) => existing.id === recipe.id)) recipes.push({ ...recipe, custom: true });
+      });
+      function persistCustomRecipes() {
+        localStorage.setItem('recipe-box-custom-recipes', JSON.stringify(recipes.filter((recipe) => recipe.custom)));
+      }
 
       const state = {
         filter: 'all',
@@ -1107,7 +1162,7 @@
               ? state.favorites.includes(recipe.id)
               : recipe.category === state.filter;
 
-          const haystack = `${recipe.title} ${recipe.description}`.toLowerCase();
+          const haystack = [recipe.title, recipe.description, recipe.category, ...(recipe.ingredients || [])].join(' ').toLowerCase();
           const matchesQuery = !query || haystack.includes(query);
           return matchesFilter && matchesQuery;
         });
@@ -1129,6 +1184,10 @@
       function renderCards() {
         const visible = getVisibleRecipes();
 
+        if (!visible.length) {
+          recipeGrid.innerHTML = '<div class="recipe-empty-state"><strong>No recipes found</strong>Try another search or switch categories. Your saved recipes stay in your collection.</div>';
+          return;
+        }
         recipeGrid.innerHTML = visible.map((recipe) => {
           const isFav = state.favorites.includes(recipe.id);
           const color = recipe.color || 'gold';
@@ -1137,15 +1196,15 @@
               <div class="card-actions">
                 <button class="favorite-btn ${isFav ? 'is-favorited' : ''}" type="button" data-favorite-id="${recipe.id}" aria-label="${isFav ? 'Remove from favorites' : 'Add to favorites'}">${isFav ? '♥' : '♡'}</button>
               </div>
-              <div class="recipe-visual" aria-hidden="true">${recipe.icon}</div>
+              <div class="recipe-visual" aria-hidden="true">${escapeHTML(recipe.icon || '🍽️')}</div>
               <div class="recipe-info">
                 <div class="recipe-meta">
-                  <span class="tag">${recipe.category}</span>
-                  <span>${recipe.time} min</span>
-                  <span>★ ${recipe.rating}</span>
+                  <span class="tag">${escapeHTML(recipe.category)}</span>
+                  <span>${escapeHTML(recipe.time)} min</span>
+                  <span>★ ${escapeHTML(recipe.rating ?? 5)}</span>
                 </div>
-                <h3>${recipe.title}</h3>
-                <p>${recipe.description}</p>
+                <h3>${escapeHTML(recipe.title)}</h3>
+                <p>${escapeHTML(recipe.description || 'A personal recipe saved to your collection.')}</p>
                 <div class="card-buttons">
                   <button class="view-btn" type="button" data-view-id="${recipe.id}">View recipe</button>
                   <button class="shop-toggle" type="button" data-shop-id="${recipe.id}">Add ingredients</button>
@@ -1179,29 +1238,29 @@
         modalContent.innerHTML = `
           <div class="modal-header">
             <div class="modal-meta">
-              <span>${recipe.category}</span>
-              <span>${recipe.time} min</span>
-              <span>★ ${recipe.rating}</span>
-              <span>${recipe.difficulty}</span>
+              <span>${escapeHTML(recipe.category)}</span>
+              <span>${escapeHTML(recipe.time)} min</span>
+              <span>★ ${escapeHTML(recipe.rating ?? 5)}</span>
+              <span>${escapeHTML(recipe.difficulty || 'Easy')}</span>
             </div>
-            <h2 id="modalTitle">${recipe.title}</h2>
+            <h2 id="modalTitle">${escapeHTML(recipe.title)}</h2>
           </div>
           <div class="modal-body">
             <div>
               <h3>Ingredients</h3>
               <ul class="ingredient-list">
-                ${recipe.ingredients.map((item) => `
+                ${(recipe.ingredients || []).map((item) => { const safeItem = escapeHTML(item); return `
                   <li>
-                    <input type="checkbox" aria-label="Add ${item} to shopping list" data-shopping-item="${item}" />
-                    <span>${item}</span>
+                    <input type="checkbox" aria-label="Add ${safeItem} to shopping list" data-shopping-item="${safeItem}" />
+                    <span>${safeItem}</span>
                   </li>
-                `).join('')}
+                `; }).join('')}
               </ul>
             </div>
             <div>
               <h3>Method</h3>
               <ol>
-                ${recipe.method.map((step) => `<li>${step}</li>`).join('')}
+                ${(recipe.method || []).map((step) => `<li>${escapeHTML(step)}</li>`).join('')}
               </ol>
             </div>
           </div>
@@ -1267,6 +1326,9 @@
       }
 
       function renderAll() {
+        if (statRecipes) statRecipes.textContent = String(recipes.length);
+        savedFilterBtn.setAttribute('aria-pressed', String(state.filter === 'favorites'));
+        savedFilterBtn.firstChild.textContent = state.filter === 'favorites' ? '♥ Saved ' : '♡ Saved ';
         updateFavoritesCount();
         setFeatured();
         renderRecent();
@@ -1310,6 +1372,33 @@
       featuredFavoriteBtn.addEventListener('click', () => {
         toggleFavorite(featuredFavoriteBtn.dataset.recipeId);
       });
+
+      savedFilterBtn.addEventListener('click', () => {
+        state.filter = state.filter === 'favorites' ? 'all' : 'favorites';
+        filters.forEach((button) => button.classList.toggle('is-active', button.dataset.filter === state.filter));
+        renderAll();
+      });
+
+      const closeNewRecipe = () => { newRecipeModal.hidden = true; newRecipeError.textContent = ''; };
+      addRecipeBtn.addEventListener('click', () => { newRecipeError.textContent = ''; newRecipeModal.hidden = false; newRecipeForm.elements.title.focus(); });
+      document.getElementById('newRecipeClose').addEventListener('click', closeNewRecipe);
+      document.getElementById('cancelNewRecipe').addEventListener('click', closeNewRecipe);
+      document.getElementById('newRecipeBackdrop').addEventListener('click', closeNewRecipe);
+      newRecipeForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const data = new FormData(newRecipeForm);
+        const title = String(data.get('title') || '').trim();
+        const ingredients = String(data.get('ingredients') || '').split(/\\n|,/).map((item) => item.trim()).filter(Boolean);
+        const method = String(data.get('method') || '').split(/\\n/).map((item) => item.trim()).filter(Boolean);
+        if (!title || !ingredients.length || !method.length) { newRecipeError.textContent = 'Add a recipe name, at least one ingredient, and at least one method step.'; return; }
+        const recipe = { id: 'custom-' + Date.now(), title, category: String(data.get('category') || 'dinner'), time: Math.max(1, Number(data.get('time')) || 25), rating: 5, difficulty: 'Personal', icon: String(data.get('icon') || '🍽️'), color: String(data.get('color') || 'coral'), description: String(data.get('description') || '').trim() || 'A personal recipe saved to your collection.', ingredients, method, custom: true };
+        recipes.unshift(recipe);
+        persistCustomRecipes();
+        state.filter = 'all'; state.query = ''; searchInput.value = ''; state.featuredId = recipe.id;
+        filters.forEach((button) => button.classList.toggle('is-active', button.dataset.filter === 'all'));
+        newRecipeForm.reset(); closeNewRecipe(); renderAll();
+      });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !newRecipeModal.hidden) closeNewRecipe(); });
 
       setTheme(state.theme);
       renderAll();
