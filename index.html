@@ -2008,6 +2008,22 @@ window.addEventListener("load",()=>{setTimeout(()=>{refreshSystemOverview();cons
 
 /* Lock/PIN screen removed: ORG-OS opens straight to the desktop. */
 #org-lock-screen,.org-lock-screen,.start-lock-button{display:none!important}
+
+/* Consistent finishing pass for built-in ORG-OS windows and native apps. */
+.window{border-radius:13px;overflow:hidden;border:1px solid #ffffff1b;box-shadow:0 20px 60px #0004;}
+.titlebar{min-height:40px;gap:9px;}
+.titlebar .window-title{font-weight:650;letter-spacing:-.015em;}
+.window-controls{gap:3px;}
+.window-controls button{border-radius:7px;transition:background .15s ease,color .15s ease;}
+.window .window-body button:not(.close),.window .window-body input,.window .window-body select,.window .window-body textarea{transition:border-color .15s ease,background-color .15s ease,box-shadow .15s ease;}
+.window .window-body button:focus-visible,.window .window-body input:focus-visible,.window .window-body select:focus-visible,.window .window-body textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.window .window-body button:disabled{opacity:.5;cursor:not-allowed;}
+.installed-app-window{min-width:min(360px,calc(100vw - 16px));min-height:min(260px,calc(100vh - 70px));}
+.installed-app-window .titlebar{padding-inline:10px;}
+.installed-app-window .window-body{overflow:auto;}
+.files-app .files-toolbar{flex-wrap:wrap;gap:6px;}
+.files-app .files-path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+@media(max-width:640px){.window{max-width:calc(100vw - 8px)!important;max-height:calc(100vh - 66px)!important}.titlebar{min-height:38px}.window-controls button{width:34px}}
 </style>
 </body>
 </html>
