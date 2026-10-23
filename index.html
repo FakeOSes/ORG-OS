@@ -2255,7 +2255,7 @@ window.toggleTaskbarPin=function(key){
  if(typeof window.syncTaskbar==='function')syncTaskbar('');
  if(typeof window.toast==='function')toast(next.includes(key)?'Pinned '+APP_NAMES[key].title+' to the taskbar.':'Unpinned '+APP_NAMES[key].title+'.');
 };
-function start(){render();const host=$('task-apps');if(host&&!host.dataset.pinObserver){host.dataset.pinObserver='true';new MutationObserver(()=>render()).observe(host,{childList:true});}window.addEventListener('resize',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});}
+function start(){render();window.addEventListener('resize',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
