@@ -2696,6 +2696,7 @@ function bindLegacyPinButtons(){
 function init(){
  render();bindLegacyPinButtons();
  if(initialized)return;initialized=true;
+ let observerFrame=0;
  const bodyObserver=new MutationObserver(records=>{
   let needsRender=false,needsBind=false;
   const relevantNode=node=>node.nodeType===1&&(node.matches?.('.window,.start-app-wrap,.app-tile')||!!node.querySelector?.('.window,.start-app-wrap,.app-tile'));
@@ -2704,10 +2705,16 @@ function init(){
     if(record.target.id==='task-apps'||record.target.closest?.('#task-apps'))continue;
     const changed=[...record.addedNodes,...record.removedNodes];
     if(changed.some(relevantNode)){needsRender=true;needsBind=true;}
-   }else if(record.type==='attributes'&&record.target.classList?.contains('window'))needsRender=true;
+   }else if(record.type==='attributes'&&record.target.classList?.contains('window')&&(record.attributeName==='class'||record.attributeName==='data-launched'))needsRender=true;
   }
-  if(needsRender)render();
-  if(needsBind)bindLegacyPinButtons();
+  if(!needsRender)return;
+  if(observerFrame)return;
+  const shouldBind=needsBind;
+  observerFrame=requestAnimationFrame(()=>{
+   observerFrame=0;
+   render();
+   if(shouldBind)bindLegacyPinButtons();
+  });
  });
  if(document.body)bodyObserver.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','data-launched']});
  window.addEventListener('resize',render);
