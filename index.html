@@ -743,7 +743,6 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
 #win-orgstore .store-detail-actions .soft-button{min-height:40px}
 @media(max-width:600px){#start-menu .start-main-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}#start-menu .start-main-grid .app-tile{min-height:92px!important}}
 
-.org-app-week-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.org-app-week-pin{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.16)!important}
 </style>
 </head>
 <body>
@@ -771,26 +770,19 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
   <div id="desktop-widgets"></div>
 </div>
 
-<nav id="taskbar" class="org-taskbar-2" aria-label="ORG OS taskbar">
-  <div class="taskbar-start-area">
-    <button class="task-button taskbar-start" id="start-button" title="Start" aria-label="Open Start menu">
-      <span class="start-logo" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-    </button>
+<div id="taskbar">
+  <button class="task-button" id="start-button" title="Start" aria-label="Start menu">
+    <span class="start-logo" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </span>
+  </button>
+  <input id="task-search" placeholder="Search apps..." aria-label="Search apps">
+  <div class="task-apps" id="task-apps"></div>
+  <div class="tray">
+    <button id="notify-button" title="Notifications">◔</button>
+    <div id="clock"></div>
   </div>
-  <label class="taskbar-search-wrap" aria-label="Search apps">
-    <span class="taskbar-search-icon" aria-hidden="true">⌕</span>
-    <input id="task-search" placeholder="Search apps" aria-label="Search apps" autocomplete="off">
-    <kbd class="taskbar-search-hint">⌘ K</kbd>
-  </label>
-  <div class="taskbar-apps-rail">
-    <div class="task-apps" id="task-apps" aria-label="Pinned and running apps"></div>
-  </div>
-  <div class="tray taskbar-tray">
-    <button id="notify-button" title="Notifications" aria-label="Open notifications"><span aria-hidden="true">◔</span><i class="taskbar-notification-dot" aria-hidden="true"></i></button>
-    <div class="taskbar-tray-divider" aria-hidden="true"></div>
-    <div id="clock" aria-label="Date and time"></div>
-  </div>
-</nav>
+</div>
 <div id="taskbar-edge" aria-label="Show taskbar" role="button" tabindex="0"></div>
 
 <div id="start-menu" class="panel">
@@ -1008,10 +1000,6 @@ Type "help" to see available commands.
 <main class="org-store-main" id="org-store-discover-page">
 <div class="store-hero"><div><span class="store-eyebrow">ORG STORE 2.1</span><h2>Discover something great.</h2><p>Explore apps built for ORG OS 1 and later.</p></div><div class="store-hero-mark">▦</div></div>
 <section class="org-featured-app"><div class="org-featured-copy"><span class="org-featured-eyebrow">FEATURED · AI ASSISTANT</span><h2>Meet ChatGPT.</h2><p>Brainstorm, learn, write, code, and explore ideas with your AI assistant.</p><div class="org-featured-meta"><span>✳ OpenAI</span><span>Productivity</span><span>ChatGPT account</span></div><button class="org-featured-button" onclick="showStoreDetails(storeItems.find(app=>app.key==='chatgpt'),false,getInstalledApps().some(app=>app.key==='chatgpt'),'chatgpt')">View ChatGPT <span>→</span></button></div><div class="org-featured-art" aria-hidden="true"><div class="chatgpt-featured-mark">✳</div></div></section>
-<section class="org-app-of-week" aria-labelledby="org-app-of-week-title">
-  <div class="org-app-week-art" aria-hidden="true"><span>♫</span><i></i><i></i><i></i><i></i></div>
-  <div class="org-app-week-copy"><span class="org-featured-eyebrow">APP OF THE WEEK · MEDIA</span><h2 id="org-app-of-week-title">ORG Music</h2><p>Your desktop soundtrack. Open your music player and jump back into what you were listening to.</p><div class="org-app-week-meta"><span>🎵 Media player</span><span>Included with ORG-OS</span></div><div class="org-app-week-actions"><button class="org-featured-button" type="button" onclick="openApp('music')">Open ORG Music <span>→</span></button><button class="org-featured-button org-app-week-pin" type="button" onclick="toggleTaskbarPin('music');this.textContent=(getTaskbarPinnedKeys().includes('music')?'✓ Pinned to taskbar':'＋ Pin to taskbar')">＋ Pin to taskbar</button></div></div>
-</section>
 <div class="store-toolbar"><button id="org-store-theme-toggle" class="soft-button" type="button" onclick="toggleStoreTheme()" aria-pressed="true">☀️ Light store</button><input id="org-store-search" class="field" placeholder="Search apps..." aria-label="Search apps"><select id="org-store-category" class="field" aria-label="Filter by category"><option value="all">All categories</option><option value="productivity">Productivity</option><option value="creative">Creative</option><option value="media">Media</option><option value="utilities">Utilities</option><option value="system">System</option></select></div>
 <div class="store-status-row"><strong>Apps to explore</strong><span class="status" id="org-store-status">ORG OS 1+ compatible apps</span></div>
 <div id="org-store-grid" class="apps-grid org-store-grid"></div>
@@ -1106,7 +1094,7 @@ function closeAllWindows(){document.querySelectorAll(".window").forEach(win=>{wi
 function toggleStart(){$("notifications").classList.remove("open");$("start-menu").classList.toggle("open");if($("start-menu").classList.contains("open")){$("start-search").value="";renderPinned();updateStartClock();ensureOrgWidgetLibraryLoaded();$("start-search").focus();}}
 function toggleNotifications(){ $("start-menu").classList.remove("open"); $("notifications").classList.toggle("open"); }
 $("start-button").onclick=toggleStart;$("notify-button").onclick=toggleNotifications;
-function getTaskbarPinnedKeys(){const defaults=["notes","files","terminal","settings","orgstore"];const saved=safeGet("desktop.taskbarPinnedApps",defaults);return (Array.isArray(saved)?saved:defaults).filter((key,index,all)=>APP_NAMES[key]&&all.indexOf(key)===index&&!(key==="welcome"&&safeGet("desktop.welcomeRemoved",false)));} function toggleTaskbarPin(key){if(!APP_NAMES[key])return;const pins=getTaskbarPinnedKeys(),next=pins.includes(key)?pins.filter(item=>item!==key):pins.concat(key);safeSet("desktop.taskbarPinnedApps",next);renderTaskbarPins();syncTaskbar("");toast(next.includes(key)?"Pinned "+APP_NAMES[key].title+" to the taskbar.":"Unpinned "+APP_NAMES[key].title+".");} function makeTaskButton(name){if(!APP_NAMES[name])return null;let b=document.querySelector('.task-button[data-app="'+name+'"]');if(b)return b;b=document.createElement("button");b.className="task-button";b.dataset.app=name;b.title=APP_NAMES[name].title;b.innerHTML='<span class="task-app-icon">'+APP_NAMES[name].icon+'</span><span class="task-running-indicator"></span>';b.setAttribute("aria-label",APP_NAMES[name].title);b.onclick=()=>{const win=$("win-"+name);if(!win){openApp(name);return;}if(!win.classList.contains("hidden")&&getTopVisibleApp()===name){minimizeApp(name);}else if(!win&&!APP_NAMES[name])return;else if(!win.classList.contains("hidden")){focusApp(name);}else openApp(name);};$("task-apps").appendChild(b);return b;} function renderTaskbarPins(){const host=$("task-apps");if(!host)return;registerInstalledApps();getTaskbarPinnedKeys().forEach(makeTaskButton);document.querySelectorAll("#task-apps .task-button[data-app]").forEach(item=>{const name=item.dataset.app,win=$("win-"+name),running=!!win&&(!win.classList.contains("hidden")||win.dataset.launched==="true");if(!getTaskbarPinnedKeys().includes(name)&&!running)item.remove();});} registerInstalledApps();renderTaskbarPins(); function getInstalledApps(){const items=safeGet("desktop.installedApps",[]);if(!Array.isArray(items))return [];const retired=new Set(["typing-lab","link-vault","budget-buddy","installed-typing-lab","installed-link-vault","installed-budget-buddy"]);const clean=items.filter(app=>app&&![app.key,app.appKey].some(key=>typeof key==="string"&&(retired.has(key)||/^installed-(typing-lab|link-vault|budget-buddy)$/.test(key))));if(clean.length!==items.length)safeSet("desktop.installedApps",clean);return clean;} const ORG_CORE_APPS=[{key:"calendar",name:"Calendar",icon:"📅",category:"productivity"},{key:"paint",name:"ORG Paint",icon:"🎨",category:"creative"},{key:"music",name:"ORG Music",icon:"🎵",category:"media"},{key:"photos",name:"ORG Photos",icon:"🖼️",category:"media"},{key:"weather",name:"Weather",icon:"🌤️",category:"utilities"},{key:"monitor",name:"System Monitor",icon:"📊",category:"system"}]; function ensureCoreAppsInstalled(){const installed=getInstalledApps();let changed=false;ORG_CORE_APPS.forEach(app=>{let record=installed.find(item=>item.key===app.key);if(!record){record={...app,url:"https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html",description:"Included with ORG-OS."};installed.push(record);changed=true;}if(record.systemCore!==true||record.appKey!==app.key||record.name!==app.name||record.icon!==app.icon||record.url!=="https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html"){record.systemCore=true;record.appKey=app.key;record.name=app.name;record.icon=app.icon;record.category=app.category;record.url="https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html";record.description="Included with ORG-OS.";changed=true;}});if(changed)safeSet("desktop.installedApps",installed);} function registerInstalledApps(){getInstalledApps().forEach(app=>{if(!app||!app.key||!app.name)return;app.appKey=app.appKey||("installed-"+app.key);APP_NAMES[app.appKey]={title:app.name,icon:app.icon||"📦"};});} function getStartEntries(){registerInstalledApps();return Object.entries(APP_NAMES).filter(([key])=>key!=="welcome"||!safeGet("desktop.welcomeRemoved",false));} function getPinnedKeys(){const saved=safeGet("desktop.pinnedApps",["notes","terminal","orgstore"]);return (Array.isArray(saved)?saved:[]).filter(key=>APP_NAMES[key]).slice(0,3);}
+function getTaskbarPinnedKeys(){const defaults=["notes","files","terminal","settings","orgstore"];const saved=safeGet("desktop.taskbarPinnedApps",defaults);return (Array.isArray(saved)?saved:defaults).filter((key,index,all)=>APP_NAMES[key]&&all.indexOf(key)===index&&!(key==="welcome"&&safeGet("desktop.welcomeRemoved",false)));} function toggleTaskbarPin(key){if(!APP_NAMES[key])return;const pins=getTaskbarPinnedKeys(),next=pins.includes(key)?pins.filter(item=>item!==key):pins.concat(key);safeSet("desktop.taskbarPinnedApps",next);renderTaskbarPins();syncTaskbar("");toast(next.includes(key)?"Pinned "+APP_NAMES[key].title+" to the taskbar.":"Unpinned "+APP_NAMES[key].title+".");} function makeTaskButton(name){if(!APP_NAMES[name])return null;let b=document.querySelector('.task-button[data-app="'+name+'"]');if(b)return b;b=document.createElement("button");b.className="task-button";b.dataset.app=name;b.title=APP_NAMES[name].title;b.innerHTML='<span class="task-app-icon">'+APP_NAMES[name].icon+'</span><span class="task-running-indicator"></span>';b.setAttribute("aria-label",APP_NAMES[name].title);b.onclick=()=>{const win=$("win-"+name);if(!win){openApp(name);return;}if(!win.classList.contains("hidden")&&getTopVisibleApp()===name){minimizeApp(name);}else if(!win&&!APP_NAMES[name])return;else if(!win.classList.contains("hidden")){focusApp(name);}else openApp(name);};$("task-apps").appendChild(b);return b;} function renderTaskbarPins(){const host=$("task-apps");if(!host)return;registerInstalledApps();getTaskbarPinnedKeys().forEach(makeTaskButton);document.querySelectorAll("#task-apps .task-button[data-app]").forEach(item=>{const name=item.dataset.app,win=$("win-"+name),running=!!win&&(!win.classList.contains("hidden")||win.dataset.launched==="true");if(!getTaskbarPinnedKeys().includes(name)&&!running)item.remove();});} registerInstalledApps();renderTaskbarPins(); function getInstalledApps(){const items=safeGet("desktop.installedApps",[]);return Array.isArray(items)?items:[];} const ORG_CORE_APPS=[{key:"calendar",name:"Calendar",icon:"📅",category:"productivity"},{key:"paint",name:"ORG Paint",icon:"🎨",category:"creative"},{key:"music",name:"ORG Music",icon:"🎵",category:"media"},{key:"photos",name:"ORG Photos",icon:"🖼️",category:"media"},{key:"weather",name:"Weather",icon:"🌤️",category:"utilities"},{key:"monitor",name:"System Monitor",icon:"📊",category:"system"}]; function ensureCoreAppsInstalled(){const installed=getInstalledApps();let changed=false;ORG_CORE_APPS.forEach(app=>{let record=installed.find(item=>item.key===app.key);if(!record){record={...app,url:"https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html",description:"Included with ORG-OS."};installed.push(record);changed=true;}if(record.systemCore!==true||record.appKey!==app.key||record.name!==app.name||record.icon!==app.icon||record.url!=="https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html"){record.systemCore=true;record.appKey=app.key;record.name=app.name;record.icon=app.icon;record.category=app.category;record.url="https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html";record.description="Included with ORG-OS.";changed=true;}});if(changed)safeSet("desktop.installedApps",installed);} function registerInstalledApps(){getInstalledApps().forEach(app=>{if(!app||!app.key||!app.name)return;app.appKey=app.appKey||("installed-"+app.key);APP_NAMES[app.appKey]={title:app.name,icon:app.icon||"📦"};});} function getStartEntries(){registerInstalledApps();return Object.entries(APP_NAMES).filter(([key])=>key!=="welcome"||!safeGet("desktop.welcomeRemoved",false));} function getPinnedKeys(){const saved=safeGet("desktop.pinnedApps",["notes","terminal","orgstore"]);return (Array.isArray(saved)?saved:[]).filter(key=>APP_NAMES[key]).slice(0,3);}
 function togglePinnedApp(key){const pins=getPinnedKeys();const next=pins.includes(key)?pins.filter(item=>item!==key):(pins.length<3?[...pins,key]:pins);if(!pins.includes(key)&&pins.length>=3){toast("You can pin up to 3 apps.");return;}safeSet("desktop.pinnedApps",next);renderPinned($("start-search").value);toast(next.includes(key)?"App pinned.":"App unpinned.");}
 function makeAppTile(key,a){const wrap=document.createElement("div");wrap.className="start-app-wrap";const b=document.createElement("button");b.type="button";b.className="app-tile";b.draggable=true;b.dataset.appKey=key;b.innerHTML='<span class="icon">'+a.icon+'</span><span class="app-tile-name"></span>';b.querySelector(".app-tile-name").textContent=a.title;b.onclick=()=>openApp(key);const pin=document.createElement("button");pin.type="button";pin.className="start-pin-toggle";pin.title=getPinnedKeys().includes(key)?"Unpin app":"Pin app";pin.textContent=getPinnedKeys().includes(key)?"★":"＋";pin.setAttribute("aria-label",pin.title+" "+a.title);pin.onclick=e=>{e.stopPropagation();togglePinnedApp(key);};const taskPin=document.createElement("button");taskPin.type="button";taskPin.className="start-taskbar-toggle"+(getTaskbarPinnedKeys().includes(key)?" is-pinned":"");taskPin.title=getTaskbarPinnedKeys().includes(key)?"Unpin from taskbar":"Pin to taskbar";taskPin.textContent="▰";taskPin.setAttribute("aria-label",taskPin.title+" "+a.title);taskPin.onclick=e=>{e.stopPropagation();toggleTaskbarPin(key);renderPinned($("start-search").value);};wrap.append(b,pin,taskPin);return wrap;}
 function renderRecentSearches(){const host=$("start-recent-searches");if(!host)return;host.replaceChildren();const terms=safeGet("desktop.recentSearches",[]);if(!Array.isArray(terms)||!terms.length){const empty=document.createElement("span");empty.className="start-muted";empty.textContent="Your recent searches appear here.";host.appendChild(empty);return;}terms.slice(0,5).forEach(term=>{const b=document.createElement("button");b.className="start-recent-chip";b.innerHTML='<span>⌕</span><span></span>';b.lastElementChild.textContent=term;b.onclick=()=>{$("start-search").value=term;renderPinned(term);};host.appendChild(b);});}
@@ -1451,12 +1439,12 @@ function renderOrgStoreUpdates(){
 }
 function showOrgStorePage(page){const discover=$("org-store-discover-page"),updates=$("org-store-updates-page");if(!discover||!updates)return;discover.classList.remove("store-detail-active");const detail=$("org-store-detail-page");if(detail)detail.remove();const showUpdates=page==="updates";discover.classList.toggle("hidden",showUpdates);updates.classList.toggle("hidden",!showUpdates);document.querySelectorAll(".org-store-nav").forEach(x=>x.classList.toggle("active",x.dataset.storePage===page));if(showUpdates)renderOrgStoreUpdates();}
 function toggleStoreTheme(){const current=safeGet("desktop.storeTheme","dark"),next=current==="dark"?"light":"dark";safeSet("desktop.storeTheme",next);applyStoreTheme(next);}function applyStoreTheme(theme){const root=$("win-orgstore");if(!root)return;root.dataset.storeTheme=theme==="light"?"light":"dark";const b=$("org-store-theme-toggle");if(b){b.textContent=theme==="light"?"🌙 Dark store":"☀️ Light store";b.setAttribute("aria-pressed",String(theme==="dark"));}}
-function renderOrgStore(){applyStoreTheme(safeGet("desktop.storeTheme","dark"));const host=$("org-store-grid");if(!host)return;host.replaceChildren();const q=($("org-store-search")?.value||"").trim().toLowerCase(),category=$("org-store-category")?.value||"all";let count=0;const installed=getInstalledApps();const makeCard=(app,isBuiltin)=>{const key=isBuiltin?app.builtin:(app.key||app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""));const isInstalled=!isBuiltin&&installed.some(item=>item.key===key);const card=document.createElement("article");card.className="store-card store-card-modern store-card-clickable";card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","Open "+app.name+" app page");card.setAttribute("title","Open "+app.name);card.onclick=()=>showStoreDetails(app,isBuiltin,isInstalled,key);card.onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target===card){e.preventDefault();showStoreDetails(app,isBuiltin,isInstalled,key);}};const top=document.createElement("div");top.className="store-card-top";const icon=document.createElement("div");icon.className="store-app-icon";icon.textContent=app.icon||"📦";const tag=document.createElement("span");tag.className="store-category-tag";tag.textContent=isBuiltin?"System":(app.category||"Apps");top.append(icon,tag);const title=document.createElement("h3");title.textContent=app.name;const desc=document.createElement("p");desc.textContent=app.description||"No description available.";card.append(top,title,desc);if(isBuiltin||isInstalled){const label=document.createElement("div");label.className="installed-label";label.textContent=isBuiltin?"Included with ORG-OS":"✓ Installed";card.append(label);}host.appendChild(card);count++;};ORG_APPS.filter(app=>(app.name+" "+app.description).toLowerCase().includes(q)&&(category==="all"||category==="system")).forEach(app=>makeCard(app,true));storeItems.filter(app=>!["typing-lab","link-vault","budget-buddy","installed-typing-lab","installed-link-vault","installed-budget-buddy"].includes(app.key)&&!["typing-lab","link-vault","budget-buddy"].includes(String(app.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""))&&(app.name+" "+(app.description||"")).toLowerCase().includes(q)&&(category==="all"||category===String(app.category||"apps").toLowerCase())).forEach(app=>makeCard(app,false));if(!count){const empty=document.createElement("div");empty.className="empty store-empty";empty.textContent="No apps match your search. Try another name or category.";host.appendChild(empty);}const status=$("org-store-status");if(status)status.textContent=count+" "+(count===1?"app":"apps")+(category==="all"?" available":" in "+category);}
+function renderOrgStore(){applyStoreTheme(safeGet("desktop.storeTheme","dark"));const host=$("org-store-grid");if(!host)return;host.replaceChildren();const q=($("org-store-search")?.value||"").trim().toLowerCase(),category=$("org-store-category")?.value||"all";let count=0;const installed=getInstalledApps();const makeCard=(app,isBuiltin)=>{const key=isBuiltin?app.builtin:(app.key||app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""));const isInstalled=!isBuiltin&&installed.some(item=>item.key===key);const card=document.createElement("article");card.className="store-card store-card-modern store-card-clickable";card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","Open "+app.name+" app page");card.setAttribute("title","Open "+app.name);card.onclick=()=>showStoreDetails(app,isBuiltin,isInstalled,key);card.onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target===card){e.preventDefault();showStoreDetails(app,isBuiltin,isInstalled,key);}};const top=document.createElement("div");top.className="store-card-top";const icon=document.createElement("div");icon.className="store-app-icon";icon.textContent=app.icon||"📦";const tag=document.createElement("span");tag.className="store-category-tag";tag.textContent=isBuiltin?"System":(app.category||"Apps");top.append(icon,tag);const title=document.createElement("h3");title.textContent=app.name;const desc=document.createElement("p");desc.textContent=app.description||"No description available.";card.append(top,title,desc);if(isBuiltin||isInstalled){const label=document.createElement("div");label.className="installed-label";label.textContent=isBuiltin?"Included with ORG-OS":"✓ Installed";card.append(label);}host.appendChild(card);count++;};ORG_APPS.filter(app=>(app.name+" "+app.description).toLowerCase().includes(q)&&(category==="all"||category==="system")).forEach(app=>makeCard(app,true));storeItems.filter(app=>(app.name+" "+(app.description||"")).toLowerCase().includes(q)&&(category==="all"||category===String(app.category||"apps").toLowerCase())).forEach(app=>makeCard(app,false));if(!count){const empty=document.createElement("div");empty.className="empty store-empty";empty.textContent="No apps match your search. Try another name or category.";host.appendChild(empty);}const status=$("org-store-status");if(status)status.textContent=count+" "+(count===1?"app":"apps")+(category==="all"?" available":" in "+category);}
 function getStoreAppFeatures(app){const key=String(app.key||app.builtin||"").toLowerCase();const catalog={chatgpt:["Open ChatGPT inside an ORG-OS app window","Use the official ChatGPT website and account","Website embedding restrictions remain controlled by ChatGPT"],welcome:["Guided desktop introduction","Quick links to core ORG-OS features"],notes:["Create and edit notes","Automatic local saving","Export notes as text"],terminal:["Run ORG Shell commands","Install catalog apps","Manage apps and desktop settings"],settings:["Personalize themes and wallpaper","Manage accounts and desktop preferences"],files:["Create folders and text files","Rename, edit, move, and delete local items"],calendar:["Monthly calendar view","Saved appointments and event planning"],paint:["Drawing and erasing tools","Undo support","Export artwork as PNG"],music:["Play local audio files","Track queue and playback controls"],tasks:["Create and complete tasks","Priority and completion filters"],photos:["Browse local image files","Thumbnail gallery and image preview"],weather:["City-based weather dashboard","Live conditions require a connected weather source"],monitor:["Inspect browser capabilities","Review available desktop windows"],calculator:["Calculator keypad and keyboard support","Calculation history"],clock:["Live digital clock","Stopwatch","Countdown timer"],pomodoro:["Focused work sessions","Short breaks and session progress"],markdown:["Markdown editor","Live formatted preview"],"json-tool":["Format and validate JSON","Minify JSON for compact output"],"unit-converter":["Convert common length units","Convert weight and temperature"],"csv-explorer":["Import CSV files locally","Preview rows and summarize columns","Export CSV data"],"regex-playground":["Test regular expressions","Highlight matches and inspect capture groups"],"system-cleanup":["Inspect browser storage usage","Clear selected local data"],"habit-tracker":["Daily habit checklist","Track streaks and routine progress"],"password-studio":["Generate random passwords locally","Choose length and character types"],"reading-log":["Maintain a personal bookshelf","Track pages read and completion"],"text-diff":["Compare two text blocks","Spot differences between versions"],"svg-workshop":["Create editable vector shapes","Customize colors and text","Export SVG artwork"],"random-picker":["Create a custom list","Randomly pick an item"],"recipe-box":["Save and search recipes","Track ingredients and cooking steps"],"color-contrast":["Preview foreground and background colors","Check text contrast"]};const features=Array.isArray(app.features)?app.features:Array.isArray(app.includes)?app.includes:(catalog[key]||["Designed for ORG-OS","Opens in its own desktop window"]);const widgets=Array.isArray(app.widgets)?app.widgets:Array.isArray(app.includesWidgets)?app.includesWidgets:(key==="clock"?["Clock widget"]:[]);return{features:features.map(String),widgets:widgets.map(w=>typeof w==="string"?w:(w.name||w.title||"Widget"))};}
 function showStoreDetails(app,isBuiltin,isInstalled,key){const discover=$("org-store-discover-page");if(!discover||!app)return;let page=$("org-store-detail-page");if(page)page.remove();page=document.createElement("section");page.id="org-store-detail-page";page.className="org-store-main org-store-detail-page";const back=document.createElement("button");back.type="button";back.className="store-detail-back";back.innerHTML="← <span>Back to apps</span>";back.onclick=()=>{discover.classList.remove("store-detail-active");page.remove();};const head=document.createElement("div");head.className="store-detail-header";const icon=document.createElement("div");icon.className="store-detail-hero-icon";icon.textContent=app.icon||"📦";const copy=document.createElement("div");copy.className="store-detail-heading-copy";const eyebrow=document.createElement("div");eyebrow.className="store-eyebrow";eyebrow.textContent="ORG APP STORE · APP DETAILS";const title=document.createElement("h1");title.textContent=app.name;const maker=document.createElement("div");maker.className="store-detail-byline";maker.textContent="By "+(app.author||app.by||"ORG-OS Team");copy.append(eyebrow,title,maker);head.append(icon,copy);const badges=document.createElement("div");badges.className="store-detail-badges";const category=document.createElement("span");category.className="store-category-tag";category.textContent=(isBuiltin?"System":(app.category||"Apps"))+" category";const compatibility=document.createElement("span");compatibility.className="store-detail-compat";compatibility.textContent="Works with "+(app.compatibility||"ORG-OS 1.1+");badges.append(category,compatibility);const about=document.createElement("section");about.className="store-detail-section";const aboutTitle=document.createElement("h2");aboutTitle.textContent="Description";const desc=document.createElement("p");desc.className="store-detail-description";desc.textContent=app.description||"No description available.";about.append(aboutTitle,desc);const data=getStoreAppFeatures(app);const features=document.createElement("section");features.className="store-detail-section";const featureTitle=document.createElement("h2");featureTitle.textContent="What it comes with";const list=document.createElement("ul");list.className="store-detail-feature-list";data.features.forEach(value=>{const li=document.createElement("li");li.textContent=value;list.append(li);});features.append(featureTitle,list);const widgetSection=document.createElement("section");widgetSection.className="store-detail-section";const widgetTitle=document.createElement("h2");widgetTitle.textContent="Included widgets";widgetSection.append(widgetTitle);if(data.widgets.length){const widgets=document.createElement("div");widgets.className="store-detail-widget-list";data.widgets.forEach(name=>{const item=document.createElement("div");item.className="store-detail-widget-item";const glyph=document.createElement("span");glyph.textContent="▦";const text=document.createElement("div"),strong=document.createElement("strong"),small=document.createElement("small");strong.textContent=name;small.textContent="Available from the desktop widget library";text.append(strong,small);item.append(glyph,text);widgets.append(item);});widgetSection.append(widgets);}else{const none=document.createElement("p");none.className="store-detail-muted";none.textContent="No separate widgets are listed for this app.";widgetSection.append(none);}const footer=document.createElement("div");footer.className="store-detail-footer";const status=document.createElement("p");status.className="store-detail-install-status";status.textContent=isBuiltin?"Included with ORG-OS.":isInstalled?"Installed and ready on this desktop.":"Review the app details before installing.";const actions=document.createElement("div");actions.className="store-detail-actions";if(!isBuiltin&&!isInstalled){const install=document.createElement("button");install.className="store-install-button";install.textContent="Install app";install.onclick=()=>{installApp(app);setTimeout(()=>{if(getInstalledApps().some(item=>item.key===key)){showStoreDetails(app,false,true,key);toast(app.name+" installed.");}},0);};actions.append(install);}else if(!isBuiltin&&isInstalled){const record=getInstalledApps().find(item=>item.key===key);const isCore=!!(record&&record.systemCore);const tag=document.createElement("span");tag.className="store-detail-installed-tag";tag.textContent=isCore?"✓ Included with ORG-OS":"✓ Installed";actions.append(tag);if(!isCore){const uninstall=document.createElement("button");uninstall.className="soft-button";uninstall.textContent="Uninstall";uninstall.onclick=async()=>{if(!await orgConfirm("Uninstall "+app.name+" for every ORG-OS profile?",{title:"Uninstall app",confirmText:"Uninstall",danger:true}))return;safeSet("desktop.installedApps",getInstalledApps().filter(item=>item.key!==key));registerInstalledApps();renderOrgStore();showStoreDetails(app,false,false,key);toast(app.name+" uninstalled.");};actions.append(uninstall);}else{const open=document.createElement("button");open.className="store-install-button";open.textContent="Open app";open.onclick=()=>{discover.classList.remove("store-detail-active");page.remove();openInstalledApp(key);};actions.append(open);}}else if(isInstalled){const tag=document.createElement("span");tag.className="store-detail-installed-tag";tag.textContent="✓ Installed";actions.append(tag);const open=document.createElement("button");open.className="store-install-button";open.textContent="Open app";open.onclick=()=>{discover.classList.remove("store-detail-active");page.remove();openInstalledApp(key);};actions.append(open);}else{const tag=document.createElement("span");tag.className="store-detail-installed-tag";tag.textContent="✓ Included with ORG-OS";actions.append(tag);const open=document.createElement("button");open.className="store-install-button";open.textContent="Open app";open.onclick=()=>{discover.classList.remove("store-detail-active");page.remove();openApp(key);};actions.append(open);}footer.append(status,actions);page.append(back,head,badges,about,features,widgetSection,footer);discover.append(page);discover.classList.add("store-detail-active");requestAnimationFrame(()=>page.scrollIntoView({behavior:"smooth",block:"start"}));}
 function normalizeGitHubUrl(value){if(typeof value!=="string")return "";const trimmed=value.trim();if(!trimmed)return "";if(/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed))return trimmed;if(/^https?:\/\/github\.com\//i.test(trimmed)){const match=trimmed.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i);if(match)return "https://raw.githubusercontent.com/"+match[1]+"/"+match[2]+"/"+match[3]+"/"+match[4];}try{const parsed=new URL(trimmed);return ["https:","http:"].includes(parsed.protocol)?parsed.href:"";}catch{return "";}}
 function normalizeCatalog(data){const output=[];[["apps",data.apps||[]],["tools",data.tools||[]],["hubs",data.hubs||[]],["links",data.links||[]]].forEach(([category,items])=>{if(!Array.isArray(items))return;items.forEach(item=>{if(!item||!String(item.name||"").trim())return;const url=normalizeGitHubUrl(item.url);if(!url)return;output.push({category,name:String(item.name).trim(),description:item.description||item.desc||"",icon:item.icon||"🔧",url,installed:false})})});return output;}
-function loadAppCatalog(){const apps=[{key:"chatgpt",name:"ChatGPT",description:"Open ChatGPT inside its own ORG-OS app window for brainstorming, learning, writing, and coding.",icon:"✳",category:"productivity"},{key:"calendar",name:"Calendar",description:"Plan events with a monthly calendar and saved appointments.",icon:"📅",category:"productivity"},{key:"paint",name:"ORG Paint",description:"Draw, erase, undo, and export artwork as PNG.",icon:"🎨",category:"creative"},{key:"music",name:"ORG Music",description:"Play local audio files with a track queue and controls.",icon:"🎵",category:"media"},{key:"tasks",name:"Tasks",description:"Manage to-dos with completion and priority filters.",icon:"✅",category:"productivity"},{key:"photos",name:"ORG Photos",description:"Browse local images in a thumbnail gallery and preview them.",icon:"🖼️",category:"media"},{key:"weather",name:"Weather",description:"A city-based weather dashboard starter; live weather data is not connected yet.",icon:"🌤️",category:"utilities"},{key:"monitor",name:"System Monitor",description:"Inspect browser capabilities and available desktop windows.",icon:"📊",category:"system"},{key:"calculator",name:"Calculator",description:"A handy calculator with history and keyboard support.",icon:"🧮",category:"utilities"},{key:"clock",name:"World Clock",description:"Live digital clock, stopwatch, and countdown timer.",icon:"⏱️",category:"utilities"},{key:"pomodoro",name:"Focus Timer",description:"Pomodoro work sessions, short breaks, and progress tracking.",icon:"🍅",category:"productivity"},{key:"markdown",name:"Markdown Studio",description:"Write Markdown and preview formatted notes side by side.",icon:"📝",category:"productivity"},{key:"json-tool",name:"JSON Studio",description:"Format, validate, and minify JSON data.",icon:"{ }",category:"utilities"},{key:"unit-converter",name:"Unit Converter",description:"Convert common length, weight, and temperature units.",icon:"📐",category:"utilities"},{key:"csv-explorer",name:"CSV Explorer",description:"Open CSV files, inspect rows, and summarize columns locally.",icon:"▤",category:"utilities"},{key:"regex-playground",name:"Regex Playground",description:"Test regular expressions against sample text and inspect matches.",icon:"⌘",category:"utilities"},{key:"system-cleanup",name:"Storage Explorer",description:"Review ORG OS browser storage and clear selected local data.",icon:"🗄️",category:"system"},{key:"habit-tracker",name:"Habit Tracker",description:"Build routines with a daily checklist and streak counts.",icon:"🌱",category:"productivity"},{key:"password-studio",name:"Password Studio",description:"Generate random passwords locally with adjustable character sets.",icon:"🔐",category:"utilities"},{key:"reading-log",name:"Reading Log",description:"Track books, pages read, and reading progress on your shelf.",icon:"📚",category:"productivity"},{key:"text-diff",name:"Text Compare",description:"Compare two text blocks and spot differences.",icon:"🔎",category:"utilities"},{key:"svg-workshop",name:"SVG Workshop",description:"Create simple vector shapes and export them as SVG artwork.",icon:"◇",category:"creative"},{key:"random-picker",name:"Random Picker",description:"Make a list and randomly pick an item.",icon:"🎲",category:"utilities"},{key:"recipe-box",name:"Recipe Box",description:"Save recipes and ingredient notes in one place.",icon:"🍲",category:"productivity"},{key:"color-contrast",name:"Contrast Checker",description:"Preview foreground and background colors and check contrast.",icon:"🌓",category:"creative"}];storeItems=apps.filter(app=>!["typing-lab","link-vault","budget-buddy"].includes(app.key)).map(app=>({...app,url:"https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html",installed:false,author:"ORG-OS Team",compatibility:"ORG OS 1.1+"}));const status=$("org-store-status");if(status)status.textContent=storeItems.length+" standalone ORG-OS apps · install to add a window";renderOrgStore();}function installApp(app){if(!app||!app.name||!app.url){toast("This catalog item cannot be installed.");return;}const installed=getInstalledApps();const key=app.key||app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");if(installed.some(item=>item.key===key)){toast("Already installed.");openInstalledApp(key);return;}const record={key,name:app.name,url:app.url,description:app.description||"",icon:app.icon||"📦",category:app.category||"apps",appKey:"installed-"+key};installed.push(record);safeSet("desktop.installedApps",installed);registerInstalledApps();if(!getPinnedKeys().length)safeSet("desktop.pinnedApps",["notes","terminal","orgstore"]);renderOrgStore();renderPinned($("start-search").value);toast(app.name+" installed. Find it in Start.");}
+function loadAppCatalog(){const apps=[{key:"chatgpt",name:"ChatGPT",description:"Open ChatGPT inside its own ORG-OS app window for brainstorming, learning, writing, and coding.",icon:"✳",category:"productivity"},{key:"calendar",name:"Calendar",description:"Plan events with a monthly calendar and saved appointments.",icon:"📅",category:"productivity"},{key:"paint",name:"ORG Paint",description:"Draw, erase, undo, and export artwork as PNG.",icon:"🎨",category:"creative"},{key:"music",name:"ORG Music",description:"Play local audio files with a track queue and controls.",icon:"🎵",category:"media"},{key:"tasks",name:"Tasks",description:"Manage to-dos with completion and priority filters.",icon:"✅",category:"productivity"},{key:"photos",name:"ORG Photos",description:"Browse local images in a thumbnail gallery and preview them.",icon:"🖼️",category:"media"},{key:"weather",name:"Weather",description:"A city-based weather dashboard starter; live weather data is not connected yet.",icon:"🌤️",category:"utilities"},{key:"monitor",name:"System Monitor",description:"Inspect browser capabilities and available desktop windows.",icon:"📊",category:"system"},{key:"calculator",name:"Calculator",description:"A handy calculator with history and keyboard support.",icon:"🧮",category:"utilities"},{key:"clock",name:"World Clock",description:"Live digital clock, stopwatch, and countdown timer.",icon:"⏱️",category:"utilities"},{key:"pomodoro",name:"Focus Timer",description:"Pomodoro work sessions, short breaks, and progress tracking.",icon:"🍅",category:"productivity"},{key:"markdown",name:"Markdown Studio",description:"Write Markdown and preview formatted notes side by side.",icon:"📝",category:"productivity"},{key:"json-tool",name:"JSON Studio",description:"Format, validate, and minify JSON data.",icon:"{ }",category:"utilities"},{key:"unit-converter",name:"Unit Converter",description:"Convert common length, weight, and temperature units.",icon:"📐",category:"utilities"},{key:"csv-explorer",name:"CSV Explorer",description:"Open CSV files, inspect rows, and summarize columns locally.",icon:"▤",category:"utilities"},{key:"regex-playground",name:"Regex Playground",description:"Test regular expressions against sample text and inspect matches.",icon:"⌘",category:"utilities"},{key:"system-cleanup",name:"Storage Explorer",description:"Review ORG OS browser storage and clear selected local data.",icon:"🗄️",category:"system"},{key:"habit-tracker",name:"Habit Tracker",description:"Build routines with a daily checklist and streak counts.",icon:"🌱",category:"productivity"},{key:"password-studio",name:"Password Studio",description:"Generate random passwords locally with adjustable character sets.",icon:"🔐",category:"utilities"},{key:"reading-log",name:"Reading Log",description:"Track books, pages read, and reading progress on your shelf.",icon:"📚",category:"productivity"},{key:"text-diff",name:"Text Compare",description:"Compare two text blocks and spot differences.",icon:"🔎",category:"utilities"},{key:"svg-workshop",name:"SVG Workshop",description:"Create simple vector shapes and export them as SVG artwork.",icon:"◇",category:"creative"},{key:"random-picker",name:"Random Picker",description:"Make a list and randomly pick an item.",icon:"🎲",category:"utilities"},{key:"recipe-box",name:"Recipe Box",description:"Save recipes and ingredient notes in one place.",icon:"🍲",category:"productivity"},{key:"color-contrast",name:"Contrast Checker",description:"Preview foreground and background colors and check contrast.",icon:"🌓",category:"creative"}];storeItems=apps.map(app=>({...app,url:"https://raw.githubusercontent.com/avinstudios/ORG-OS/main/apps/"+app.key+"/index.html",installed:false,author:"ORG-OS Team",compatibility:"ORG OS 1.1+"}));const status=$("org-store-status");if(status)status.textContent=storeItems.length+" standalone ORG-OS apps · install to add a window";renderOrgStore();}function installApp(app){if(!app||!app.name||!app.url){toast("This catalog item cannot be installed.");return;}const installed=getInstalledApps();const key=app.key||app.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");if(installed.some(item=>item.key===key)){toast("Already installed.");openInstalledApp(key);return;}const record={key,name:app.name,url:app.url,description:app.description||"",icon:app.icon||"📦",category:app.category||"apps",appKey:"installed-"+key};installed.push(record);safeSet("desktop.installedApps",installed);registerInstalledApps();if(!getPinnedKeys().length)safeSet("desktop.pinnedApps",["notes","terminal","orgstore"]);renderOrgStore();renderPinned($("start-search").value);toast(app.name+" installed. Find it in Start.");}
 function installByName(name){const q=String(name||"").trim().replace(/^["']|["']$/g,"");const found=storeItems.find(app=>app.name.toLowerCase()===q.toLowerCase()||app.name.toLowerCase().includes(q.toLowerCase()));if(!found){printTerminal("App not found in the App Store catalog: "+q);printTerminal("Tip: run 'apps' to list catalog items.");return;}installApp(found);}
 $("org-store-search").addEventListener("input",renderOrgStore);
 $("org-store-category").addEventListener("change",renderOrgStore);
@@ -2220,8 +2208,62 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 
 
-
-
+<style id="org-taskbar-pins-fix">
+#taskbar{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;min-width:0!important;overflow:hidden!important;padding:6px 12px!important;box-sizing:border-box!important}
+#taskbar #start-button{flex:0 0 43px!important;width:43px!important;min-width:43px!important}
+#taskbar #task-search{flex:0 1 180px!important;width:180px!important;min-width:70px!important;max-width:180px!important}
+#taskbar #task-apps{display:flex!important;align-items:center!important;flex:1 1 0!important;width:0!important;min-width:0!important;max-width:none!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:thin;scrollbar-color:#ffffff35 transparent;white-space:nowrap!important}
+#taskbar #task-apps .task-button{display:grid!important;place-items:center!important;position:relative!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;visibility:visible!important;opacity:1!important}
+#taskbar #task-apps .task-button.taskbar-pinned:before{content:"";position:absolute;inset:2px;border:1px solid var(--accent,#60a5fa);border-radius:8px;opacity:.45;pointer-events:none}
+#taskbar #task-apps .task-button.taskbar-pinned:after{left:25%!important;right:25%!important;bottom:1px!important;width:auto!important;height:3px!important}
+#taskbar .tray{display:flex!important;align-items:center!important;position:relative!important;inset:auto!important;flex:0 0 auto!important;min-width:max-content!important;margin-left:0!important;padding-left:6px!important;gap:5px!important}
+#taskbar #clock{min-width:60px!important;white-space:nowrap!important}
+@media(max-width:760px){#taskbar{gap:5px!important;padding-inline:6px!important}#taskbar #task-search{flex-basis:112px!important;width:112px!important;max-width:112px!important}#taskbar #task-apps .task-button{flex-basis:36px!important;width:36px!important;min-width:36px!important;height:38px!important}#taskbar .tray{gap:2px!important;padding-left:2px!important}#taskbar #clock{min-width:52px!important;font-size:10px!important}}
+@media(max-width:480px){#taskbar #task-search{display:none!important}#taskbar{gap:4px!important;padding-inline:4px!important}#taskbar #task-apps .task-button{flex-basis:34px!important;width:34px!important;min-width:34px!important;height:36px!important}#taskbar .tray button{padding:4px!important}#taskbar #clock{min-width:48px!important;font-size:9px!important}}
+</style>
+<script id="org-taskbar-pins-fix-script">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+function pins(){
+ const defaults=['notes','files','terminal','settings','orgstore'];
+ let saved=typeof window.safeGet==='function'?safeGet('desktop.taskbarPinnedApps',defaults):defaults;
+ if(!Array.isArray(saved))saved=defaults;
+ const out=[];
+ saved.forEach(key=>{if(typeof key==='string'&&window.APP_NAMES&&APP_NAMES[key]&&!out.includes(key)&&!(key==='welcome'&&safeGet('desktop.welcomeRemoved',false)))out.push(key)});
+ return out;
+}
+function taskButton(name){
+ if(!window.APP_NAMES||!APP_NAMES[name])return null;
+ const host=$('task-apps');if(!host)return null;
+ let b=host.querySelector('.task-button[data-app="'+CSS.escape(name)+'"]');
+ if(!b){b=document.createElement('button');b.type='button';b.className='task-button';b.dataset.app=name;b.innerHTML='<span class="task-app-icon"></span><span class="task-running-indicator"></span>';b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';b.onclick=()=>{const win=$('win-'+name);if(win&&!win.classList.contains('hidden')&&typeof window.getTopVisibleApp==='function'&&getTopVisibleApp()===name){minimizeApp(name);return}if(win&&!win.classList.contains('hidden')){focusApp(name);return}openApp(name)};}
+ b.title=APP_NAMES[name].title||name;b.setAttribute('aria-label',b.title);b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';return b;
+}
+function render(){
+ const host=$('task-apps');if(!host||!window.APP_NAMES)return;
+ if(typeof window.registerInstalledApps==='function')registerInstalledApps();
+ const pinned=pins(),all=[...pinned];
+ host.querySelectorAll('.task-button[data-app]').forEach(b=>{const n=b.dataset.app,win=$('win-'+n),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true');if(!all.includes(n)&&running)all.push(n);else if(!all.includes(n))b.remove()});
+ all.forEach(n=>{const b=taskButton(n);if(b)host.appendChild(b)});
+ const visible=typeof window.getTopVisibleApp==='function'?getTopVisibleApp():'';
+ host.querySelectorAll('.task-button[data-app]').forEach(b=>{const n=b.dataset.app,win=$('win-'+n),isVisible=!!win&&!win.classList.contains('hidden'),running=!!win&&(isVisible||win.dataset.launched==='true'),isPinned=pinned.includes(n);b.classList.toggle('taskbar-pinned',isPinned);b.classList.toggle('running',running);b.classList.toggle('active',isVisible&&n===visible);b.title=(APP_NAMES[n]?.title||n)+(running?' — running':isPinned?' — pinned':'');b.setAttribute('aria-label',(APP_NAMES[n]?.title||n)+(running?', running':isPinned?', pinned':''));});
+}
+window.getTaskbarPinnedKeys=pins;
+window.makeTaskButton=taskButton;
+window.renderTaskbarPins=render;
+window.toggleTaskbarPin=function(key){
+ if(!APP_NAMES||!APP_NAMES[key])return;
+ const current=pins(),next=current.includes(key)?current.filter(k=>k!==key):[...current,key];
+ if(typeof window.safeSet==='function')safeSet('desktop.taskbarPinnedApps',next);
+ render();
+ if(typeof window.syncTaskbar==='function')syncTaskbar('');
+ if(typeof window.toast==='function')toast(next.includes(key)?'Pinned '+APP_NAMES[key].title+' to the taskbar.':'Unpinned '+APP_NAMES[key].title+'.');
+};
+function start(){render();window.addEventListener('resize',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
 
 
 <style id="org-notification-center-style">
@@ -2319,15 +2361,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 const PIN_KEY='orgos.taskbarPins.v1';
 const RETIRED=new Set(['typing-lab','budget-buddy','link-vault']);
 const $=id=>document.getElementById(id);
-function clean(list){return [...new Set((Array.isArray(list)?list:[]).filter(k=>typeof k==='string'&&typeof APP_NAMES!=="undefined"&&APP_NAMES[k]&&!RETIRED.has(k)&&!/^installed-(typing-lab|budget-buddy|link-vault)$/.test(k)))];}
+function clean(list){return [...new Set((Array.isArray(list)?list:[]).filter(k=>typeof k==='string'&&window.APP_NAMES&&APP_NAMES[k]&&!RETIRED.has(k)&&!/^installed-(typing-lab|budget-buddy|link-vault)$/.test(k)))];}
 function readPins(){
- let stored=null;try{const raw=localStorage.getItem(PIN_KEY);if(raw!==null)stored=JSON.parse(raw);}catch(e){}
- let legacy=[];try{legacy=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',[]):[];}catch(e){}
- const defaults=['notes','files','terminal','settings','orgstore'];
- // A stale empty v1 key must not override valid pins saved by the existing desktop settings.
- const preferred=Array.isArray(stored)&&stored.length?stored:(Array.isArray(legacy)&&legacy.length?legacy:defaults);
- const cleaned=clean(preferred);
- return cleaned.length?cleaned:clean(defaults);
+ try{const raw=localStorage.getItem(PIN_KEY);if(raw!==null)return clean(JSON.parse(raw));}catch(e){}
+ let old=[];try{old=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',['notes','files','terminal','settings','orgstore']):['notes','files','terminal','settings','orgstore'];}catch(e){}
+ return clean(old);
 }
 function savePins(list){
  const value=clean(list);
@@ -2337,14 +2375,14 @@ function savePins(list){
 }
 window.getTaskbarPinnedKeys=readPins;
 window.toggleTaskbarPin=function(key){
- if(typeof APP_NAMES==="undefined"||!APP_NAMES[key]||RETIRED.has(key)||/^installed-(typing-lab|budget-buddy|link-vault)$/.test(key))return;
+ if(!window.APP_NAMES||!APP_NAMES[key]||RETIRED.has(key)||/^installed-(typing-lab|budget-buddy|link-vault)$/.test(key))return;
  const old=readPins(),next=old.includes(key)?old.filter(k=>k!==key):old.concat(key);
  savePins(next);window.renderTaskbarPins();if(typeof window.syncTaskbar==='function')window.syncTaskbar('');
  if(typeof window.toast==='function')toast(next.includes(key)?'Pinned '+APP_NAMES[key].title+' to the taskbar.':'Unpinned '+APP_NAMES[key].title+'.');
  if(typeof window.renderPinned==='function')renderPinned($('start-search')?.value||'');
 };
 window.renderTaskbarPins=function(){
- const host=$('task-apps');if(!host||typeof APP_NAMES==="undefined")return;
+ const host=$('task-apps');if(!host||!window.APP_NAMES)return;
  if(typeof window.registerInstalledApps==='function')registerInstalledApps();
  const pinned=readPins();
  pinned.forEach(key=>{if(typeof window.makeTaskButton==='function'){const b=makeTaskButton(key);if(b)host.appendChild(b);}});
@@ -2391,347 +2429,6 @@ setTimeout(removeRetiredApps,900);
 })();
 </script>
 
-
-
-
-
-
-
-
-<script id="org-window-restore-v2">
-(function(){
- function restoreButtonState(win){
-  if(!win)return;
-  win.querySelectorAll('.window-controls button.maximize').forEach(button=>{
-   const maximized=win.classList.contains('maximized');
-   button.textContent=maximized?'❐':'□';
-   button.setAttribute('aria-label',maximized?'Restore window':'Maximize window');
-   button.title=maximized?'Restore window':'Maximize window';
-   button.dataset.windowState=maximized?'restore':'maximize';
-  });
- }
- const originalMaximize=window.maximizeApp;
- window.maximizeApp=function(name){
-  if(typeof originalMaximize==='function')originalMaximize(name);
-  const win=document.getElementById('win-'+name);
-  restoreButtonState(win);
- };
- const originalRestore=window.restoreApp;
- window.restoreApp=function(name){
-  if(typeof originalRestore==='function')originalRestore(name);
-  restoreButtonState(document.getElementById('win-'+name));
- };
- function init(){
-  document.querySelectorAll('.window').forEach(win=>{
-   restoreButtonState(win);
-   if(win.dataset.restoreV2Observed)return;
-   win.dataset.restoreV2Observed='true';
-   new MutationObserver(()=>restoreButtonState(win)).observe(win,{attributes:true,attributeFilter:['class']});
-  });
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
- const observer=new MutationObserver(init);
- if(document.body)observer.observe(document.body,{subtree:true,childList:true});
-})();
-</script>
-<style id="org-window-restore-v2-css">
-.window>.titlebar .window-controls button.maximize{display:grid!important;place-items:center!important;line-height:1!important;font-family:"Segoe UI Symbol","Apple Symbols",system-ui,sans-serif!important;font-size:15px!important;padding:0!important}
-.window.maximized>.titlebar .window-controls button.maximize{font-size:0!important}
-.window.maximized>.titlebar .window-controls button.maximize:before{content:"❐"!important;display:block!important;font-size:15px!important;line-height:1!important;transform:translateY(0)!important}
-</style>
-
-
-<script id="org-window-restore-toggle-fix">
-(function(){
- 'use strict';
- function getWindow(name){return document.getElementById('win-'+name)}
- function syncButton(win){
-  if(!win)return;
-  const maximized=win.classList.contains('maximized');
-  win.querySelectorAll('.window-controls button.maximize').forEach(button=>{
-   button.textContent=maximized?'❐':'□';
-   button.setAttribute('aria-label',maximized?'Restore window':'Maximize window');
-   button.title=maximized?'Restore window':'Maximize window';
-   button.dataset.windowState=maximized?'restore':'maximize';
-  });
- }
- function saveGeometry(win){
-  if(win.dataset.restoreGeometry)return;
-  win.dataset.restoreGeometry=JSON.stringify({
-   left:win.style.left||'',
-   top:win.style.top||'',
-   width:win.style.width||'',
-   height:win.style.height||'',
-   right:win.style.right||'',
-   bottom:win.style.bottom||''
-  });
- }
- function restoreGeometry(win){
-  let old={};
-  try{old=JSON.parse(win.dataset.restoreGeometry||win.dataset.oldStyle||'{}')||{}}catch(_){}
-  win.classList.remove('maximized');
-  win.style.inset='';
-  win.style.left=old.left||'';
-  win.style.top=old.top||'';
-  win.style.right=old.right||'';
-  win.style.bottom=old.bottom||'';
-  win.style.width=old.width||'';
-  win.style.height=old.height||'';
-  if(!old.width&&!old.height){
-   win.style.width='min(650px, calc(100vw - 24px))';
-   win.style.height='min(450px, calc(100vh - 90px))';
-   win.style.left=Math.max(8,(window.innerWidth-win.offsetWidth)/2)+'px';
-   win.style.top=Math.max(8,(window.innerHeight-win.offsetHeight)/2)+'px';
-  }
-  delete win.dataset.restoreGeometry;
-  delete win.dataset.oldStyle;
-  win.dataset.lastAction='restored';
- }
- window.maximizeApp=function(name){
-  const win=getWindow(name);if(!win)return;
-  if(win.classList.contains('maximized')){
-   restoreGeometry(win);
-  }else{
-   saveGeometry(win);
-   win.dataset.oldStyle=win.dataset.restoreGeometry;
-   win.classList.add('maximized');
-   win.style.left='0px';win.style.top='0px';
-   win.style.right='';win.style.bottom='';
-   win.style.width='100%';win.style.height='100%';
-   win.dataset.lastAction='maximized';
-  }
-  syncButton(win);
-  if(typeof window.syncFullscreenTaskbar==='function')window.syncFullscreenTaskbar();
-  if(typeof window.focusApp==='function')window.focusApp(name);
- };
- window.restoreApp=function(name){
-  const win=getWindow(name);if(!win)return;
-  if(win.classList.contains('maximized'))restoreGeometry(win);
-  syncButton(win);
-  if(typeof window.syncFullscreenTaskbar==='function')window.syncFullscreenTaskbar();
-  if(typeof window.focusApp==='function')window.focusApp(name);
- };
- function init(){
-  document.querySelectorAll('.window').forEach(win=>{
-   syncButton(win);
-   if(win.dataset.restoreToggleBound)return;
-   win.dataset.restoreToggleBound='true';
-   win.addEventListener('dblclick',event=>{
-    if(event.target.closest('.window-controls'))return;
-    const name=win.id.replace(/^win-/,'');
-    if(name)window.maximizeApp(name);
-   });
-  });
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
- new MutationObserver(init).observe(document.body,{subtree:true,childList:true});
-})();
-</script>
-<style id="org-window-restore-toggle-fix-css">
-.window>.titlebar .window-controls button.maximize{display:grid!important;place-items:center!important;line-height:1!important;font-size:15px!important;padding:0!important}
-.window.maximized>.titlebar .window-controls button.maximize{font-size:0!important}
-.window.maximized>.titlebar .window-controls button.maximize:before{content:"❐"!important;display:block!important;font-size:15px!important;line-height:1!important;transform:none!important}
-</style>
-
-
-<style id="org-taskbar-2-design">
-:root{--taskbar2-bg:rgba(17,22,33,.86);--taskbar2-border:rgba(255,255,255,.12);--taskbar2-shadow:0 18px 55px rgba(0,0,0,.34)}
-#taskbar.org-taskbar-2{position:fixed!important;z-index:7000!important;left:50%!important;right:auto!important;bottom:14px!important;transform:translateX(-50%)!important;width:min( min(1080px, calc(100vw - 28px)), 1080px)!important;height:66px!important;min-height:66px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:10px!important;padding:8px 11px!important;border:1px solid var(--taskbar2-border)!important;border-radius:22px!important;background:var(--taskbar2-bg)!important;background-color:var(--taskbar2-bg)!important;backdrop-filter:blur(28px) saturate(170%)!important;-webkit-backdrop-filter:blur(28px) saturate(170%)!important;box-shadow:var(--taskbar2-shadow),inset 0 1px 0 rgba(255,255,255,.07)!important;overflow:visible!important}
-#taskbar.org-taskbar-2:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.055),transparent 42%,rgba(255,255,255,.025));opacity:1}
-#taskbar.org-taskbar-2>*{position:relative;z-index:1}
-#taskbar .taskbar-start-area{flex:0 0 auto;display:flex;align-items:center}
-#taskbar.org-taskbar-2 #start-button{width:46px!important;min-width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:15px!important;border:1px solid rgba(255,255,255,.1)!important;background:rgba(255,255,255,.065)!important;display:grid!important;place-items:center!important;transition:background .16s,transform .16s,border-color .16s!important}
-#taskbar.org-taskbar-2 #start-button:hover,#taskbar.org-taskbar-2 #start-button.active{background:var(--accent-soft)!important;border-color:var(--accent)!important;transform:translateY(-1px)}
-#taskbar.org-taskbar-2 .start-logo{width:21px!important;height:21px!important;gap:3px!important}
-#taskbar.org-taskbar-2 .start-logo span{border-radius:2px!important}
-#taskbar.org-taskbar-2 .taskbar-search-wrap{height:44px;flex:0 1 210px;min-width:130px;max-width:220px;display:flex;align-items:center;gap:8px;padding:0 11px;border-radius:14px;border:1px solid rgba(255,255,255,.075);background:rgba(0,0,0,.18);color:var(--text-muted,#aab5c8);box-sizing:border-box;transition:border-color .15s,background .15s}
-#taskbar.org-taskbar-2 .taskbar-search-wrap:focus-within{border-color:var(--accent);background:rgba(0,0,0,.27)}
-#taskbar.org-taskbar-2 .taskbar-search-icon{font-size:23px;line-height:1}
-#taskbar.org-taskbar-2 #task-search{min-width:0!important;width:100%!important;max-width:none!important;flex:1 1 auto!important;padding:0!important;border:0!important;outline:0!important;background:transparent!important;color:var(--text,#f8fafc)!important;font-size:12px!important;box-shadow:none!important}
-#taskbar.org-taskbar-2 #task-search::placeholder{color:var(--text-muted,#aab5c8)}
-#taskbar.org-taskbar-2 .taskbar-search-hint{font:10px system-ui,sans-serif;white-space:nowrap;padding:2px 4px;border:1px solid rgba(255,255,255,.12);border-radius:5px;color:#aab5c8;background:rgba(255,255,255,.04)}
-#taskbar.org-taskbar-2 .taskbar-apps-rail{flex:1 1 auto;min-width:0;display:flex;align-items:center;overflow:hidden}
-#taskbar.org-taskbar-2 #task-apps{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;overscroll-behavior-x:contain!important;padding:0 1px!important}
-#taskbar.org-taskbar-2 #task-apps::-webkit-scrollbar{display:none}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button{position:relative!important;display:grid!important;place-items:center!important;flex:0 0 46px!important;width:46px!important;min-width:46px!important;height:46px!important;padding:0!important;border:1px solid transparent!important;border-radius:14px!important;background:transparent!important;color:inherit!important;font-size:22px!important;transition:background .16s,border-color .16s,transform .16s!important}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button:hover{background:rgba(255,255,255,.085)!important;border-color:rgba(255,255,255,.09)!important;transform:translateY(-2px)}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button.active{background:var(--accent-soft)!important;border-color:rgba(255,255,255,.13)!important}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button .task-app-icon{display:block!important;line-height:1!important;font-size:23px!important}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button .taskbar-app-indicator{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:99px;background:var(--accent);opacity:0;transition:width .15s,opacity .15s}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button.running .taskbar-app-indicator{opacity:.8}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button.active .taskbar-app-indicator{width:17px;opacity:1}
-#taskbar.org-taskbar-2 #task-apps .taskbar-app-button:not(.taskbar-pinned){border-style:dashed!important;border-color:rgba(255,255,255,.1)!important}
-#taskbar.org-taskbar-2 .taskbar-tray{display:flex!important;align-items:center!important;gap:9px!important;flex:0 0 auto!important;max-width:none!important;min-width:0!important;padding-left:6px!important;margin-left:auto!important}
-#taskbar.org-taskbar-2 .taskbar-tray #notify-button{position:relative;display:grid!important;place-items:center!important;width:39px!important;min-width:39px!important;height:42px!important;padding:0!important;border:1px solid transparent!important;border-radius:12px!important;background:transparent!important;font-size:22px!important}
-#taskbar.org-taskbar-2 .taskbar-tray #notify-button:hover,#taskbar.org-taskbar-2 .taskbar-tray #notify-button.active{background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.08)!important}
-#taskbar.org-taskbar-2 .taskbar-notification-dot{position:absolute;right:8px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--accent);display:none}
-#taskbar.org-taskbar-2 .taskbar-tray #notify-button.has-notifications .taskbar-notification-dot{display:block}
-#taskbar.org-taskbar-2 .taskbar-tray-divider{height:30px;width:1px;background:rgba(255,255,255,.12)}
-#taskbar.org-taskbar-2 #clock{min-width:76px!important;max-width:104px!important;text-align:center!important;font-size:11px!important;line-height:1.35!important;color:var(--text,#f8fafc)!important;white-space:pre-line!important;font-variant-numeric:tabular-nums!important}
-#taskbar-edge{position:fixed!important;z-index:6999!important;left:0!important;right:0!important;bottom:0!important;height:5px!important;cursor:pointer!important;opacity:0!important}
-body.fullscreen-window #taskbar.org-taskbar-2{opacity:0!important;pointer-events:none!important;transform:translate(-50%,12px)!important;transition:opacity .18s,transform .18s!important}
-body.fullscreen-window.taskbar-revealed #taskbar.org-taskbar-2{opacity:1!important;pointer-events:auto!important;transform:translate(-50%,0)!important}
-@media(max-width:760px){
- #taskbar.org-taskbar-2{bottom:8px!important;width:calc(100vw - 16px)!important;height:62px!important;min-height:62px!important;gap:6px!important;padding:6px!important;border-radius:19px!important}
- #taskbar.org-taskbar-2 #start-button{width:42px!important;min-width:42px!important;height:44px!important;flex-basis:42px!important;border-radius:13px!important}
- #taskbar.org-taskbar-2 .taskbar-search-wrap{flex:0 0 42px;width:42px;min-width:42px;max-width:42px;height:44px;padding:0;justify-content:center;gap:0;overflow:hidden}
- #taskbar.org-taskbar-2 .taskbar-search-icon{font-size:23px}
- #taskbar.org-taskbar-2 #task-search{display:none!important}
- #taskbar.org-taskbar-2 .taskbar-search-hint{display:none!important}
- #taskbar.org-taskbar-2 .taskbar-apps-rail{flex:1 1 0}
- #taskbar.org-taskbar-2 #task-apps{gap:2px!important}
- #taskbar.org-taskbar-2 #task-apps .taskbar-app-button{flex-basis:39px!important;width:39px!important;min-width:39px!important;height:43px!important;border-radius:12px!important}
- #taskbar.org-taskbar-2 #task-apps .task-app-icon{font-size:21px!important}
- #taskbar.org-taskbar-2 .taskbar-tray{gap:3px!important;padding-left:0!important}
- #taskbar.org-taskbar-2 .taskbar-tray #notify-button{width:31px!important;min-width:31px!important;height:40px!important}
- #taskbar.org-taskbar-2 .taskbar-tray-divider{display:none!important}
- #taskbar.org-taskbar-2 #clock{min-width:48px!important;max-width:54px!important;font-size:9px!important}
- #taskbar-edge{height:4px!important}
-}
-@media(max-width:390px){
- #taskbar.org-taskbar-2 .taskbar-tray #notify-button{display:none!important}
- #taskbar.org-taskbar-2 .taskbar-search-wrap{display:none!important}
-}
-</style>
-<script id="org-taskbar-2-engine">
-(function(){
-'use strict';
-const KEY='orgos.taskbarPins.v2';
-const INIT_KEY='orgos.taskbarPins.v2.initialized';
-const DEFAULTS=['notes','files','terminal','settings','orgstore'];
-const RETIRED=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
-const $=id=>document.getElementById(id);
-let signature='';
-let initialized=false;
-let appsRegistered=false;
-const appNames=()=>typeof APP_NAMES!=='undefined'?APP_NAMES:{};
-function valid(key){return typeof key==='string'&&!!appNames()[key]&&!RETIRED.has(key)&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))}
-function clean(list){return [...new Set((Array.isArray(list)?list:[]).filter(valid))]}
-function readPins(){
- try{
-  const raw=localStorage.getItem(KEY);
-  if(raw!==null){const saved=JSON.parse(raw);if(Array.isArray(saved)&&(saved.length>0||localStorage.getItem(INIT_KEY)==='true'))return clean(saved)}
- }catch(_){}
- try{
-  const legacy=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',null):null;
-  if(Array.isArray(legacy))return clean(legacy);
- }catch(_){}
- return clean(DEFAULTS);
-}
-function savePins(list){
- const value=clean(list);
- try{localStorage.setItem(KEY,JSON.stringify(value));localStorage.setItem(INIT_KEY,'true')}catch(_){}
- try{if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',value)}catch(_){}
- return value;
-}
-function getWindow(key){return $('win-'+key)}
-function running(key){const w=getWindow(key);return !!w&&(!w.classList.contains('hidden')||w.dataset.launched==='true')}
-function title(key){return appNames()[key]?.title||key}
-function icon(key){return appNames()[key]?.icon||'📦'}
-function topApp(){
- let top='',z=-Infinity;
- document.querySelectorAll('.window').forEach(w=>{if(w.classList.contains('hidden'))return;const n=Number.parseInt(w.style.zIndex||'0',10)||0;if(n>=z){z=n;top=w.id.replace(/^win-/,'')}});
- return top;
-}
-function openOrFocus(key){
- const w=getWindow(key);
- if(w&&!w.classList.contains('hidden')){
-  if(topApp()===key&&typeof window.minimizeApp==='function')window.minimizeApp(key);
-  else if(typeof window.focusApp==='function')window.focusApp(key);
-  else if(typeof window.openApp==='function')window.openApp(key);
-  return;
- }
- if(typeof window.openApp==='function')window.openApp(key);
-}
-function togglePin(key){
- if(!valid(key))return;
- const pins=readPins(),next=pins.includes(key)?pins.filter(k=>k!==key):pins.concat(key);
- savePins(next);signature='';render();
- if(typeof window.toast==='function')window.toast(next.includes(key)?'Pinned '+title(key)+' to the taskbar.':'Unpinned '+title(key)+' from the taskbar.');
- if(typeof window.renderPinned==='function')window.renderPinned($('start-search')?.value||'');
-}
-function makeButton(key,pins){
- const b=document.createElement('button');b.type='button';b.className='taskbar-app-button task-button';b.dataset.app=key;
- b.title=title(key)+(pins.includes(key)?' · pinned':' · running')+' — right-click to '+(pins.includes(key)?'unpin':'pin');
- b.setAttribute('aria-label',title(key));
- const i=document.createElement('span');i.className='task-app-icon';i.textContent=icon(key);
- const d=document.createElement('span');d.className='taskbar-app-indicator';d.setAttribute('aria-hidden','true');
- b.append(i,d);
- b.addEventListener('click',()=>openOrFocus(key));
- b.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();togglePin(key)});
- b.addEventListener('keydown',e=>{if((e.shiftKey&&e.key==='F10')||e.key==='ContextMenu'){e.preventDefault();togglePin(key)}});
- return b;
-}
-function render(){
- const host=$('task-apps');if(!host)return;
- if(!appsRegistered&&typeof window.registerInstalledApps==='function'){appsRegistered=true;window.registerInstalledApps();}
- const pins=readPins(),keys=[...pins];
- document.querySelectorAll('.window[id^="win-"]').forEach(w=>{
-  const key=w.id.slice(4);
-  if(running(key)&&valid(key)&&!keys.includes(key))keys.push(key);
- });
- const nextSignature=JSON.stringify(keys);
- if(signature!==nextSignature||host.children.length!==keys.length){
-  host.replaceChildren();keys.forEach(key=>host.append(makeButton(key,pins)));signature=nextSignature;
- }
- host.querySelectorAll('.taskbar-app-button').forEach(b=>{
-  const key=b.dataset.app,isRunning=running(key),isActive=isRunning&&topApp()===key,isPinned=pins.includes(key);
-  b.classList.toggle('running',isRunning);b.classList.toggle('active',isActive);b.classList.toggle('taskbar-pinned',isPinned);
-  b.title=title(key)+(isPinned?' · pinned':isRunning?' · running':'')+' — right-click to '+(isPinned?'unpin':'pin');
- });
- const start=$('start-button');if(start)start.classList.toggle('active',!!$('start-menu')?.classList.contains('open'));
- const notify=$('notify-button');if(notify)notify.classList.toggle('active',!!$('notifications')?.classList.contains('open'));
-}
-function bindLegacyPinButtons(){
- document.querySelectorAll('.start-taskbar-toggle').forEach(button=>{
-  if(button.dataset.taskbar2PinBound)return;
-  button.dataset.taskbar2PinBound='true';
-  button.addEventListener('click',event=>{
-   event.preventDefault();event.stopImmediatePropagation();
-   const key=button.closest('.start-app-wrap')?.querySelector('.app-tile')?.dataset.appKey||button.closest('.start-app-wrap')?.querySelector('.app-tile')?.dataset.app;
-   if(key)togglePin(key);
-  },true);
- });
-}
-function init(){
- render();bindLegacyPinButtons();
- if(initialized)return;initialized=true;
- let observerFrame=0;
- const bodyObserver=new MutationObserver(records=>{
-  let needsRender=false,needsBind=false;
-  const relevantNode=node=>node.nodeType===1&&(node.matches?.('.window,.start-app-wrap,.app-tile')||!!node.querySelector?.('.window,.start-app-wrap,.app-tile'));
-  for(const record of records){
-   if(record.type==='childList'){
-    if(record.target.id==='task-apps'||record.target.closest?.('#task-apps'))continue;
-    const changed=[...record.addedNodes,...record.removedNodes];
-    if(changed.some(relevantNode)){needsRender=true;needsBind=true;}
-   }else if(record.type==='attributes'&&record.target.classList?.contains('window')&&(record.attributeName==='class'||record.attributeName==='data-launched'))needsRender=true;
-  }
-  if(!needsRender)return;
-  if(observerFrame)return;
-  const shouldBind=needsBind;
-  observerFrame=requestAnimationFrame(()=>{
-   observerFrame=0;
-   render();
-   if(shouldBind)bindLegacyPinButtons();
-  });
- });
- if(document.body)bodyObserver.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','data-launched']});
- window.addEventListener('resize',render);
- window.addEventListener('storage',e=>{if(!e.key||e.key===KEY||e.key==='desktop.taskbarPinnedApps'||e.key==='orgos.taskbarPins.v1'){signature='';render()}});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){signature='';render()}});
-}
-window.getTaskbarPinnedKeys=readPins;
-window.toggleTaskbarPin=togglePin;
-window.getTaskbarV2PinnedKeys=readPins;
-window.toggleTaskbarV2Pin=togglePin;
-window.makeTaskButton=function(key){render();return $('task-apps')?.querySelector('.taskbar-app-button[data-app="'+CSS.escape(key)+'"]')||null};
-window.renderTaskbarPins=render;
-window.renderTaskbarV2=render;
-window.syncTaskbar=function(){render()};
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script>
 </body>
 <style id="org-start-menu-widgets-final-fix">
 #start-menu .start-dashboard{display:grid!important;grid-template-columns:minmax(0,1.08fr) minmax(220px,.92fr)!important;min-height:0!important;flex:1 1 auto!important;overflow:hidden!important}
@@ -2758,5 +2455,3 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 }
 @media(prefers-reduced-motion:reduce){#start-menu *{scroll-behavior:auto!important}}
 </style></html>
-
-<style id="org-restore-button-alignment-fix">/* Keep the maximize/restore glyph optically centered in the titlebar. */ .titlebar .window-controls button.maximize::before{display:block;line-height:1;transform:translateY(1.5px)} </style>
