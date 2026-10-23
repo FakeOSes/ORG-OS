@@ -4,19 +4,20 @@
   "version": "1.0.0",
   "minimumOSVersion": "1.0.0",
   "compatibleOS": "ORG OS 1+",
-  "description": "A clean weather dashboard with city search and a saved location.",
+  "description": "A clean weather dashboard with city search and a saved location. (STILL IN DEVELOMENT)",
   "entry": "index.html",
   "category": "Utilities",
   "icon": "🌤️",
   "features": [
     "light-dark-theme",
-    "widgets"
+    "widgets",
+    "ORG SUPPORT XT4"
   ],
   "widgets": [
     {
       "id": "weather-overview",
       "title": "Weather widget",
-      "description": "Compact at-a-glance view provided by Weather"
+      "description": "Compact at-a-glance view provided by Weather "
     }
   ],
   "permissions": [
