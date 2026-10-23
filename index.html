@@ -2454,4 +2454,85 @@ setTimeout(removeRetiredApps,900);
  .window.maximized{height:100dvh!important;width:100vw!important}
 }
 @media(prefers-reduced-motion:reduce){#start-menu *{scroll-behavior:auto!important}}
-</style></html>
+</style>
+<style id="org-taskbar-pin-show-repair">
+#taskbar #task-apps{display:flex!important;align-items:center!important;flex:1 1 auto!important;min-width:0!important;max-width:none!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;scrollbar-width:none!important}
+#taskbar #task-apps::-webkit-scrollbar{display:none}
+#taskbar #task-apps .task-button{position:relative!important;display:grid!important;flex:0 0 40px!important;width:40px!important;min-width:40px!important;height:40px!important;padding:0!important;place-items:center!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;visibility:visible!important;opacity:1!important}
+#taskbar #task-apps .task-button:hover{background:#ffffff12!important;border-color:#ffffff18!important}
+#taskbar #task-apps .task-button.taskbar-pinned:before{content:"";position:absolute;inset:2px;border:1px solid var(--accent,#60a5fa);border-radius:8px;opacity:.5;pointer-events:none}
+#taskbar #task-apps .task-button.running:after{content:"";position:absolute;left:calc(50% - 3px);bottom:2px;width:6px;height:3px;border-radius:3px;background:#cbd5e1}
+#taskbar #task-apps .task-button.active:after{left:calc(50% - 8px);width:16px;background:var(--accent,#60a5fa)}
+#taskbar #task-apps .task-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important;line-height:1}
+@media(max-width:760px){#taskbar #task-apps .task-button{flex-basis:36px!important;width:36px!important;min-width:36px!important;height:38px!important}}
+@media(max-width:480px){#taskbar #task-apps .task-button{flex-basis:34px!important;width:34px!important;min-width:34px!important;height:36px!important}}
+</style>
+<script id="org-taskbar-pin-show-repair-script">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const KEY='desktop.taskbarPinnedApps';
+const DEFAULTS=['notes','files','terminal','settings','orgstore'];
+const valid=key=>typeof key==='string'&&!!(window.APP_NAMES&&window.APP_NAMES[key])&&!(key==='welcome'&&typeof window.safeGet==='function'&&window.safeGet('desktop.welcomeRemoved',false));
+function pins(){
+ let saved;
+ try{saved=typeof window.safeGet==='function'?window.safeGet(KEY,DEFAULTS):JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+ if(!Array.isArray(saved))saved=DEFAULTS;
+ return [...new Set(saved.filter(valid))];
+}
+function save(list){
+ const clean=[...new Set(list.filter(valid))];
+ try{if(typeof window.safeSet==='function')window.safeSet(KEY,clean);else localStorage.setItem(KEY,JSON.stringify(clean))}catch(e){}
+ return clean;
+}
+function windowFor(key){return $('win-'+key)}
+function running(key){const w=windowFor(key);return !!w&&(!w.classList.contains('hidden')||w.dataset.launched==='true')}
+function render(){
+ const host=$('task-apps');if(!host||!window.APP_NAMES)return;
+ const pinned=pins(),keys=[...pinned];
+ Object.keys(window.APP_NAMES).forEach(key=>{if(valid(key)&&running(key)&&!keys.includes(key))keys.push(key)});
+ const existing=new Map([...host.querySelectorAll('.task-button[data-app]')].map(b=>[b.dataset.app,b]));
+ for(const [key,b] of existing){if(!keys.includes(key))b.remove()}
+ for(const key of keys){
+  if(!valid(key))continue;
+  let b=host.querySelector('.task-button[data-app="'+key.replace(/["\\]/g,'\\</html>
+')+'"]');
+  if(!b){
+   b=document.createElement('button');b.type='button';b.className='task-button';b.dataset.app=key;
+   const icon=document.createElement('span');icon.className='task-app-icon';b.appendChild(icon);
+   const indicator=document.createElement('span');indicator.className='task-running-indicator';indicator.setAttribute('aria-hidden','true');b.appendChild(indicator);
+   b.addEventListener('click',()=>{
+    const w=windowFor(key);
+    if(w&&!w.classList.contains('hidden')&&typeof window.getTopVisibleApp==='function'&&window.getTopVisibleApp()===key&&typeof window.minimizeApp==='function')window.minimizeApp(key);
+    else if(w&&!w.classList.contains('hidden')&&typeof window.focusApp==='function')window.focusApp(key);
+    else if(typeof window.openApp==='function')window.openApp(key);
+   });
+   b.addEventListener('contextmenu',e=>{e.preventDefault();window.toggleTaskbarPin(key)});
+   b.addEventListener('keydown',e=>{if(e.shiftKey&&e.key==='F10'){e.preventDefault();window.toggleTaskbarPin(key)}});
+  }
+  const icon=b.querySelector('.task-app-icon');if(icon)icon.textContent=window.APP_NAMES[key].icon||'📦';
+  const title=window.APP_NAMES[key].title||key;
+  const isRunning=running(key),isPinned=pinned.includes(key);
+  b.classList.toggle('taskbar-pinned',isPinned);b.classList.toggle('running',isRunning);
+  b.classList.toggle('active',isRunning&&typeof window.getTopVisibleApp==='function'&&window.getTopVisibleApp()===key);
+  b.title=title+' · '+(isPinned?'right-click to unpin':'right-click to pin');
+  b.setAttribute('aria-label',title+(isRunning?', running':'')+(isPinned?', pinned':''));
+  host.appendChild(b);
+ }
+}
+window.getTaskbarPinnedKeys=pins;
+window.renderTaskbarPins=render;
+window.toggleTaskbarPin=function(key){
+ if(!valid(key))return;
+ const current=pins(),next=current.includes(key)?current.filter(k=>k!==key):current.concat(key);
+ save(next);render();
+ if(typeof window.syncTaskbar==='function')window.syncTaskbar('');
+ if(typeof window.renderPinned==='function'&&$('start-search'))window.renderPinned($('start-search').value);
+ if(typeof window.toast==='function')window.toast(next.includes(key)?'Pinned '+(window.APP_NAMES[key].title||key)+' to the taskbar.':'Unpinned '+(window.APP_NAMES[key].title||key)+'.');
+};
+function start(){render();window.addEventListener('resize',render);window.addEventListener('storage',e=>{if(!e.key||e.key===KEY)render()});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
+
+</html>
