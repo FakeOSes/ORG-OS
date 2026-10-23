@@ -25,7 +25,8 @@ body[data-theme=dark]{color-scheme:dark;--bg:#191817;--panel:#252321;--card:#211
 (()=>{'use strict';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const audio=$('audio'),list=$('track-list');let tracks=[],localTracks=[],index=-1,view='all',repeat=false,shuffle=false,manifestTracks=[];
-const musixBase=new URL('./MusiX/',location.href);
+// Always load the MusiX library from the repository's raw GitHub URL, regardless of where ORG OS itself is hosted.
+const musixBase=new URL('https://raw.githubusercontent.com/Avinstudios/ORG-OS/main/apps/music/MusiX/');
 function setTheme(t){const resolved=t==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.body.dataset.theme=resolved;document.documentElement.style.colorScheme=resolved;try{localStorage.setItem('orgos.music.theme.v3',t)}catch(e){}}
 let savedTheme='system';try{savedTheme=localStorage.getItem('orgos.music.theme.v3')||'system'}catch(e){}$('theme').value=savedTheme;setTheme(savedTheme);$('theme').onchange=()=>setTheme($('theme').value);
 try{audio.volume=Number(localStorage.getItem('orgos.music.volume')||'.8')}catch(e){audio.volume=.8}$('volume').value=audio.volume;
@@ -70,7 +71,6 @@ async function loadMusiX(){
  }
  refreshTracks();
 }
-loadMusiX();
 loadMusiX();
 })();
 </script></body></html>
