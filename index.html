@@ -2600,20 +2600,26 @@ const DEFAULTS=['notes','files','terminal','settings','orgstore'];
 const RETIRED=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
 const $=id=>document.getElementById(id);
 let signature='';
+let initialized=false;
 const appNames=()=>typeof APP_NAMES!=='undefined'?APP_NAMES:{};
 function valid(key){return typeof key==='string'&&!!appNames()[key]&&!RETIRED.has(key)&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))}
+function clean(list){return [...new Set((Array.isArray(list)?list:[]).filter(valid))]}
 function readPins(){
- let list=null;
- try{list=JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){}
- if(!Array.isArray(list)){try{list=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',DEFAULTS):DEFAULTS}catch(_){list=DEFAULTS}}
- const clean=[...new Set((Array.isArray(list)?list:[]).filter(valid))];
- return clean.length?clean:DEFAULTS.filter(valid);
+ try{
+  const raw=localStorage.getItem(KEY);
+  if(raw!==null){const saved=JSON.parse(raw);if(Array.isArray(saved))return clean(saved)}
+ }catch(_){}
+ try{
+  const legacy=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',null):null;
+  if(Array.isArray(legacy))return clean(legacy);
+ }catch(_){}
+ return clean(DEFAULTS);
 }
 function savePins(list){
- const clean=[...new Set(list.filter(valid))];
- try{localStorage.setItem(KEY,JSON.stringify(clean))}catch(_){}
- try{if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',clean)}catch(_){}
- return clean;
+ const value=clean(list);
+ try{localStorage.setItem(KEY,JSON.stringify(value))}catch(_){}
+ try{if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',value)}catch(_){}
+ return value;
 }
 function getWindow(key){return $('win-'+key)}
 function running(key){const w=getWindow(key);return !!w&&(!w.classList.contains('hidden')||w.dataset.launched==='true')}
@@ -2629,9 +2635,17 @@ function openOrFocus(key){
  if(w&&!w.classList.contains('hidden')){
   if(topApp()===key&&typeof window.minimizeApp==='function')window.minimizeApp(key);
   else if(typeof window.focusApp==='function')window.focusApp(key);
+  else if(typeof window.openApp==='function')window.openApp(key);
   return;
  }
  if(typeof window.openApp==='function')window.openApp(key);
+}
+function togglePin(key){
+ if(!valid(key))return;
+ const pins=readPins(),next=pins.includes(key)?pins.filter(k=>k!==key):pins.concat(key);
+ savePins(next);signature='';render();
+ if(typeof window.toast==='function')window.toast(next.includes(key)?'Pinned '+title(key)+' to the taskbar.':'Unpinned '+title(key)+' from the taskbar.');
+ if(typeof window.renderPinned==='function')window.renderPinned($('start-search')?.value||'');
 }
 function makeButton(key,pins){
  const b=document.createElement('button');b.type='button';b.className='taskbar-app-button task-button';b.dataset.app=key;
@@ -2641,7 +2655,7 @@ function makeButton(key,pins){
  const d=document.createElement('span');d.className='taskbar-app-indicator';d.setAttribute('aria-hidden','true');
  b.append(i,d);
  b.addEventListener('click',()=>openOrFocus(key));
- b.addEventListener('contextmenu',e=>{e.preventDefault();togglePin(key)});
+ b.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();togglePin(key)});
  b.addEventListener('keydown',e=>{if((e.shiftKey&&e.key==='F10')||e.key==='ContextMenu'){e.preventDefault();togglePin(key)}});
  return b;
 }
@@ -2649,7 +2663,10 @@ function render(){
  const host=$('task-apps');if(!host)return;
  if(typeof window.registerInstalledApps==='function')window.registerInstalledApps();
  const pins=readPins(),keys=[...pins];
- document.querySelectorAll('.window').forEach(w=>{const key=w.id.replace(/^win-/,'');if(w.id.startsWith('win-')&&running(key)&&valid(key)&&!keys.includes(key))keys.push(key)});
+ document.querySelectorAll('.window[id^="win-"]').forEach(w=>{
+  const key=w.id.slice(4);
+  if(running(key)&&valid(key)&&!keys.includes(key))keys.push(key);
+ });
  const nextSignature=JSON.stringify(keys);
  if(signature!==nextSignature||host.children.length!==keys.length){
   host.replaceChildren();keys.forEach(key=>host.append(makeButton(key,pins)));signature=nextSignature;
@@ -2657,16 +2674,38 @@ function render(){
  host.querySelectorAll('.taskbar-app-button').forEach(b=>{
   const key=b.dataset.app,isRunning=running(key),isActive=isRunning&&topApp()===key,isPinned=pins.includes(key);
   b.classList.toggle('running',isRunning);b.classList.toggle('active',isActive);b.classList.toggle('taskbar-pinned',isPinned);
-  b.title=title(key)+(isPinned?' · pinned':' · running')+' — right-click to '+(isPinned?'unpin':'pin');
+  b.title=title(key)+(isPinned?' · pinned':isRunning?' · running':'')+' — right-click to '+(isPinned?'unpin':'pin');
  });
  const start=$('start-button');if(start)start.classList.toggle('active',!!$('start-menu')?.classList.contains('open'));
  const notify=$('notify-button');if(notify)notify.classList.toggle('active',!!$('notifications')?.classList.contains('open'));
 }
-function togglePin(key){
- if(!valid(key))return;
- const pins=readPins(),next=pins.includes(key)?pins.filter(k=>k!==key):pins.concat(key);
- savePins(next);signature='';render();
- if(typeof window.toast==='function')window.toast(next.includes(key)?'Pinned '+title(key)+' to the taskbar.':'Unpinned '+title(key)+' from the taskbar.');
+function bindLegacyPinButtons(){
+ document.querySelectorAll('.start-taskbar-toggle').forEach(button=>{
+  if(button.dataset.taskbar2PinBound)return;
+  button.dataset.taskbar2PinBound='true';
+  button.addEventListener('click',event=>{
+   event.preventDefault();event.stopImmediatePropagation();
+   const key=button.closest('.start-app-wrap')?.querySelector('.app-tile')?.dataset.appKey||button.closest('.start-app-wrap')?.querySelector('.app-tile')?.dataset.app;
+   if(key)togglePin(key);
+  },true);
+ });
+}
+function init(){
+ render();bindLegacyPinButtons();
+ if(initialized)return;initialized=true;
+ const bodyObserver=new MutationObserver(records=>{
+  let needsRender=false,needsBind=false;
+  for(const record of records){
+   if(record.type==='childList'){needsRender=true;needsBind=true;break}
+   if(record.type==='attributes'&&record.target.classList?.contains('window'))needsRender=true;
+  }
+  if(needsRender)render();
+  if(needsBind)bindLegacyPinButtons();
+ });
+ if(document.body)bodyObserver.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','data-launched']});
+ window.addEventListener('resize',render);
+ window.addEventListener('storage',e=>{if(!e.key||e.key===KEY||e.key==='desktop.taskbarPinnedApps'||e.key==='orgos.taskbarPins.v1'){signature='';render()}});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){signature='';render()}});
 }
 window.getTaskbarPinnedKeys=readPins;
 window.toggleTaskbarPin=togglePin;
@@ -2676,22 +2715,6 @@ window.makeTaskButton=function(key){render();return $('task-apps')?.querySelecto
 window.renderTaskbarPins=render;
 window.renderTaskbarV2=render;
 window.syncTaskbar=function(){render()};
-function init(){
- render();
- const host=$('task-apps');
- if(host&&!host.dataset.taskbarObserver){
-  host.dataset.taskbarObserver='true';
-  new MutationObserver(render).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','data-launched']});
- }
- const search=$('task-search'),wrap=document.querySelector('.taskbar-search-wrap');
- if(search&&wrap&&!wrap.dataset.taskbarSearchBound){
-  wrap.dataset.taskbarSearchBound='true';
-  wrap.addEventListener('click',()=>{if(matchMedia('(max-width: 760px)').matches){if(typeof window.toggleStart==='function')window.toggleStart();const s=$('start-search');if(s)s.focus()}else search.focus()});
- }
- window.addEventListener('resize',render);
- window.addEventListener('storage',e=>{if(!e.key||e.key===KEY||e.key==='desktop.taskbarPinnedApps'||e.key==='orgos.taskbarPins.v1') {signature='';render()}});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){signature='';render()}});
-}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
