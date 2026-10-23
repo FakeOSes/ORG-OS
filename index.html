@@ -777,7 +777,7 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
     </span>
   </button>
   <input id="task-search" placeholder="Search apps..." aria-label="Search apps">
-  <div class="task-apps" id="task-apps"></div>
+  <div class="task-apps" id="task-apps" aria-hidden="true"></div><div class="task-apps org-taskbar-v2-apps" id="taskbar-v2-apps" aria-label="Pinned and running apps"></div>
   <div class="tray">
     <button id="notify-button" title="Notifications">◔</button>
     <div id="clock"></div>
@@ -1000,6 +1000,10 @@ Type "help" to see available commands.
 <main class="org-store-main" id="org-store-discover-page">
 <div class="store-hero"><div><span class="store-eyebrow">ORG STORE 2.1</span><h2>Discover something great.</h2><p>Explore apps built for ORG OS 1 and later.</p></div><div class="store-hero-mark">▦</div></div>
 <section class="org-featured-app"><div class="org-featured-copy"><span class="org-featured-eyebrow">FEATURED · AI ASSISTANT</span><h2>Meet ChatGPT.</h2><p>Brainstorm, learn, write, code, and explore ideas with your AI assistant.</p><div class="org-featured-meta"><span>✳ OpenAI</span><span>Productivity</span><span>ChatGPT account</span></div><button class="org-featured-button" onclick="showStoreDetails(storeItems.find(app=>app.key==='chatgpt'),false,getInstalledApps().some(app=>app.key==='chatgpt'),'chatgpt')">View ChatGPT <span>→</span></button></div><div class="org-featured-art" aria-hidden="true"><div class="chatgpt-featured-mark">✳</div></div></section>
+<section class="org-app-of-week" aria-labelledby="org-app-of-week-title">
+  <div class="org-app-week-art" aria-hidden="true"><span>♫</span><i></i><i></i><i></i><i></i></div>
+  <div class="org-app-week-copy"><span class="org-featured-eyebrow">APP OF THE WEEK · MEDIA</span><h2 id="org-app-of-week-title">ORG Music</h2><p>Your desktop soundtrack. Open your music player and jump back into what you were listening to.</p><div class="org-app-week-meta"><span>🎵 Media player</span><span>Included with ORG-OS</span></div><button class="org-featured-button" type="button" onclick="openApp('music')">Open ORG Music <span>→</span></button></div>
+</section>
 <div class="store-toolbar"><button id="org-store-theme-toggle" class="soft-button" type="button" onclick="toggleStoreTheme()" aria-pressed="true">☀️ Light store</button><input id="org-store-search" class="field" placeholder="Search apps..." aria-label="Search apps"><select id="org-store-category" class="field" aria-label="Filter by category"><option value="all">All categories</option><option value="productivity">Productivity</option><option value="creative">Creative</option><option value="media">Media</option><option value="utilities">Utilities</option><option value="system">System</option></select></div>
 <div class="store-status-row"><strong>Apps to explore</strong><span class="status" id="org-store-status">ORG OS 1+ compatible apps</span></div>
 <div id="org-store-grid" class="apps-grid org-store-grid"></div>
@@ -2507,6 +2511,75 @@ window.addEventListener('storage',event=>{if(!event.key||event.key==='desktop.ta
 #taskbar #task-apps .task-button{display:grid!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;visibility:visible!important;opacity:1!important;place-items:center!important}
 #taskbar #task-apps .task-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important}
 </style>
+
+<script id="org-taskbar-v2">
+(function(){
+'use strict';
+const KEY='orgos.taskbarPins.v2';
+const DEFAULTS=['notes','files','terminal','settings','orgstore'];
+const $=id=>document.getElementById(id);
+const retired=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
+function names(){return typeof APP_NAMES!=='undefined'?APP_NAMES:{}}
+function valid(key){return typeof key==='string'&&!!names()[key]&&!retired.has(key)&&!/^installed-(typing-lab|link-vault|budget-buddy)$/.test(key)&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))}
+function readPins(){let list;try{list=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}if(!Array.isArray(list)){try{list=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',DEFAULTS):DEFAULTS}catch(e){list=DEFAULTS}}list=[...new Set((Array.isArray(list)?list:[]).filter(valid))];return list.length?list:DEFAULTS.filter(valid)}
+function savePins(list){const clean=[...new Set(list.filter(valid))];try{localStorage.setItem(KEY,JSON.stringify(clean));if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',clean)}catch(e){}return clean}
+function windowFor(key){return $('win-'+key)}
+function running(key){const w=windowFor(key);return !!w&&(!w.classList.contains('hidden')||w.dataset.launched==='true')}
+function iconFor(key){return names()[key]?.icon||'📦'}
+function titleFor(key){return names()[key]?.title||key}
+function openOrFocus(key){const w=windowFor(key);if(w&&!w.classList.contains('hidden')){if(typeof getTopVisibleApp==='function'&&getTopVisibleApp()===key&&typeof minimizeApp==='function')minimizeApp(key);else if(typeof focusApp==='function')focusApp(key);else if(typeof openApp==='function')openApp(key)}else if(typeof openApp==='function')openApp(key)}
+function makeButton(key,pins){
+ const b=document.createElement('button');b.type='button';b.className='task-button org-taskbar-v2-button';b.dataset.app=key;b.title=titleFor(key)+' · right-click to '+(pins.includes(key)?'unpin':'pin');b.setAttribute('aria-label',b.title);
+ const icon=document.createElement('span');icon.className='task-app-icon';icon.textContent=iconFor(key);b.append(icon);
+ const dot=document.createElement('span');dot.className='org-taskbar-v2-dot';dot.setAttribute('aria-hidden','true');b.append(dot);
+ b.classList.toggle('running',running(key));b.classList.toggle('active',!!(running(key)&&typeof getTopVisibleApp==='function'&&getTopVisibleApp()===key));b.classList.toggle('taskbar-pinned',pins.includes(key));
+ b.onclick=()=>openOrFocus(key);
+ b.oncontextmenu=e=>{e.preventDefault();const next=readPins();savePins(next.includes(key)?next.filter(k=>k!==key):next.concat(key));render();if(typeof toast==='function')toast(next.includes(key)?'Unpinned '+titleFor(key)+'.':'Pinned '+titleFor(key)+' to the taskbar.');};
+ b.onkeydown=e=>{if(e.shiftKey&&e.key==='F10'){e.preventDefault();const next=readPins();savePins(next.includes(key)?next.filter(k=>k!==key):next.concat(key));render();}};
+ return b;
+}
+function render(){
+ const host=$('taskbar-v2-apps');if(!host)return;
+ if(typeof registerInstalledApps==='function')try{registerInstalledApps()}catch(e){}
+ const pins=readPins(),keys=[...pins];
+ Object.keys(names()).forEach(key=>{if(valid(key)&&running(key)&&!keys.includes(key))keys.push(key)});
+ host.replaceChildren();
+ keys.forEach(key=>host.append(makeButton(key,pins)));
+ host.dataset.pinCount=String(pins.length);
+}
+window.renderTaskbarV2=render;
+window.getTaskbarV2PinnedKeys=readPins;
+window.toggleTaskbarV2Pin=function(key){if(!valid(key))return;const pins=readPins();savePins(pins.includes(key)?pins.filter(k=>k!==key):pins.concat(key));render()};
+function boot(){render();setTimeout(render,150);setTimeout(render,600);setTimeout(render,1400)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+const observer=new MutationObserver(()=>render());
+function observe(){if(document.body)observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-launched']})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();
+window.addEventListener('storage',e=>{if(!e.key||e.key===KEY||e.key==='desktop.taskbarPinnedApps')render()});
+window.addEventListener('resize',render);
+})();
+</script>
+<style id="org-taskbar-v2-styles">
+#taskbar #task-apps{display:none!important}
+#taskbar .org-taskbar-v2-apps{display:flex!important;align-items:center!important;gap:5px!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;visibility:visible!important;opacity:1!important}
+#taskbar .org-taskbar-v2-apps::-webkit-scrollbar{display:none}
+#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button{position:relative!important;display:grid!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;padding:0!important;place-items:center!important;visibility:visible!important;opacity:1!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;font-size:21px!important}
+#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button:hover{background:#ffffff12!important;border-color:#ffffff16!important}
+#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button.active{background:var(--accent-soft)!important;border-color:#ffffff24!important}
+#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important;line-height:1}
+#taskbar .org-taskbar-v2-dot{position:absolute;bottom:2px;left:50%;width:5px;height:5px;border-radius:50%;background:#cbd5e1;transform:translateX(-50%);opacity:0}
+#taskbar .org-taskbar-v2-button.running .org-taskbar-v2-dot{opacity:1}
+#taskbar .org-taskbar-v2-button.active .org-taskbar-v2-dot{width:17px;height:3px;border-radius:5px;background:var(--accent);opacity:1}
+.org-app-of-week{position:relative;display:grid;grid-template-columns:minmax(115px,.52fr) minmax(0,1fr);gap:18px;align-items:center;margin:14px 0 18px;padding:20px;border:1px solid #8b5cf64d;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 8% 15%,#8b5cf629,transparent 50%),linear-gradient(120deg,#172039,#111827 70%);color:#f8fafc}
+.org-app-week-art{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;min-height:118px;border:1px solid #ffffff12;border-radius:13px;background:linear-gradient(145deg,#7c3aed55,#2563eb30);font-size:40px;color:#ddd6fe;overflow:hidden}
+.org-app-week-art span{position:relative;z-index:1;display:grid;place-items:center;width:66px;height:66px;border:1px solid #ffffff30;border-radius:20px;background:#ffffff12;box-shadow:0 10px 28px #0003}
+.org-app-week-art i{position:absolute;bottom:20px;width:4px;height:20px;border-radius:5px;background:#c4b5fd;opacity:.65}
+.org-app-week-art i:nth-of-type(1){left:12%;height:16px}.org-app-week-art i:nth-of-type(2){left:22%;height:29px}.org-app-week-art i:nth-of-type(3){left:32%;height:21px}.org-app-week-art i:nth-of-type(4){left:42%;height:34px}
+.org-app-week-copy{min-width:0}.org-app-week-copy h2{margin:7px 0;font-size:clamp(20px,3vw,27px);letter-spacing:-.04em}.org-app-week-copy p{margin:0;color:#c4cde0;font-size:12px;line-height:1.65}.org-app-week-meta{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0;color:#cbd5e1;font-size:10px}.org-app-week-meta span{padding:5px 8px;border:1px solid #ffffff14;border-radius:7px;background:#ffffff08}
+#win-orgstore[data-store-theme="light"] .org-app-of-week{background:linear-gradient(120deg,#f1edff,#fff 75%);color:#172033;border-color:#d7c9ff}#win-orgstore[data-store-theme="light"] .org-app-week-copy p,#win-orgstore[data-store-theme="light"] .org-app-week-meta{color:#536078}#win-orgstore[data-store-theme="light"] .org-app-week-meta span{border-color:#dce2ed;background:#fff}
+@media(max-width:560px){.org-app-of-week{grid-template-columns:1fr;gap:12px;padding:14px}.org-app-week-art{min-height:75px}.org-app-week-art span{width:54px;height:54px}.org-app-week-copy h2{font-size:22px}#taskbar{gap:5px;padding:5px 7px}#task-search{width:115px;flex-basis:115px}}
+</style>
+
 </body>
 <style id="org-start-menu-widgets-final-fix">
 #start-menu .start-dashboard{display:grid!important;grid-template-columns:minmax(0,1.08fr) minmax(220px,.92fr)!important;min-height:0!important;flex:1 1 auto!important;overflow:hidden!important}
