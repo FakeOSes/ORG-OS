@@ -2602,7 +2602,6 @@ const RETIRED=new Set(['typing-lab','link-vault','budget-buddy','installed-typin
 const $=id=>document.getElementById(id);
 let signature='';
 let initialized=false;
-let appsRegistered=false;
 const appNames=()=>typeof APP_NAMES!=='undefined'?APP_NAMES:{};
 function valid(key){return typeof key==='string'&&!!appNames()[key]&&!RETIRED.has(key)&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))}
 function clean(list){return [...new Set((Array.isArray(list)?list:[]).filter(valid))]}
@@ -2663,7 +2662,7 @@ function makeButton(key,pins){
 }
 function render(){
  const host=$('task-apps');if(!host)return;
- if(!appsRegistered&&typeof window.registerInstalledApps==='function'){appsRegistered=true;window.registerInstalledApps();}
+ if(typeof window.registerInstalledApps==='function')window.registerInstalledApps();
  const pins=readPins(),keys=[...pins];
  document.querySelectorAll('.window[id^="win-"]').forEach(w=>{
   const key=w.id.slice(4);
@@ -2697,13 +2696,9 @@ function init(){
  if(initialized)return;initialized=true;
  const bodyObserver=new MutationObserver(records=>{
   let needsRender=false,needsBind=false;
-  const relevantNode=node=>node.nodeType===1&&(node.matches?.('.window,.start-app-wrap,.app-tile')||!!node.querySelector?.('.window,.start-app-wrap,.app-tile'));
   for(const record of records){
-   if(record.type==='childList'){
-    if(record.target.id==='task-apps'||record.target.closest?.('#task-apps'))continue;
-    const changed=[...record.addedNodes,...record.removedNodes];
-    if(changed.some(relevantNode)){needsRender=true;needsBind=true;}
-   }else if(record.type==='attributes'&&record.target.classList?.contains('window'))needsRender=true;
+   if(record.type==='childList'){needsRender=true;needsBind=true;break}
+   if(record.type==='attributes'&&record.target.classList?.contains('window'))needsRender=true;
   }
   if(needsRender)render();
   if(needsBind)bindLegacyPinButtons();
