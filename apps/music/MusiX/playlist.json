@@ -1,7 +1,7 @@
 {
   "name": "MusiX",
   "version": 1,
-  "description": "ORG Music preloaded track list. Each src matches the exact MP3 filename in this folder.",
+  "description": "The ORG Music Marketplace.",
   "tracks": [
     {
       "title": "Aria Math",
@@ -51,12 +51,12 @@
         {
       "title": "Thunder",
       "artist": "Imagine Dragons",
-      "src": "Thunder by Imangine Dragons.mp3"
+      "src": "Thunder by Imagine Dragons.mp3"
     },
      {
       "title": "Demons",
       "artist": "Imagine Dragons",
-      "src": "Demons by Imangine Dragons.mp3"
+      "src": "Demons by Imagine Dragons.mp3"
     },
      {
       "title": "Christmas Kids",
