@@ -2596,6 +2596,7 @@ body.fullscreen-window.taskbar-revealed #taskbar.org-taskbar-2{opacity:1!importa
 (function(){
 'use strict';
 const KEY='orgos.taskbarPins.v2';
+const INIT_KEY='orgos.taskbarPins.v2.initialized';
 const DEFAULTS=['notes','files','terminal','settings','orgstore'];
 const RETIRED=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
 const $=id=>document.getElementById(id);
@@ -2607,7 +2608,7 @@ function clean(list){return [...new Set((Array.isArray(list)?list:[]).filter(val
 function readPins(){
  try{
   const raw=localStorage.getItem(KEY);
-  if(raw!==null){const saved=JSON.parse(raw);if(Array.isArray(saved))return clean(saved)}
+  if(raw!==null){const saved=JSON.parse(raw);if(Array.isArray(saved)&&(saved.length>0||localStorage.getItem(INIT_KEY)==='true'))return clean(saved)}
  }catch(_){}
  try{
   const legacy=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',null):null;
@@ -2617,7 +2618,7 @@ function readPins(){
 }
 function savePins(list){
  const value=clean(list);
- try{localStorage.setItem(KEY,JSON.stringify(value))}catch(_){}
+ try{localStorage.setItem(KEY,JSON.stringify(value));localStorage.setItem(INIT_KEY,'true')}catch(_){}
  try{if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',value)}catch(_){}
  return value;
 }
