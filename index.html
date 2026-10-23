@@ -2160,8 +2160,8 @@ const read=()=>{try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e){
 function items(){return [...document.querySelectorAll('#desktop-icons .desktop-icon,#desktop-widgets .desktop-widget')]}
 function save(){
  const data={icons:{},widgets:{}};
- document.querySelectorAll('#desktop-icons .desktop-icon').forEach((el,i)=>{const id=el.dataset.open||el.dataset.app||el.dataset.desktopId||el.textContent.trim();data.icons[id]={order:i,left:el.style.left||'',top:el.style.top||''}});
- document.querySelectorAll('#desktop-widgets .desktop-widget').forEach((el,i)=>{const id=el.dataset.widgetId||el.dataset.desktopId||el.id||String(i);data.widgets[id]={order:i,left:el.style.left||'',top:el.style.top||'',width:el.style.width||'',height:el.style.height||''}});
+ document.querySelectorAll('#desktop-icons .desktop-icon').forEach((el,i)=>{const id=el.dataset.open||el.dataset.app||el.dataset.desktopId||el.textContent.trim();data.icons[id]={order:Number.parseInt(getComputedStyle(el).order,10)||0,left:el.style.left||'',top:el.style.top||''}});
+ document.querySelectorAll('#desktop-widgets .desktop-widget').forEach((el,i)=>{const id=el.dataset.widgetId||el.dataset.desktopId||el.id||String(i);data.widgets[id]={order:Number.parseInt(getComputedStyle(el).order,10)||0,left:el.style.left||'',top:el.style.top||'',width:el.style.width||'',height:el.style.height||''}});
  try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}
 }
 function restore(){
