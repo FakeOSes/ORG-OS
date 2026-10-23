@@ -807,10 +807,15 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
   <div class="start-bottom"><button class="start-settings" onclick="openApp('settings')"><span>⚙</span> Settings</button><span class="start-footer-version">ORG OS · 1.2</span><button class="start-power" onclick="closeAllWindows()" title="Close all windows" aria-label="Close all windows">⏻</button></div>
 </div>
 
-<div id="notifications" class="panel">
-  <div class="panel-heading">Notifications</div>
-  <p style="color:var(--muted)">You're all caught up.</p>
-  <button class="soft-button" onclick="toggleNotifications()">Close</button>
+<div id="notifications" class="panel org-notification-center" role="dialog" aria-label="Notification center" aria-modal="false">
+  <div class="org-notification-header"><div><span class="org-notification-eyebrow">ORG OS</span><h2>Notification center</h2><p id="org-notification-date">Your updates at a glance</p></div><button class="org-notification-close" onclick="toggleNotifications()" aria-label="Close notification center">×</button></div>
+  <section class="org-quick-settings" aria-label="Quick settings"><div class="org-quick-settings-heading"><strong>Quick settings</strong><span>CONTROL CENTER</span></div><div class="org-quick-grid">
+    <button type="button" class="org-quick-tile" id="org-quick-dnd" aria-pressed="false"><span class="org-quick-icon">☾</span><span><strong>Do not disturb</strong><small>Silence new alerts</small></span><span class="org-quick-state">Off</span></button>
+    <button type="button" class="org-quick-tile" id="org-quick-appearance" aria-pressed="false"><span class="org-quick-icon">◐</span><span><strong>Light appearance</strong><small>Switch desktop theme</small></span><span class="org-quick-state">Off</span></button>
+    <button type="button" class="org-quick-tile" id="org-quick-focus" aria-pressed="false"><span class="org-quick-icon">◎</span><span><strong>Focus mode</strong><small>Keep your workspace clear</small></span><span class="org-quick-state">Off</span></button>
+  </div></section>
+  <section class="org-notification-list-section"><div class="org-notification-list-heading"><div><strong>Recent notifications</strong><span id="org-notification-count">0 alerts</span></div><button type="button" id="org-clear-notifications">Clear all</button></div><div id="org-notification-list" aria-live="polite"><div class="org-notification-empty"><span>✓</span><strong>You're all caught up</strong><p>When an app has something to tell you, it’ll show up here.</p></div></div></section>
+  <div class="org-notification-footer"><span><i></i> All systems ready</span><button type="button" onclick="toggleNotifications()">Done</button></div>
 </div>
 
 <div id="context-menu" class="panel" role="menu" aria-label="Context menu"></div>
@@ -2257,6 +2262,95 @@ window.toggleTaskbarPin=function(key){
 };
 function start(){render();window.addEventListener('resize',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
+
+
+<style id="org-notification-center-style">
+#notifications.org-notification-center{display:none;position:fixed;z-index:9200;right:12px;bottom:64px;width:min(410px,calc(100vw - 24px));max-height:min(760px,calc(100dvh - 82px));padding:0;overflow:hidden;flex-direction:column;color:#edf3ff;background:rgba(13,20,33,.97);border:1px solid #ffffff20;border-radius:19px;box-shadow:0 26px 80px #0009;backdrop-filter:blur(34px) saturate(170%)}
+#notifications.org-notification-center.open{display:flex!important}
+.org-notification-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 20px 16px;background:linear-gradient(135deg,#60a5fa20,transparent 75%);border-bottom:1px solid #ffffff12}
+.org-notification-eyebrow{font-size:10px;letter-spacing:.16em;font-weight:800;color:var(--accent,#60a5fa)}
+.org-notification-header h2{font-size:21px;line-height:1.2;margin:5px 0 5px;letter-spacing:-.035em}.org-notification-header p{font-size:11px;color:#aab7cb;margin:0}
+.org-notification-close{flex:0 0 32px;width:32px;height:32px;border:1px solid #ffffff16;border-radius:10px;background:#ffffff08;color:inherit;font-size:20px;cursor:pointer}
+.org-quick-settings{padding:15px 17px 16px;border-bottom:1px solid #ffffff12}
+.org-quick-settings-heading,.org-notification-list-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:11px}
+.org-quick-settings-heading strong,.org-notification-list-heading strong{font-size:12px}.org-quick-settings-heading>span{font-size:9px;letter-spacing:.1em;color:#8998ae}
+.org-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.org-quick-tile{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:9px;text-align:left;min-width:0;padding:11px;border:1px solid #ffffff13;border-radius:12px;background:#ffffff07;color:inherit;cursor:pointer;transition:background .15s,border-color .15s}
+.org-quick-tile:hover{background:#ffffff10;border-color:#ffffff2a}.org-quick-tile[aria-pressed="true"]{background:color-mix(in srgb,var(--accent,#60a5fa) 20%,#121b2b);border-color:var(--accent,#60a5fa)}
+.org-quick-icon{grid-row:1/3;display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:#ffffff10;font-size:17px}
+.org-quick-tile strong{display:block;font-size:10px;line-height:1.3;overflow-wrap:anywhere}.org-quick-tile small{display:block;font-size:9px;line-height:1.35;color:#9caec5;margin-top:3px}.org-quick-state{grid-column:2;font-size:9px;color:#a8b8cd;margin-top:5px}
+.org-notification-list-section{display:flex;flex-direction:column;min-height:100px;max-height:290px;overflow:hidden;padding:15px 17px 8px}
+.org-notification-list-heading{margin-bottom:9px}.org-notification-list-heading>div{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.org-notification-list-heading span{font-size:9px;color:#95a4b9}.org-notification-list-heading button{border:0;background:transparent;color:#a9c9ff;font-size:10px;cursor:pointer;padding:5px}
+#org-notification-list{overflow-y:auto;min-height:0;padding-bottom:5px;scrollbar-width:thin;scrollbar-color:#ffffff24 transparent}
+.org-notification-empty{display:flex;align-items:center;flex-direction:column;text-align:center;padding:18px 12px 22px;color:#aab7cb}.org-notification-empty>span{display:grid;place-items:center;width:40px;height:40px;border-radius:14px;background:#34d39918;color:#6ee7b7;font-size:22px;margin-bottom:9px}.org-notification-empty strong{font-size:12px;color:#edf3ff}.org-notification-empty p{font-size:10px;line-height:1.5;max-width:235px;margin:5px 0 0}
+.org-notification-item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;padding:11px 9px;border-radius:12px;border:1px solid #ffffff0e;background:#ffffff05;margin-bottom:7px;cursor:pointer}.org-notification-item:hover{background:#ffffff0b}.org-notification-app-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#ffffff0c;font-size:17px}.org-notification-copy{min-width:0}.org-notification-copy strong{display:block;font-size:11px;line-height:1.35;color:#f2f6ff;overflow-wrap:anywhere}.org-notification-copy p{font-size:10px;line-height:1.45;color:#aebbd0;margin:4px 0 0;overflow-wrap:anywhere}.org-notification-copy time{display:block;font-size:9px;color:#7f90a8;margin-top:6px}.org-notification-dismiss{align-self:start;border:0;border-radius:6px;background:transparent;color:#9aaac0;padding:2px 5px;cursor:pointer;font-size:15px}.org-notification-dismiss:hover{background:#ffffff15;color:#fff}
+.org-notification-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 17px;border-top:1px solid #ffffff12;background:#ffffff03;font-size:9px;color:#9eafc5}.org-notification-footer>span{display:flex;align-items:center;gap:7px}.org-notification-footer i{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d39955}.org-notification-footer button{border:1px solid #ffffff16;border-radius:8px;padding:6px 12px;background:#ffffff09;color:#eef4ff;font-size:10px;cursor:pointer}
+#notify-button{position:relative}#notify-button.org-has-unread:after{content:attr(data-unread);position:absolute;right:-2px;top:-2px;min-width:15px;height:15px;padding:0 3px;display:grid;place-items:center;border-radius:9px;background:#60a5fa;color:#07111f;font-size:9px;font-weight:800;border:2px solid #111b2b;box-sizing:border-box}
+body.org-notification-light{--panel:rgba(247,250,255,.97);color:#172033}body.org-notification-light #notifications.org-notification-center{color:#182338;background:rgba(247,250,255,.97);border-color:#cbd5e1;box-shadow:0 26px 80px #0f172a35}
+body.org-notification-light .org-notification-header{background:linear-gradient(135deg,#60a5fa22,transparent 75%);border-color:#dbe3ee}body.org-notification-light .org-notification-header p,body.org-notification-light .org-quick-settings-heading>span,body.org-notification-light .org-quick-tile small,body.org-notification-light .org-notification-list-heading span,body.org-notification-light .org-notification-copy p,body.org-notification-light .org-notification-copy time,body.org-notification-light .org-notification-footer{color:#64748b}
+body.org-notification-light .org-notification-close,body.org-notification-light .org-quick-tile,body.org-notification-light .org-notification-item,body.org-notification-light .org-notification-footer button{color:#172033;background:#ffffffaa;border-color:#dbe3ee}
+body.org-notification-light .org-quick-icon,body.org-notification-light .org-notification-app-icon{background:#e7edf6}body.org-notification-light .org-notification-copy strong,body.org-notification-light .org-notification-empty strong{color:#172033}body.org-notification-light .org-notification-footer{border-color:#dbe3ee}
+@media(max-width:480px){#notifications.org-notification-center{right:6px;bottom:62px;width:calc(100vw - 12px);max-height:calc(100dvh - 72px);border-radius:16px}.org-notification-header{padding:16px}.org-quick-settings{padding:12px}.org-quick-grid{gap:6px}.org-quick-tile{padding:9px 7px;column-gap:6px;grid-template-columns:27px minmax(0,1fr)}.org-quick-icon{width:27px;height:27px}.org-quick-tile strong{font-size:9px}.org-quick-tile small{font-size:8px}.org-notification-list-section{padding:12px 10px 6px;max-height:250px}}
+</style>
+<script id="org-notification-center-script">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const KEY='orgos.notificationCenter.v1';
+const PREF='orgos.notificationCenter.preferences';
+let items=[],prefs={dnd:false,light:false,focus:false},serial=0;
+const icons={system:'⚙️',music:'🎵',store:'🛍️',files:'📁',calendar:'📅',weather:'🌤️',photos:'🖼️',terminal:'⌨️',settings:'⚙️'};
+function read(key,fallback){try{const value=localStorage.getItem(key);return value===null?fallback:JSON.parse(value)}catch(e){return fallback}}
+function write(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(e){}}
+function stamp(ts){const d=new Date(ts);return d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}
+function render(){
+ const host=$('org-notification-list'),count=$('org-notification-count'),button=$('notify-button');if(!host)return;
+ const unread=items.filter(n=>!n.read).length;
+ if(count)count.textContent=items.length+' alert'+(items.length===1?'':'s');
+ if(button){button.classList.toggle('org-has-unread',unread>0);button.dataset.unread=unread>99?'99+':String(unread);button.setAttribute('aria-label',unread?'Notifications, '+unread+' unread':'Notifications');}
+ host.innerHTML='';
+ if(!items.length){host.innerHTML='<div class="org-notification-empty"><span>✓</span><strong>You’re all caught up</strong><p>When an app has something to tell you, it’ll show up here.</p></div>';return}
+ items.forEach(n=>{
+  const card=document.createElement('article');card.className='org-notification-item';card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label',n.title+'. '+n.message);
+  const icon=document.createElement('span');icon.className='org-notification-app-icon';icon.textContent=n.icon||icons[n.app]||'🔔';
+  const copy=document.createElement('div');copy.className='org-notification-copy';
+  const title=document.createElement('strong');title.textContent=n.title;
+  const message=document.createElement('p');message.textContent=n.message;
+  const time=document.createElement('time');time.textContent=stamp(n.time);
+  copy.append(title,message,time);
+  const dismiss=document.createElement('button');dismiss.type='button';dismiss.className='org-notification-dismiss';dismiss.textContent='×';dismiss.setAttribute('aria-label','Dismiss notification');dismiss.onclick=e=>{e.stopPropagation();items=items.filter(x=>x.id!==n.id);save();render()};
+  const activate=()=>{n.read=true;save();render();if(n.app&&typeof window.openApp==='function')window.openApp(n.app);if(n.url&&/^https?:\/\//i.test(n.url))window.open(n.url,'_blank','noopener');if(typeof window.toggleNotifications==='function')window.toggleNotifications()};
+  card.onclick=activate;card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate()}};
+  card.append(icon,copy,dismiss);host.appendChild(card);
+ });
+}
+function save(){write(KEY,items.slice(0,60));write(PREF,prefs)}
+function setPref(name,value){prefs[name]=!!value;document.body.classList.toggle('org-notification-light',prefs.light);const config=[['dnd','org-quick-dnd'],['light','org-quick-appearance'],['focus','org-quick-focus']];config.forEach(([key,id])=>{const b=$(id);if(!b)return;b.setAttribute('aria-pressed',String(!!prefs[key]));const state=b.querySelector('.org-quick-state');if(state)state.textContent=prefs[key]?'On':'Off';});save()}
+function add(title,message,options){
+ options=options||{};if(prefs.dnd&&!options.force)return null;
+ const n={id:Date.now().toString(36)+'-'+(++serial),title:String(title||'Notification').slice(0,120),message:String(message||'').slice(0,500),app:typeof options.app==='string'?options.app:'',icon:options.icon||icons[options.app]||'🔔',time:Date.now(),read:false,url:typeof options.url==='string'?options.url:''};
+ items.unshift(n);items=items.slice(0,60);save();render();
+ if(options.toast!==false&&typeof window.orgToast==='function')window.orgToast(n.title+': '+n.message);
+ return n.id;
+}
+window.ORGOSNotifications={add:function(title,message,options){return add(title,message,options)},clear:function(){items=[];save();render()},getAll:function(){return items.map(n=>({...n}))},setDoNotDisturb:function(value){setPref('dnd',value)}};
+window.addORGNotification=window.ORGOSNotifications.add;
+window.toggleNotifications=function(){const panel=$('notifications'),start=$('start-menu');if(!panel)return;start?.classList.remove('open');const opening=!panel.classList.contains('open');panel.classList.toggle('open',opening);if(opening){items=items.map(n=>({...n,read:true}));save();render()}};
+function init(){
+ items=read(KEY,[]);if(!Array.isArray(items))items=[];
+ items=items.filter(n=>n&&typeof n.title==='string'&&typeof n.message==='string'&&typeof n.time==='number').slice(0,60);
+ prefs=Object.assign({dnd:false,light:false,focus:false},read(PREF,{}));setPref('dnd',prefs.dnd);setPref('light',prefs.light);setPref('focus',prefs.focus);render();
+ const date=$('org-notification-date');if(date)date.textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+ const button=$('notify-button');if(button)button.onclick=window.toggleNotifications;
+ [['org-quick-dnd','dnd'],['org-quick-appearance','light'],['org-quick-focus','focus']].forEach(([id,key])=>{const b=$(id);if(b)b.onclick=()=>setPref(key,!prefs[key])});
+ const clear=$('org-clear-notifications');if(clear)clear.onclick=()=>{items=[];save();render()};
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('notifications')?.classList.remove('open')});
+ document.addEventListener('pointerdown',e=>{const panel=$('notifications'),button=$('notify-button');if(panel?.classList.contains('open')&&!panel.contains(e.target)&&!button?.contains(e.target))panel.classList.remove('open')});
+ window.addEventListener('storage',e=>{if(e.key===KEY){items=read(KEY,[]);if(!Array.isArray(items))items=[];render()}});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 
