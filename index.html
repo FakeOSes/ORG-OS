@@ -1091,8 +1091,6 @@ if(window.ORGCore){
 function toast(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2400);if(window.ORGOSNotifications&&typeof message==="string"&&!window.__orgNotificationToastGuard){window.__orgNotificationToastGuard=true;try{window.ORGOSNotifications.add("ORG OS",message,{app:"system",toast:false})}finally{window.__orgNotificationToastGuard=false}}}
 function hideSplash(){const splash=$("splash-screen");if(!splash)return;splash.classList.add("hidden");setTimeout(()=>splash.remove(),800)}
 window.addEventListener("load",()=>setTimeout(hideSplash,1650));
-// Safety fallback: a stalled external resource must not leave ORG OS stuck on its splash screen.
-setTimeout(hideSplash,8000);
 
 function getTopVisibleApp(){let topName="",topZ=-Infinity;document.querySelectorAll(".window").forEach(win=>{if(win.classList.contains("hidden"))return;const z=Number.parseInt(win.style.zIndex||"0",10)||0;if(z>=topZ){topZ=z;topName=win.id.replace(/^win-/,"");}});return topName;}
 function syncTaskbar(activeName){renderTaskbarPins();const visibleTop=getTopVisibleApp();if(!activeName||!$("win-"+activeName)||$("win-"+activeName).classList.contains("hidden"))activeName=visibleTop;else if(visibleTop&&Number.parseInt($("win-"+activeName).style.zIndex||"0",10)<Number.parseInt($("win-"+visibleTop).style.zIndex||"0",10))activeName=visibleTop;document.querySelectorAll(".task-button[data-app]").forEach(item=>{const name=item.dataset.app,win=$("win-"+name),visible=!!win&&!win.classList.contains("hidden"),running=!!win&&(visible||win.dataset.launched==="true"),pinned=getTaskbarPinnedKeys().includes(name);item.classList.toggle("running",running);item.classList.toggle("active",visible&&name===activeName);item.classList.toggle("taskbar-pinned",pinned);item.setAttribute("aria-label",(APP_NAMES[name]?.title||name)+(running?", running":""));item.title=(APP_NAMES[name]?.title||name)+(running?" — running":pinned?" — pinned":"");if(!pinned&&!running)item.remove();});} function focusApp(name){const win=$("win-"+name);if(!win||win.classList.contains("hidden"))return;win.style.zIndex=++zIndex;syncTaskbar(name);}
@@ -2759,7 +2757,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  .window.maximized{height:100dvh!important;width:100vw!important}
 }
 @media(prefers-reduced-motion:reduce){#start-menu *{scroll-behavior:auto!important}}
-/* Keep the maximize/restore glyph optically centered in the titlebar. */
-.titlebar .window-controls button.maximize::before{display:block;line-height:1;transform:translateY(1.5px)}
-</style>
-</html>
+</style></html>
+
+<style id="org-restore-button-alignment-fix">/* Keep the maximize/restore glyph optically centered in the titlebar. */ .titlebar .window-controls button.maximize::before{display:block;line-height:1;transform:translateY(1.5px)} </style>
