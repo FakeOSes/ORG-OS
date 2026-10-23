@@ -2230,18 +2230,18 @@ function pins(){
  let saved=typeof window.safeGet==='function'?safeGet('desktop.taskbarPinnedApps',defaults):defaults;
  if(!Array.isArray(saved))saved=defaults;
  const out=[];
- saved.forEach(key=>{if(typeof key==='string'&&window.APP_NAMES&&APP_NAMES[key]&&!out.includes(key)&&!(key==='welcome'&&safeGet('desktop.welcomeRemoved',false)))out.push(key)});
+ saved.forEach(key=>{if(typeof key==='string'&&APP_NAMES&&APP_NAMES[key]&&!out.includes(key)&&!(key==='welcome'&&safeGet('desktop.welcomeRemoved',false)))out.push(key)});
  return out;
 }
 function taskButton(name){
- if(!window.APP_NAMES||!APP_NAMES[name])return null;
+ if(!APP_NAMES||!APP_NAMES[name])return null;
  const host=$('task-apps');if(!host)return null;
  let b=host.querySelector('.task-button[data-app="'+CSS.escape(name)+'"]');
  if(!b){b=document.createElement('button');b.type='button';b.className='task-button';b.dataset.app=name;b.innerHTML='<span class="task-app-icon"></span><span class="task-running-indicator"></span>';b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';b.onclick=()=>{const win=$('win-'+name);if(win&&!win.classList.contains('hidden')&&typeof window.getTopVisibleApp==='function'&&getTopVisibleApp()===name){minimizeApp(name);return}if(win&&!win.classList.contains('hidden')){focusApp(name);return}openApp(name)};}
  b.title=APP_NAMES[name].title||name;b.setAttribute('aria-label',b.title);b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';return b;
 }
 function render(){
- const host=$('task-apps');if(!host||!window.APP_NAMES)return;
+ const host=$('task-apps');if(!host||!APP_NAMES)return;
  if(typeof window.registerInstalledApps==='function')registerInstalledApps();
  const pinned=pins(),all=[...pinned];
  host.querySelectorAll('.task-button[data-app]').forEach(b=>{const n=b.dataset.app,win=$('win-'+n),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true');if(!all.includes(n)&&running)all.push(n);else if(!all.includes(n))b.remove()});
