@@ -1617,5 +1617,27 @@ hr{border:0;border-top:1px solid var(--line,#dfe5ef)}
       renderAll();
     const ingredientFinderModal=document.getElementById('ingredientFinderModal'),ingredientFinderInput=document.getElementById('ingredientFinderInput'),ingredientFinderResults=document.getElementById('ingredientFinderResults');function renderIngredientFinder(){if(!ingredientFinderResults)return;const terms=String(ingredientFinderInput.value||'').toLowerCase().split(/[,;\n]+/).map(v=>v.trim()).filter(Boolean);const ranked=recipes.map(recipe=>{const ingredients=(recipe.ingredients||[]).map(v=>String(v).toLowerCase());const matched=terms.filter(term=>ingredients.some(item=>item.includes(term)||term.split(/\s+/).some(word=>word.length>2&&item.includes(word))));return {recipe,matched};}).filter(item=>!terms.length||item.matched.length>0).sort((a,b)=>b.matched.length-a.matched.length||a.recipe.time-b.recipe.time).slice(0,12);if(!ranked.length){ingredientFinderResults.innerHTML='<div class="ingredient-finder-empty">No recipes matched those ingredients yet. Try a simpler ingredient name or another combination.</div>';return;}ingredientFinderResults.innerHTML=ranked.map(({recipe,matched})=>'<button class="ingredient-finder-result" type="button" data-finder-recipe="'+escapeHTML(recipe.id)+'"><span class="ingredient-finder-result-icon">'+escapeHTML(recipe.icon||'🍽️')+'</span><span class="ingredient-finder-result-copy"><strong>'+escapeHTML(recipe.title)+'</strong><small>'+(terms.length?matched.length+' ingredient match'+(matched.length===1?'':'es')+' · ':'')+escapeHTML(recipe.time)+' min · '+escapeHTML(recipe.difficulty||'Easy')+'</small></span><span aria-hidden="true">→</span></button>').join('');ingredientFinderResults.querySelectorAll('[data-finder-recipe]').forEach(button=>button.addEventListener('click',()=>{ingredientFinderModal.hidden=true;openModal(button.dataset.finderRecipe);}));}function closeIngredientFinder(){ingredientFinderModal.hidden=true;}document.getElementById('ingredientFinderBtn').addEventListener('click',()=>{ingredientFinderModal.hidden=false;renderIngredientFinder();ingredientFinderInput.focus();});document.getElementById('ingredientFinderClose').addEventListener('click',closeIngredientFinder);ingredientFinderModal.querySelector('[data-close-ingredient-finder]').addEventListener('click',closeIngredientFinder);ingredientFinderInput.addEventListener('input',renderIngredientFinder);ingredientFinderModal.querySelectorAll('[data-ingredient-suggestion]').forEach(button=>button.addEventListener('click',()=>{ingredientFinderInput.value=button.dataset.ingredientSuggestion;renderIngredientFinder();}));document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ingredientFinderModal.hidden)closeIngredientFinder();});
 </script>
-  </body>
+  
+<style id="recipe-single-action-fix">
+.recipe-card .card-actions{display:none!important}
+.recipe-card .card-buttons{display:block!important;margin-top:14px}
+.recipe-card .card-buttons .view-btn{width:100%;min-height:42px}
+.recipe-card .card-buttons .shop-toggle{display:none!important}
+#recipeModal .modal-footer{display:none!important}
+#recipeModal .modal-body{line-height:1.65}
+#recipeModal .modal-body ol{padding-left:22px}
+#recipeModal .modal-body ol li{margin:0 0 10px}
+</style>
+<script id="recipe-single-action-script">
+/* Recipe cards expose one clear action; the detail view contains the full recipe. */
+document.addEventListener('DOMContentLoaded',()=>{
+ const apply=()=>document.querySelectorAll('#recipeGrid .recipe-card').forEach(card=>{
+  card.querySelectorAll('.card-actions,[data-favorite-id],[data-shop-id]').forEach(el=>el.remove());
+  const buttons=card.querySelector('.card-buttons');if(buttons){buttons.querySelectorAll('button:not([data-view-id])').forEach(el=>el.remove());}
+ });
+ apply();const grid=document.getElementById('recipeGrid');if(grid)new MutationObserver(apply).observe(grid,{childList:true,subtree:true});
+ const featured=document.querySelector('.feature-actions');if(featured){const fav=document.getElementById('featuredFavoriteBtn');if(fav)fav.hidden=true;}
+});
+</script>
+</body>
 </html>
