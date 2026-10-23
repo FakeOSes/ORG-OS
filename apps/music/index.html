@@ -52,4 +52,36 @@ hr{border:0;border-top:1px solid var(--line)}
 const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));function setTheme(t){let v=t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t;document.body.dataset.theme=v;document.documentElement.style.colorScheme=v;try{localStorage.setItem("orgos.appTheme",t)}catch(e){}}
 let saved="system";try{saved=localStorage.getItem("orgos.appTheme")||"system"}catch(e){}theme.value=saved;setTheme(saved);theme.onchange=()=>setTheme(theme.value);matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>{if(theme.value==="system")setTheme("system")});
 let tracks=[],index=0;function play(i){if(!tracks.length)return;index=(i+tracks.length)%tracks.length;audio.src=tracks[index].url;track.textContent=tracks[index].name;now.textContent="▶ "+tracks[index].name;audio.play().catch(()=>{});render()}function render(){queue.innerHTML=tracks.map((t,i)=>'<button class="track '+(i===index?'selected':'')+'" data-i="'+i+'">'+(i===index?'▶ ':'♫ ')+esc(t.name)+'</button>').join("");queue.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>play(+b.dataset.i))}files.onchange=()=>{tracks.push(...[...files.files].map(f=>({name:f.name,url:URL.createObjectURL(f)})));if(tracks.length)play(Math.max(0,tracks.length-1))};prev.onclick=()=>play(index-1);next.onclick=()=>play(index+1);audio.onended=()=>play(index+1);volume.oninput=()=>audio.volume=+volume.value;audio.volume=.8;
-</script></body></html>
+</script>
+<style id="music-recipe-box-redesign">
+:root{--bg:#f6f1e9;--panel:#fffdf9;--text:#2b2a27;--muted:#79756e;--line:#e8dfd3;--accent:#bd704b;--soft:#f5e5d8;--shadow:0 12px 34px #5a3c2010}
+body[data-theme=dark]{--bg:#191817;--panel:#252321;--text:#f5eee6;--muted:#b7ada2;--line:#403a34;--accent:#e5a17c;--soft:#3c2d25;--shadow:0 12px 34px #0004}
+body{padding:clamp(14px,2.5vw,30px);background:radial-gradient(ellipse at top left,var(--soft),transparent 42%),var(--bg);font-size:14px}
+header{padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:18px}
+header .appicon{background:var(--soft);border-radius:14px}
+header h1{font-size:23px;letter-spacing:-.04em}
+main{max-width:1100px;margin:auto}
+.hero{margin:0 0 16px;padding:22px;border-radius:20px;background:linear-gradient(135deg,var(--soft),var(--panel) 70%);border:1px solid var(--line)}
+.album{width:116px;height:116px;flex:0 0 116px;border-radius:20px;background:linear-gradient(145deg,#d9a17f,#f4ddca);color:#603b2a;box-shadow:inset 0 0 0 1px #ffffff70}
+.hero h2{font-size:24px;letter-spacing:-.035em;margin-bottom:5px}
+.filebtn{display:inline-flex;margin-top:8px;background:var(--accent);color:white;border-color:var(--accent);font-weight:650}
+audio{display:block;width:100%;margin:12px 0 16px;border-radius:14px}
+.toolbar{padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.toolbar button{min-height:40px}
+#queue{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px}
+.track{display:flex;align-items:center;gap:10px;min-height:48px;padding:12px 14px;margin:0;border-radius:12px;background:var(--panel);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track.selected{background:var(--soft);border-color:var(--accent);font-weight:650}
+.widget{padding:15px 17px;border-radius:15px;background:var(--panel);border-color:var(--line)}
+.settings select{max-width:120px}
+@media(max-width:520px){.hero{align-items:flex-start;gap:13px;padding:15px}.album{width:76px;height:76px;flex-basis:76px;font-size:35px}.hero h2{font-size:19px}header .spacer{flex-basis:100%}}
+</style>
+<script id="music-reopen-persistence">
+/* Keep the player usable after close/reopen and remember the user's theme. */
+(function(){
+ const $=id=>document.getElementById(id);const key='orgos.music.theme.v2';
+ try{const t=localStorage.getItem(key);if(t){$('theme').value=t;document.body.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.documentElement.style.colorScheme=document.body.dataset.theme;}}catch(e){}
+ const original=$('theme').onchange;$('theme').addEventListener('change',()=>{try{localStorage.setItem(key,$('theme').value)}catch(e){}});
+ const file=$('files');if(file)file.setAttribute('aria-label','Add audio files');
+})();
+</script>
+</body></html>
