@@ -2202,5 +2202,63 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 .org-shell-switch{display:flex;align-items:center;gap:8px;font-size:12px}.org-shell-switch input{accent-color:var(--accent);width:17px;height:17px}.org-compact-taskbar #task-apps .task-button{flex-basis:34px!important;width:34px!important;min-width:34px!important;height:36px!important}
 </style>
 
+
+<style id="org-taskbar-pins-fix">
+#taskbar{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;min-width:0!important;overflow:hidden!important;padding:6px 12px!important;box-sizing:border-box!important}
+#taskbar #start-button{flex:0 0 43px!important;width:43px!important;min-width:43px!important}
+#taskbar #task-search{flex:0 1 180px!important;width:180px!important;min-width:70px!important;max-width:180px!important}
+#taskbar #task-apps{display:flex!important;align-items:center!important;flex:1 1 0!important;width:0!important;min-width:0!important;max-width:none!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:thin;scrollbar-color:#ffffff35 transparent;white-space:nowrap!important}
+#taskbar #task-apps .task-button{display:grid!important;place-items:center!important;position:relative!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;visibility:visible!important;opacity:1!important}
+#taskbar #task-apps .task-button.taskbar-pinned:before{content:"";position:absolute;inset:2px;border:1px solid var(--accent,#60a5fa);border-radius:8px;opacity:.45;pointer-events:none}
+#taskbar #task-apps .task-button.taskbar-pinned:after{left:25%!important;right:25%!important;bottom:1px!important;width:auto!important;height:3px!important}
+#taskbar .tray{display:flex!important;align-items:center!important;position:relative!important;inset:auto!important;flex:0 0 auto!important;min-width:max-content!important;margin-left:0!important;padding-left:6px!important;gap:5px!important}
+#taskbar #clock{min-width:60px!important;white-space:nowrap!important}
+@media(max-width:760px){#taskbar{gap:5px!important;padding-inline:6px!important}#taskbar #task-search{flex-basis:112px!important;width:112px!important;max-width:112px!important}#taskbar #task-apps .task-button{flex-basis:36px!important;width:36px!important;min-width:36px!important;height:38px!important}#taskbar .tray{gap:2px!important;padding-left:2px!important}#taskbar #clock{min-width:52px!important;font-size:10px!important}}
+@media(max-width:480px){#taskbar #task-search{display:none!important}#taskbar{gap:4px!important;padding-inline:4px!important}#taskbar #task-apps .task-button{flex-basis:34px!important;width:34px!important;min-width:34px!important;height:36px!important}#taskbar .tray button{padding:4px!important}#taskbar #clock{min-width:48px!important;font-size:9px!important}}
+</style>
+<script id="org-taskbar-pins-fix-script">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+function pins(){
+ const defaults=['notes','files','terminal','settings','orgstore'];
+ let saved=typeof window.safeGet==='function'?safeGet('desktop.taskbarPinnedApps',defaults):defaults;
+ if(!Array.isArray(saved))saved=defaults;
+ const out=[];
+ saved.forEach(key=>{if(typeof key==='string'&&window.APP_NAMES&&APP_NAMES[key]&&!out.includes(key)&&!(key==='welcome'&&safeGet('desktop.welcomeRemoved',false)))out.push(key)});
+ return out;
+}
+function taskButton(name){
+ if(!window.APP_NAMES||!APP_NAMES[name])return null;
+ const host=$('task-apps');if(!host)return null;
+ let b=host.querySelector('.task-button[data-app="'+CSS.escape(name)+'"]');
+ if(!b){b=document.createElement('button');b.type='button';b.className='task-button';b.dataset.app=name;b.innerHTML='<span class="task-app-icon"></span><span class="task-running-indicator"></span>';b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';b.onclick=()=>{const win=$('win-'+name);if(win&&!win.classList.contains('hidden')&&typeof window.getTopVisibleApp==='function'&&getTopVisibleApp()===name){minimizeApp(name);return}if(win&&!win.classList.contains('hidden')){focusApp(name);return}openApp(name)};}
+ b.title=APP_NAMES[name].title||name;b.setAttribute('aria-label',b.title);b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';return b;
+}
+function render(){
+ const host=$('task-apps');if(!host||!window.APP_NAMES)return;
+ if(typeof window.registerInstalledApps==='function')registerInstalledApps();
+ const pinned=pins(),all=[...pinned];
+ host.querySelectorAll('.task-button[data-app]').forEach(b=>{const n=b.dataset.app,win=$('win-'+n),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true');if(!all.includes(n)&&running)all.push(n);else if(!all.includes(n))b.remove()});
+ all.forEach(n=>{const b=taskButton(n);if(b)host.appendChild(b)});
+ const visible=typeof window.getTopVisibleApp==='function'?getTopVisibleApp():'';
+ host.querySelectorAll('.task-button[data-app]').forEach(b=>{const n=b.dataset.app,win=$('win-'+n),isVisible=!!win&&!win.classList.contains('hidden'),running=!!win&&(isVisible||win.dataset.launched==='true'),isPinned=pinned.includes(n);b.classList.toggle('taskbar-pinned',isPinned);b.classList.toggle('running',running);b.classList.toggle('active',isVisible&&n===visible);b.title=(APP_NAMES[n]?.title||n)+(running?' — running':isPinned?' — pinned':'');b.setAttribute('aria-label',(APP_NAMES[n]?.title||n)+(running?', running':isPinned?', pinned':''));});
+}
+window.getTaskbarPinnedKeys=pins;
+window.makeTaskButton=taskButton;
+window.renderTaskbarPins=render;
+window.toggleTaskbarPin=function(key){
+ if(!APP_NAMES||!APP_NAMES[key])return;
+ const current=pins(),next=current.includes(key)?current.filter(k=>k!==key):[...current,key];
+ if(typeof window.safeSet==='function')safeSet('desktop.taskbarPinnedApps',next);
+ render();
+ if(typeof window.syncTaskbar==='function')syncTaskbar('');
+ if(typeof window.toast==='function')toast(next.includes(key)?'Pinned '+APP_NAMES[key].title+' to the taskbar.':'Unpinned '+APP_NAMES[key].title+'.');
+};
+function start(){render();window.addEventListener('resize',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
+
 </body>
 </html>
