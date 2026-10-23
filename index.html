@@ -770,19 +770,26 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
   <div id="desktop-widgets"></div>
 </div>
 
-<div id="taskbar">
-  <button class="task-button" id="start-button" title="Start" aria-label="Start menu">
-    <span class="start-logo" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
-    </span>
-  </button>
-  <input id="task-search" placeholder="Search apps..." aria-label="Search apps">
-  <div class="task-apps" id="task-apps" aria-label="Pinned and running apps"></div>
-  <div class="tray">
-    <button id="notify-button" title="Notifications">◔</button>
-    <div id="clock"></div>
+<nav id="taskbar" class="org-taskbar-2" aria-label="ORG OS taskbar">
+  <div class="taskbar-start-area">
+    <button class="task-button taskbar-start" id="start-button" title="Start" aria-label="Open Start menu">
+      <span class="start-logo" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+    </button>
   </div>
-</div>
+  <label class="taskbar-search-wrap" aria-label="Search apps">
+    <span class="taskbar-search-icon" aria-hidden="true">⌕</span>
+    <input id="task-search" placeholder="Search apps" aria-label="Search apps" autocomplete="off">
+    <kbd class="taskbar-search-hint">⌘ K</kbd>
+  </label>
+  <div class="taskbar-apps-rail">
+    <div class="task-apps" id="task-apps" aria-label="Pinned and running apps"></div>
+  </div>
+  <div class="tray taskbar-tray">
+    <button id="notify-button" title="Notifications" aria-label="Open notifications"><span aria-hidden="true">◔</span><i class="taskbar-notification-dot" aria-hidden="true"></i></button>
+    <div class="taskbar-tray-divider" aria-hidden="true"></div>
+    <div id="clock" aria-label="Date and time"></div>
+  </div>
+</nav>
 <div id="taskbar-edge" aria-label="Show taskbar" role="button" tabindex="0"></div>
 
 <div id="start-menu" class="panel">
@@ -2212,62 +2219,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 
 
-<style id="org-taskbar-pins-fix">
-#taskbar{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;min-width:0!important;overflow:hidden!important;padding:6px 12px!important;box-sizing:border-box!important}
-#taskbar #start-button{flex:0 0 43px!important;width:43px!important;min-width:43px!important}
-#taskbar #task-search{flex:0 1 180px!important;width:180px!important;min-width:70px!important;max-width:180px!important}
-#taskbar #task-apps{display:flex!important;align-items:center!important;flex:1 1 0!important;width:0!important;min-width:0!important;max-width:none!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:thin;scrollbar-color:#ffffff35 transparent;white-space:nowrap!important}
-#taskbar #task-apps .task-button{display:grid!important;place-items:center!important;position:relative!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;visibility:visible!important;opacity:1!important}
-#taskbar #task-apps .task-button.taskbar-pinned:before{content:"";position:absolute;inset:2px;border:1px solid var(--accent,#60a5fa);border-radius:8px;opacity:.45;pointer-events:none}
-#taskbar #task-apps .task-button.taskbar-pinned:after{left:25%!important;right:25%!important;bottom:1px!important;width:auto!important;height:3px!important}
-#taskbar .tray{display:flex!important;align-items:center!important;position:relative!important;inset:auto!important;flex:0 0 auto!important;min-width:max-content!important;margin-left:0!important;padding-left:6px!important;gap:5px!important}
-#taskbar #clock{min-width:60px!important;white-space:nowrap!important}
-@media(max-width:760px){#taskbar{gap:5px!important;padding-inline:6px!important}#taskbar #task-search{flex-basis:112px!important;width:112px!important;max-width:112px!important}#taskbar #task-apps .task-button{flex-basis:36px!important;width:36px!important;min-width:36px!important;height:38px!important}#taskbar .tray{gap:2px!important;padding-left:2px!important}#taskbar #clock{min-width:52px!important;font-size:10px!important}}
-@media(max-width:480px){#taskbar #task-search{display:none!important}#taskbar{gap:4px!important;padding-inline:4px!important}#taskbar #task-apps .task-button{flex-basis:34px!important;width:34px!important;min-width:34px!important;height:36px!important}#taskbar .tray button{padding:4px!important}#taskbar #clock{min-width:48px!important;font-size:9px!important}}
-</style>
-<script id="org-taskbar-pins-fix-script">
-(function(){
-'use strict';
-const $=id=>document.getElementById(id);
-function pins(){
- const defaults=['notes','files','terminal','settings','orgstore'];
- let saved=typeof window.safeGet==='function'?safeGet('desktop.taskbarPinnedApps',defaults):defaults;
- if(!Array.isArray(saved))saved=defaults;
- const out=[];
- saved.forEach(key=>{if(typeof key==='string'&&typeof APP_NAMES!=="undefined"&&APP_NAMES[key]&&!out.includes(key)&&!(key==='welcome'&&safeGet('desktop.welcomeRemoved',false)))out.push(key)});
- return out;
-}
-function taskButton(name){
- if(typeof APP_NAMES==="undefined"||!APP_NAMES[name])return null;
- const host=$('task-apps');if(!host)return null;
- let b=host.querySelector('.task-button[data-app="'+CSS.escape(name)+'"]');
- if(!b){b=document.createElement('button');b.type='button';b.className='task-button';b.dataset.app=name;b.innerHTML='<span class="task-app-icon"></span><span class="task-running-indicator"></span>';b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';b.onclick=()=>{const win=$('win-'+name);if(win&&!win.classList.contains('hidden')&&typeof window.getTopVisibleApp==='function'&&getTopVisibleApp()===name){minimizeApp(name);return}if(win&&!win.classList.contains('hidden')){focusApp(name);return}openApp(name)};}
- b.title=APP_NAMES[name].title||name;b.setAttribute('aria-label',b.title);b.querySelector('.task-app-icon').textContent=APP_NAMES[name].icon||'📦';return b;
-}
-function render(){
- const host=$('task-apps');if(!host||typeof APP_NAMES==="undefined")return;
- if(typeof window.registerInstalledApps==='function')registerInstalledApps();
- const pinned=pins(),all=[...pinned];
- host.querySelectorAll('.task-button[data-app]').forEach(b=>{const n=b.dataset.app,win=$('win-'+n),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true');if(!all.includes(n)&&running)all.push(n);else if(!all.includes(n))b.remove()});
- all.forEach(n=>{const b=taskButton(n);if(b)host.appendChild(b)});
- const visible=typeof window.getTopVisibleApp==='function'?getTopVisibleApp():'';
- host.querySelectorAll('.task-button[data-app]').forEach(b=>{const n=b.dataset.app,win=$('win-'+n),isVisible=!!win&&!win.classList.contains('hidden'),running=!!win&&(isVisible||win.dataset.launched==='true'),isPinned=pinned.includes(n);b.classList.toggle('taskbar-pinned',isPinned);b.classList.toggle('running',running);b.classList.toggle('active',isVisible&&n===visible);b.title=(APP_NAMES[n]?.title||n)+(running?' — running':isPinned?' — pinned':'');b.setAttribute('aria-label',(APP_NAMES[n]?.title||n)+(running?', running':isPinned?', pinned':''));});
-}
-window.getTaskbarPinnedKeys=pins;
-window.makeTaskButton=taskButton;
-window.renderTaskbarPins=render;
-window.toggleTaskbarPin=function(key){
- if(!APP_NAMES||!APP_NAMES[key])return;
- const current=pins(),next=current.includes(key)?current.filter(k=>k!==key):[...current,key];
- if(typeof window.safeSet==='function')safeSet('desktop.taskbarPinnedApps',next);
- render();
- if(typeof window.syncTaskbar==='function')syncTaskbar('');
- if(typeof window.toast==='function')toast(next.includes(key)?'Pinned '+APP_NAMES[key].title+' to the taskbar.':'Unpinned '+APP_NAMES[key].title+'.');
-};
-function start(){render();window.addEventListener('resize',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-})();
-</script>
+
+
 
 
 <style id="org-notification-center-style">
@@ -2437,159 +2390,11 @@ setTimeout(removeRetiredApps,900);
 })();
 </script>
 
-<script id="org-taskbar-single-source-fix">
-(function(){
-'use strict';
-const defaults=['notes','files','terminal','settings','orgstore'];
-const retired=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
-const $=id=>document.getElementById(id);
-function validKeys(list){
- if(typeof registerInstalledApps==='function')registerInstalledApps();
- return [...new Set((Array.isArray(list)?list:[]).filter(key=>typeof key==='string'&&!retired.has(key)&&typeof APP_NAMES!=='undefined'&&!!APP_NAMES[key]&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))))];
-}
-function readPins(){
- let list=[];
- try{list=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',[]):[];}catch(e){}
- list=validKeys(list);
- // Empty/stale storage should never make the taskbar look broken on first load.
- return list.length?list:validKeys(defaults);
-}
-function savePins(list){
- const cleaned=validKeys(list);
- try{if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',cleaned);}catch(e){}
- try{localStorage.setItem('orgos.taskbarPins.v1',JSON.stringify(cleaned));}catch(e){}
- return cleaned;
-}
-function getButton(key){
- let button=$('task-apps')?.querySelector('.task-button[data-app="'+CSS.escape(key)+'"]');
- if(!button&&typeof makeTaskButton==='function')button=makeTaskButton(key);
- if(!button){
-  const host=$('task-apps');if(!host||!APP_NAMES[key])return null;
-  button=document.createElement('button');button.type='button';button.className='task-button';button.dataset.app=key;
-  button.innerHTML='<span class="task-app-icon"></span><span class="task-running-indicator"></span>';
-  button.querySelector('.task-app-icon').textContent=APP_NAMES[key].icon||'📦';
-  button.addEventListener('click',()=>{const win=$('win-'+key);if(win&&!win.classList.contains('hidden')){if(typeof minimizeApp==='function'&&typeof getTopVisibleApp==='function'&&getTopVisibleApp()===key)minimizeApp(key);else if(typeof focusApp==='function')focusApp(key);}else if(typeof openApp==='function')openApp(key);});
- }
- button.title=APP_NAMES[key]?.title||key;
- button.setAttribute('aria-label',button.title);
- const icon=button.querySelector('.task-app-icon');if(icon)icon.textContent=APP_NAMES[key]?.icon||'📦';
- return button;
-}
-function render(){
- const host=$('task-apps');if(!host||typeof APP_NAMES==='undefined')return;
- const pins=readPins(),keep=new Set(pins);
- host.querySelectorAll('.task-button[data-app]').forEach(button=>{
-  const key=button.dataset.app,win=$('win-'+key),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true');
-  if(running)keep.add(key);
- });
- [...keep].forEach(key=>{const button=getButton(key);if(button)host.appendChild(button);});
- host.querySelectorAll('.task-button[data-app]').forEach(button=>{
-  const key=button.dataset.app,win=$('win-'+key),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true'),pinned=pins.includes(key);
-  if(!pinned&&!running){button.remove();return;}
-  button.classList.toggle('taskbar-pinned',pinned);button.classList.toggle('running',running);
-  button.style.display='grid';button.style.visibility='visible';button.style.opacity='1';
- });
-}
-window.getTaskbarPinnedKeys=readPins;
-window.renderTaskbarPins=render;
-window.toggleTaskbarPin=function(key){
- if(typeof APP_NAMES==='undefined'||!APP_NAMES[key]||retired.has(key))return;
- const pins=readPins(),next=pins.includes(key)?pins.filter(item=>item!==key):pins.concat(key);
- savePins(next);render();
- if(typeof syncTaskbar==='function')syncTaskbar('');
- if(typeof toast==='function')toast(next.includes(key)?'Pinned '+APP_NAMES[key].title+' to the taskbar.':'Unpinned '+APP_NAMES[key].title+'.');
- if(typeof renderPinned==='function')renderPinned($('start-search')?.value||'');
-};
-function boot(){render();requestAnimationFrame(render);setTimeout(render,250);setTimeout(render,1000);}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.addEventListener('resize',render);
-window.addEventListener('storage',event=>{if(!event.key||event.key==='desktop.taskbarPinnedApps'||event.key==='orgos.taskbarPins.v1')render();});
-})();
-</script>
-<style id="org-taskbar-single-source-visibility">
-#taskbar #task-apps{display:flex!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;align-items:center!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;visibility:visible!important;opacity:1!important}
-#taskbar #task-apps .task-button{display:grid!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;visibility:visible!important;opacity:1!important;place-items:center!important}
-#taskbar #task-apps .task-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important}
-</style>
 
-<script id="org-taskbar-v2">
-(function(){
-'use strict';
-const KEY='orgos.taskbarPins.v2';
-let lastSignature='';
-const DEFAULTS=['notes','files','terminal','settings','orgstore'];
-const $=id=>document.getElementById(id);
-const retired=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
-function names(){return typeof APP_NAMES!=='undefined'?APP_NAMES:{}}
-function valid(key){return typeof key==='string'&&!!names()[key]&&!retired.has(key)&&!/^installed-(typing-lab|link-vault|budget-buddy)$/.test(key)&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))}
-function readPins(){let list;try{list=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}if(!Array.isArray(list)){try{list=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',DEFAULTS):DEFAULTS}catch(e){list=DEFAULTS}}list=[...new Set((Array.isArray(list)?list:[]).filter(valid))];return list.length?list:DEFAULTS.filter(valid)}
-function savePins(list){const clean=[...new Set(list.filter(valid))];try{localStorage.setItem(KEY,JSON.stringify(clean));if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',clean)}catch(e){}return clean}
-function windowFor(key){return $('win-'+key)}
-function running(key){const w=windowFor(key);return !!w&&(!w.classList.contains('hidden')||w.dataset.launched==='true')}
-function iconFor(key){return names()[key]?.icon||'📦'}
-function titleFor(key){return names()[key]?.title||key}
-function openOrFocus(key){const w=windowFor(key);if(w&&!w.classList.contains('hidden')){if(typeof getTopVisibleApp==='function'&&getTopVisibleApp()===key&&typeof minimizeApp==='function')minimizeApp(key);else if(typeof focusApp==='function')focusApp(key);else if(typeof openApp==='function')openApp(key)}else if(typeof openApp==='function')openApp(key)}
-function makeButton(key,pins){
- const b=document.createElement('button');b.type='button';b.className='task-button org-taskbar-v2-button';b.dataset.app=key;b.title=titleFor(key)+' · right-click to '+(pins.includes(key)?'unpin':'pin');b.setAttribute('aria-label',b.title);
- const icon=document.createElement('span');icon.className='task-app-icon';icon.textContent=iconFor(key);b.append(icon);
- const dot=document.createElement('span');dot.className='org-taskbar-v2-dot';dot.setAttribute('aria-hidden','true');b.append(dot);
- b.classList.toggle('running',running(key));b.classList.toggle('active',!!(running(key)&&typeof getTopVisibleApp==='function'&&getTopVisibleApp()===key));b.classList.toggle('taskbar-pinned',pins.includes(key));
- b.onclick=()=>openOrFocus(key);
- b.oncontextmenu=e=>{e.preventDefault();const next=readPins();savePins(next.includes(key)?next.filter(k=>k!==key):next.concat(key));render();if(typeof toast==='function')toast(next.includes(key)?'Unpinned '+titleFor(key)+'.':'Pinned '+titleFor(key)+' to the taskbar.');};
- b.onkeydown=e=>{if(e.shiftKey&&e.key==='F10'){e.preventDefault();const next=readPins();savePins(next.includes(key)?next.filter(k=>k!==key):next.concat(key));render();}};
- return b;
-}
-function render(){
- const host=$('task-apps');if(!host)return;
- if(typeof registerInstalledApps==='function')try{registerInstalledApps()}catch(e){}
- const pins=readPins(),keys=[...pins];
- Object.keys(names()).forEach(key=>{if(valid(key)&&running(key)&&!keys.includes(key))keys.push(key)});
- const signature=JSON.stringify({pins,keys});
- if(signature!==lastSignature){
-  host.replaceChildren();
-  keys.forEach(key=>host.append(makeButton(key,pins)));
-  lastSignature=signature;
- }
- [...host.querySelectorAll('.org-taskbar-v2-button')].forEach(button=>{
-  const key=button.dataset.app;
-  button.classList.toggle('running',running(key));
-  button.classList.toggle('active',!!(running(key)&&typeof getTopVisibleApp==='function'&&getTopVisibleApp()===key));
-  button.classList.toggle('taskbar-pinned',pins.includes(key));
-  button.title=titleFor(key)+' · right-click to '+(pins.includes(key)?'unpin':'pin');
- });
- host.dataset.pinCount=String(pins.length);
-}
-window.renderTaskbarV2=render;
-window.getTaskbarV2PinnedKeys=readPins;
-window.toggleTaskbarV2Pin=function(key){if(!valid(key))return;const pins=readPins();savePins(pins.includes(key)?pins.filter(k=>k!==key):pins.concat(key));render()};
-function boot(){render();setTimeout(render,150);setTimeout(render,600);setTimeout(render,1400)}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-const observer=new MutationObserver(()=>render());
-function observe(){if(document.body)observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-launched']})}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();
-window.addEventListener('storage',e=>{if(!e.key||e.key===KEY||e.key==='desktop.taskbarPinnedApps')render()});
-window.addEventListener('resize',render);
-})();
-</script>
-<style id="org-taskbar-v2-styles">
-#taskbar #task-apps{display:flex!important;align-items:center!important;gap:5px!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;visibility:visible!important;opacity:1!important}
-#taskbar #task-apps::-webkit-scrollbar{display:none}
-#taskbar #task-apps .org-taskbar-v2-button{position:relative!important;display:grid!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;padding:0!important;place-items:center!important;visibility:visible!important;opacity:1!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;font-size:21px!important}
-#taskbar #task-apps .org-taskbar-v2-button:hover{background:#ffffff12!important;border-color:#ffffff16!important}
-#taskbar #task-apps .org-taskbar-v2-button.active{background:var(--accent-soft)!important;border-color:#ffffff24!important}
-#taskbar #task-apps .org-taskbar-v2-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important;line-height:1}
-#taskbar .org-taskbar-v2-dot{position:absolute;bottom:2px;left:50%;width:5px;height:5px;border-radius:50%;background:#cbd5e1;transform:translateX(-50%);opacity:0}
-#taskbar #task-apps .org-taskbar-v2-button.running .org-taskbar-v2-dot{opacity:1}
-#taskbar #task-apps .org-taskbar-v2-button.active .org-taskbar-v2-dot{width:17px;height:3px;border-radius:5px;background:var(--accent);opacity:1}
-.org-app-of-week{position:relative;display:grid;grid-template-columns:minmax(115px,.52fr) minmax(0,1fr);gap:18px;align-items:center;margin:14px 0 18px;padding:20px;border:1px solid #8b5cf64d;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 8% 15%,#8b5cf629,transparent 50%),linear-gradient(120deg,#172039,#111827 70%);color:#f8fafc}
-.org-app-week-art{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;min-height:118px;border:1px solid #ffffff12;border-radius:13px;background:linear-gradient(145deg,#7c3aed55,#2563eb30);font-size:40px;color:#ddd6fe;overflow:hidden}
-.org-app-week-art span{position:relative;z-index:1;display:grid;place-items:center;width:66px;height:66px;border:1px solid #ffffff30;border-radius:20px;background:#ffffff12;box-shadow:0 10px 28px #0003}
-.org-app-week-art i{position:absolute;bottom:20px;width:4px;height:20px;border-radius:5px;background:#c4b5fd;opacity:.65}
-.org-app-week-art i:nth-of-type(1){left:12%;height:16px}.org-app-week-art i:nth-of-type(2){left:22%;height:29px}.org-app-week-art i:nth-of-type(3){left:32%;height:21px}.org-app-week-art i:nth-of-type(4){left:42%;height:34px}
-.org-app-week-copy{min-width:0}.org-app-week-copy h2{margin:7px 0;font-size:clamp(20px,3vw,27px);letter-spacing:-.04em}.org-app-week-copy p{margin:0;color:#c4cde0;font-size:12px;line-height:1.65}.org-app-week-meta{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0;color:#cbd5e1;font-size:10px}.org-app-week-meta span{padding:5px 8px;border:1px solid #ffffff14;border-radius:7px;background:#ffffff08}
-#win-orgstore[data-store-theme="light"] .org-app-of-week{background:linear-gradient(120deg,#f1edff,#fff 75%);color:#172033;border-color:#d7c9ff}#win-orgstore[data-store-theme="light"] .org-app-week-copy p,#win-orgstore[data-store-theme="light"] .org-app-week-meta{color:#536078}#win-orgstore[data-store-theme="light"] .org-app-week-meta span{border-color:#dce2ed;background:#fff}
-@media(max-width:560px){.org-app-of-week{grid-template-columns:1fr;gap:12px;padding:14px}.org-app-week-art{min-height:75px}.org-app-week-art span{width:54px;height:54px}.org-app-week-copy h2{font-size:22px}#taskbar{gap:5px;padding:5px 7px}#task-search{width:115px;flex-basis:115px}}
-</style>
+
+
+
+
 
 
 <script id="org-window-restore-v2">
@@ -2727,6 +2532,169 @@ window.addEventListener('resize',render);
 .window.maximized>.titlebar .window-controls button.maximize:before{content:"❐"!important;display:block!important;font-size:15px!important;line-height:1!important;transform:none!important}
 </style>
 
+
+<style id="org-taskbar-2-design">
+:root{--taskbar2-bg:rgba(17,22,33,.86);--taskbar2-border:rgba(255,255,255,.12);--taskbar2-shadow:0 18px 55px rgba(0,0,0,.34)}
+#taskbar.org-taskbar-2{position:fixed!important;z-index:7000!important;left:50%!important;right:auto!important;bottom:14px!important;transform:translateX(-50%)!important;width:min( min(1080px, calc(100vw - 28px)), 1080px)!important;height:66px!important;min-height:66px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:10px!important;padding:8px 11px!important;border:1px solid var(--taskbar2-border)!important;border-radius:22px!important;background:var(--taskbar2-bg)!important;background-color:var(--taskbar2-bg)!important;backdrop-filter:blur(28px) saturate(170%)!important;-webkit-backdrop-filter:blur(28px) saturate(170%)!important;box-shadow:var(--taskbar2-shadow),inset 0 1px 0 rgba(255,255,255,.07)!important;overflow:visible!important}
+#taskbar.org-taskbar-2:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.055),transparent 42%,rgba(255,255,255,.025));opacity:1}
+#taskbar.org-taskbar-2>*{position:relative;z-index:1}
+#taskbar .taskbar-start-area{flex:0 0 auto;display:flex;align-items:center}
+#taskbar.org-taskbar-2 #start-button{width:46px!important;min-width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:15px!important;border:1px solid rgba(255,255,255,.1)!important;background:rgba(255,255,255,.065)!important;display:grid!important;place-items:center!important;transition:background .16s,transform .16s,border-color .16s!important}
+#taskbar.org-taskbar-2 #start-button:hover,#taskbar.org-taskbar-2 #start-button.active{background:var(--accent-soft)!important;border-color:var(--accent)!important;transform:translateY(-1px)}
+#taskbar.org-taskbar-2 .start-logo{width:21px!important;height:21px!important;gap:3px!important}
+#taskbar.org-taskbar-2 .start-logo span{border-radius:2px!important}
+#taskbar.org-taskbar-2 .taskbar-search-wrap{height:44px;flex:0 1 210px;min-width:130px;max-width:220px;display:flex;align-items:center;gap:8px;padding:0 11px;border-radius:14px;border:1px solid rgba(255,255,255,.075);background:rgba(0,0,0,.18);color:var(--text-muted,#aab5c8);box-sizing:border-box;transition:border-color .15s,background .15s}
+#taskbar.org-taskbar-2 .taskbar-search-wrap:focus-within{border-color:var(--accent);background:rgba(0,0,0,.27)}
+#taskbar.org-taskbar-2 .taskbar-search-icon{font-size:23px;line-height:1}
+#taskbar.org-taskbar-2 #task-search{min-width:0!important;width:100%!important;max-width:none!important;flex:1 1 auto!important;padding:0!important;border:0!important;outline:0!important;background:transparent!important;color:var(--text,#f8fafc)!important;font-size:12px!important;box-shadow:none!important}
+#taskbar.org-taskbar-2 #task-search::placeholder{color:var(--text-muted,#aab5c8)}
+#taskbar.org-taskbar-2 .taskbar-search-hint{font:10px system-ui,sans-serif;white-space:nowrap;padding:2px 4px;border:1px solid rgba(255,255,255,.12);border-radius:5px;color:#aab5c8;background:rgba(255,255,255,.04)}
+#taskbar.org-taskbar-2 .taskbar-apps-rail{flex:1 1 auto;min-width:0;display:flex;align-items:center;overflow:hidden}
+#taskbar.org-taskbar-2 #task-apps{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;overscroll-behavior-x:contain!important;padding:0 1px!important}
+#taskbar.org-taskbar-2 #task-apps::-webkit-scrollbar{display:none}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button{position:relative!important;display:grid!important;place-items:center!important;flex:0 0 46px!important;width:46px!important;min-width:46px!important;height:46px!important;padding:0!important;border:1px solid transparent!important;border-radius:14px!important;background:transparent!important;color:inherit!important;font-size:22px!important;transition:background .16s,border-color .16s,transform .16s!important}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button:hover{background:rgba(255,255,255,.085)!important;border-color:rgba(255,255,255,.09)!important;transform:translateY(-2px)}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button.active{background:var(--accent-soft)!important;border-color:rgba(255,255,255,.13)!important}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button .task-app-icon{display:block!important;line-height:1!important;font-size:23px!important}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button .taskbar-app-indicator{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:99px;background:var(--accent);opacity:0;transition:width .15s,opacity .15s}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button.running .taskbar-app-indicator{opacity:.8}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button.active .taskbar-app-indicator{width:17px;opacity:1}
+#taskbar.org-taskbar-2 #task-apps .taskbar-app-button:not(.taskbar-pinned){border-style:dashed!important;border-color:rgba(255,255,255,.1)!important}
+#taskbar.org-taskbar-2 .taskbar-tray{display:flex!important;align-items:center!important;gap:9px!important;flex:0 0 auto!important;max-width:none!important;min-width:0!important;padding-left:6px!important;margin-left:auto!important}
+#taskbar.org-taskbar-2 .taskbar-tray #notify-button{position:relative;display:grid!important;place-items:center!important;width:39px!important;min-width:39px!important;height:42px!important;padding:0!important;border:1px solid transparent!important;border-radius:12px!important;background:transparent!important;font-size:22px!important}
+#taskbar.org-taskbar-2 .taskbar-tray #notify-button:hover,#taskbar.org-taskbar-2 .taskbar-tray #notify-button.active{background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.08)!important}
+#taskbar.org-taskbar-2 .taskbar-notification-dot{position:absolute;right:8px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--accent);display:none}
+#taskbar.org-taskbar-2 .taskbar-tray #notify-button.has-notifications .taskbar-notification-dot{display:block}
+#taskbar.org-taskbar-2 .taskbar-tray-divider{height:30px;width:1px;background:rgba(255,255,255,.12)}
+#taskbar.org-taskbar-2 #clock{min-width:76px!important;max-width:104px!important;text-align:center!important;font-size:11px!important;line-height:1.35!important;color:var(--text,#f8fafc)!important;white-space:pre-line!important;font-variant-numeric:tabular-nums!important}
+#taskbar-edge{position:fixed!important;z-index:6999!important;left:0!important;right:0!important;bottom:0!important;height:5px!important;cursor:pointer!important;opacity:0!important}
+body.fullscreen-window #taskbar.org-taskbar-2{opacity:0!important;pointer-events:none!important;transform:translate(-50%,12px)!important;transition:opacity .18s,transform .18s!important}
+body.fullscreen-window.taskbar-revealed #taskbar.org-taskbar-2{opacity:1!important;pointer-events:auto!important;transform:translate(-50%,0)!important}
+@media(max-width:760px){
+ #taskbar.org-taskbar-2{bottom:8px!important;width:calc(100vw - 16px)!important;height:62px!important;min-height:62px!important;gap:6px!important;padding:6px!important;border-radius:19px!important}
+ #taskbar.org-taskbar-2 #start-button{width:42px!important;min-width:42px!important;height:44px!important;flex-basis:42px!important;border-radius:13px!important}
+ #taskbar.org-taskbar-2 .taskbar-search-wrap{flex:0 0 42px;width:42px;min-width:42px;max-width:42px;height:44px;padding:0;justify-content:center;gap:0;overflow:hidden}
+ #taskbar.org-taskbar-2 .taskbar-search-icon{font-size:23px}
+ #taskbar.org-taskbar-2 #task-search{display:none!important}
+ #taskbar.org-taskbar-2 .taskbar-search-hint{display:none!important}
+ #taskbar.org-taskbar-2 .taskbar-apps-rail{flex:1 1 0}
+ #taskbar.org-taskbar-2 #task-apps{gap:2px!important}
+ #taskbar.org-taskbar-2 #task-apps .taskbar-app-button{flex-basis:39px!important;width:39px!important;min-width:39px!important;height:43px!important;border-radius:12px!important}
+ #taskbar.org-taskbar-2 #task-apps .task-app-icon{font-size:21px!important}
+ #taskbar.org-taskbar-2 .taskbar-tray{gap:3px!important;padding-left:0!important}
+ #taskbar.org-taskbar-2 .taskbar-tray #notify-button{width:31px!important;min-width:31px!important;height:40px!important}
+ #taskbar.org-taskbar-2 .taskbar-tray-divider{display:none!important}
+ #taskbar.org-taskbar-2 #clock{min-width:48px!important;max-width:54px!important;font-size:9px!important}
+ #taskbar-edge{height:4px!important}
+}
+@media(max-width:390px){
+ #taskbar.org-taskbar-2 .taskbar-tray #notify-button{display:none!important}
+ #taskbar.org-taskbar-2 .taskbar-search-wrap{display:none!important}
+}
+</style>
+<script id="org-taskbar-2-engine">
+(function(){
+'use strict';
+const KEY='orgos.taskbarPins.v2';
+const DEFAULTS=['notes','files','terminal','settings','orgstore'];
+const RETIRED=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
+const $=id=>document.getElementById(id);
+let signature='';
+const appNames=()=>typeof APP_NAMES!=='undefined'?APP_NAMES:{};
+function valid(key){return typeof key==='string'&&!!appNames()[key]&&!RETIRED.has(key)&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))}
+function readPins(){
+ let list=null;
+ try{list=JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){}
+ if(!Array.isArray(list)){try{list=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',DEFAULTS):DEFAULTS}catch(_){list=DEFAULTS}}
+ const clean=[...new Set((Array.isArray(list)?list:[]).filter(valid))];
+ return clean.length?clean:DEFAULTS.filter(valid);
+}
+function savePins(list){
+ const clean=[...new Set(list.filter(valid))];
+ try{localStorage.setItem(KEY,JSON.stringify(clean))}catch(_){}
+ try{if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',clean)}catch(_){}
+ return clean;
+}
+function getWindow(key){return $('win-'+key)}
+function running(key){const w=getWindow(key);return !!w&&(!w.classList.contains('hidden')||w.dataset.launched==='true')}
+function title(key){return appNames()[key]?.title||key}
+function icon(key){return appNames()[key]?.icon||'📦'}
+function topApp(){
+ let top='',z=-Infinity;
+ document.querySelectorAll('.window').forEach(w=>{if(w.classList.contains('hidden'))return;const n=Number.parseInt(w.style.zIndex||'0',10)||0;if(n>=z){z=n;top=w.id.replace(/^win-/,'')}});
+ return top;
+}
+function openOrFocus(key){
+ const w=getWindow(key);
+ if(w&&!w.classList.contains('hidden')){
+  if(topApp()===key&&typeof window.minimizeApp==='function')window.minimizeApp(key);
+  else if(typeof window.focusApp==='function')window.focusApp(key);
+  return;
+ }
+ if(typeof window.openApp==='function')window.openApp(key);
+}
+function makeButton(key,pins){
+ const b=document.createElement('button');b.type='button';b.className='taskbar-app-button task-button';b.dataset.app=key;
+ b.title=title(key)+(pins.includes(key)?' · pinned':' · running')+' — right-click to '+(pins.includes(key)?'unpin':'pin');
+ b.setAttribute('aria-label',title(key));
+ const i=document.createElement('span');i.className='task-app-icon';i.textContent=icon(key);
+ const d=document.createElement('span');d.className='taskbar-app-indicator';d.setAttribute('aria-hidden','true');
+ b.append(i,d);
+ b.addEventListener('click',()=>openOrFocus(key));
+ b.addEventListener('contextmenu',e=>{e.preventDefault();togglePin(key)});
+ b.addEventListener('keydown',e=>{if((e.shiftKey&&e.key==='F10')||e.key==='ContextMenu'){e.preventDefault();togglePin(key)}});
+ return b;
+}
+function render(){
+ const host=$('task-apps');if(!host)return;
+ if(typeof window.registerInstalledApps==='function')window.registerInstalledApps();
+ const pins=readPins(),keys=[...pins];
+ document.querySelectorAll('.window').forEach(w=>{const key=w.id.replace(/^win-/,'');if(w.id.startsWith('win-')&&running(key)&&valid(key)&&!keys.includes(key))keys.push(key)});
+ const nextSignature=JSON.stringify(keys);
+ if(signature!==nextSignature||host.children.length!==keys.length){
+  host.replaceChildren();keys.forEach(key=>host.append(makeButton(key,pins)));signature=nextSignature;
+ }
+ host.querySelectorAll('.taskbar-app-button').forEach(b=>{
+  const key=b.dataset.app,isRunning=running(key),isActive=isRunning&&topApp()===key,isPinned=pins.includes(key);
+  b.classList.toggle('running',isRunning);b.classList.toggle('active',isActive);b.classList.toggle('taskbar-pinned',isPinned);
+  b.title=title(key)+(isPinned?' · pinned':' · running')+' — right-click to '+(isPinned?'unpin':'pin');
+ });
+ const start=$('start-button');if(start)start.classList.toggle('active',!!$('start-menu')?.classList.contains('open'));
+ const notify=$('notify-button');if(notify)notify.classList.toggle('active',!!$('notifications')?.classList.contains('open'));
+}
+function togglePin(key){
+ if(!valid(key))return;
+ const pins=readPins(),next=pins.includes(key)?pins.filter(k=>k!==key):pins.concat(key);
+ savePins(next);signature='';render();
+ if(typeof window.toast==='function')window.toast(next.includes(key)?'Pinned '+title(key)+' to the taskbar.':'Unpinned '+title(key)+' from the taskbar.');
+}
+window.getTaskbarPinnedKeys=readPins;
+window.toggleTaskbarPin=togglePin;
+window.getTaskbarV2PinnedKeys=readPins;
+window.toggleTaskbarV2Pin=togglePin;
+window.makeTaskButton=function(key){render();return $('task-apps')?.querySelector('.taskbar-app-button[data-app="'+CSS.escape(key)+'"]')||null};
+window.renderTaskbarPins=render;
+window.renderTaskbarV2=render;
+window.syncTaskbar=function(){render()};
+function init(){
+ render();
+ const host=$('task-apps');
+ if(host&&!host.dataset.taskbarObserver){
+  host.dataset.taskbarObserver='true';
+  new MutationObserver(render).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','data-launched']});
+ }
+ const search=$('task-search'),wrap=document.querySelector('.taskbar-search-wrap');
+ if(search&&wrap&&!wrap.dataset.taskbarSearchBound){
+  wrap.dataset.taskbarSearchBound='true';
+  wrap.addEventListener('click',()=>{if(matchMedia('(max-width: 760px)').matches){if(typeof window.toggleStart==='function')window.toggleStart();const s=$('start-search');if(s)s.focus()}else search.focus()});
+ }
+ window.addEventListener('resize',render);
+ window.addEventListener('storage',e=>{if(!e.key||e.key===KEY||e.key==='desktop.taskbarPinnedApps'||e.key==='orgos.taskbarPins.v1') {signature='';render()}});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){signature='';render()}});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
 </body>
 <style id="org-start-menu-widgets-final-fix">
 #start-menu .start-dashboard{display:grid!important;grid-template-columns:minmax(0,1.08fr) minmax(220px,.92fr)!important;min-height:0!important;flex:1 1 auto!important;overflow:hidden!important}
