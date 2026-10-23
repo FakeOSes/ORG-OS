@@ -2433,6 +2433,80 @@ setTimeout(removeRetiredApps,900);
 })();
 </script>
 
+<script id="org-taskbar-single-source-fix">
+(function(){
+'use strict';
+const defaults=['notes','files','terminal','settings','orgstore'];
+const retired=new Set(['typing-lab','link-vault','budget-buddy','installed-typing-lab','installed-link-vault','installed-budget-buddy']);
+const $=id=>document.getElementById(id);
+function validKeys(list){
+ if(typeof registerInstalledApps==='function')registerInstalledApps();
+ return [...new Set((Array.isArray(list)?list:[]).filter(key=>typeof key==='string'&&!retired.has(key)&&typeof APP_NAMES!=='undefined'&&!!APP_NAMES[key]&&!(key==='welcome'&&typeof safeGet==='function'&&safeGet('desktop.welcomeRemoved',false))))];
+}
+function readPins(){
+ let list=[];
+ try{list=typeof safeGet==='function'?safeGet('desktop.taskbarPinnedApps',[]):[];}catch(e){}
+ list=validKeys(list);
+ // Empty/stale storage should never make the taskbar look broken on first load.
+ return list.length?list:validKeys(defaults);
+}
+function savePins(list){
+ const cleaned=validKeys(list);
+ try{if(typeof safeSet==='function')safeSet('desktop.taskbarPinnedApps',cleaned);}catch(e){}
+ try{localStorage.setItem('orgos.taskbarPins.v1',JSON.stringify(cleaned));}catch(e){}
+ return cleaned;
+}
+function getButton(key){
+ let button=$('task-apps')?.querySelector('.task-button[data-app="'+CSS.escape(key)+'"]');
+ if(!button&&typeof makeTaskButton==='function')button=makeTaskButton(key);
+ if(!button){
+  const host=$('task-apps');if(!host||!APP_NAMES[key])return null;
+  button=document.createElement('button');button.type='button';button.className='task-button';button.dataset.app=key;
+  button.innerHTML='<span class="task-app-icon"></span><span class="task-running-indicator"></span>';
+  button.querySelector('.task-app-icon').textContent=APP_NAMES[key].icon||'📦';
+  button.addEventListener('click',()=>{const win=$('win-'+key);if(win&&!win.classList.contains('hidden')){if(typeof minimizeApp==='function'&&typeof getTopVisibleApp==='function'&&getTopVisibleApp()===key)minimizeApp(key);else if(typeof focusApp==='function')focusApp(key);}else if(typeof openApp==='function')openApp(key);});
+ }
+ button.title=APP_NAMES[key]?.title||key;
+ button.setAttribute('aria-label',button.title);
+ const icon=button.querySelector('.task-app-icon');if(icon)icon.textContent=APP_NAMES[key]?.icon||'📦';
+ return button;
+}
+function render(){
+ const host=$('task-apps');if(!host||typeof APP_NAMES==='undefined')return;
+ const pins=readPins(),keep=new Set(pins);
+ host.querySelectorAll('.task-button[data-app]').forEach(button=>{
+  const key=button.dataset.app,win=$('win-'+key),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true');
+  if(running)keep.add(key);
+ });
+ [...keep].forEach(key=>{const button=getButton(key);if(button)host.appendChild(button);});
+ host.querySelectorAll('.task-button[data-app]').forEach(button=>{
+  const key=button.dataset.app,win=$('win-'+key),running=!!win&&(!win.classList.contains('hidden')||win.dataset.launched==='true'),pinned=pins.includes(key);
+  if(!pinned&&!running){button.remove();return;}
+  button.classList.toggle('taskbar-pinned',pinned);button.classList.toggle('running',running);
+  button.style.display='grid';button.style.visibility='visible';button.style.opacity='1';
+ });
+}
+window.getTaskbarPinnedKeys=readPins;
+window.renderTaskbarPins=render;
+window.toggleTaskbarPin=function(key){
+ if(typeof APP_NAMES==='undefined'||!APP_NAMES[key]||retired.has(key))return;
+ const pins=readPins(),next=pins.includes(key)?pins.filter(item=>item!==key):pins.concat(key);
+ savePins(next);render();
+ if(typeof syncTaskbar==='function')syncTaskbar('');
+ if(typeof toast==='function')toast(next.includes(key)?'Pinned '+APP_NAMES[key].title+' to the taskbar.':'Unpinned '+APP_NAMES[key].title+'.');
+ if(typeof renderPinned==='function')renderPinned($('start-search')?.value||'');
+};
+function boot(){render();requestAnimationFrame(render);setTimeout(render,250);setTimeout(render,1000);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.addEventListener('resize',render);
+window.addEventListener('storage',event=>{if(!event.key||event.key==='desktop.taskbarPinnedApps'||event.key==='orgos.taskbarPins.v1')render();});
+})();
+</script>
+<style id="org-taskbar-single-source-visibility">
+#taskbar #task-apps{display:flex!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;align-items:center!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;visibility:visible!important;opacity:1!important}
+#taskbar #task-apps .task-button{display:grid!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;visibility:visible!important;opacity:1!important;place-items:center!important}
+#taskbar #task-apps .task-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important}
+</style>
 </body>
 <style id="org-start-menu-widgets-final-fix">
 #start-menu .start-dashboard{display:grid!important;grid-template-columns:minmax(0,1.08fr) minmax(220px,.92fr)!important;min-height:0!important;flex:1 1 auto!important;overflow:hidden!important}
