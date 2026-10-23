@@ -1,0 +1,6 @@
+{
+  "name": "MusiX",
+  "version": 1,
+  "description": "ORG Music preloaded track list. Add audio files in this folder and list each relative path below.",
+  "tracks": []
+}
