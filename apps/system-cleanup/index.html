@@ -22,4 +22,68 @@ hr{border:0;border-top:1px solid var(--line)}
 @media(max-width:620px){body{padding:13px}header{gap:10px;padding-bottom:13px;margin-bottom:15px}header .appicon{width:42px;height:42px}header h1{font-size:19px}.toolbar{margin:10px 0 14px}.toolbar button{padding:8px 10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
-</head><body><header><h1>🗄️ Storage Explorer</h1><p>Review ORG OS browser storage and clear selected local data.</p></header><main><div class="panel"><h2>Browser storage overview</h2><p class="muted">This only shows storage available to this site in your browser, not your device's entire disk.</p><div class="stats"><div><strong id="items">0</strong><span>Entries</span></div><div><strong id="bytes">0 B</strong><span>Approx. size</span></div></div><button id="refresh" class="primary">Refresh list</button></div><h2>Local storage keys</h2><div id="keys" class="keylist"></div><button id="delete" class="danger">Delete selected keys</button><p class="muted">Be careful: deleting profile or installed-app keys can reset ORG OS settings or remove app registrations.</p></main><script>function fmt(n){return n<1024?n+" B":(n/1024).toFixed(1)+" KB"}function render(){const host=document.getElementById("keys");host.innerHTML="";let count=0,bytes=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k)continue;const v=localStorage.getItem(k)||"";count++;bytes+=k.length+v.length;const row=document.createElement("label");row.className="keyrow";const cb=document.createElement("input");cb.type="checkbox";cb.value=k;const text=document.createElement("span");text.textContent=k;const size=document.createElement("small");size.textContent=fmt((k.length+v.length)*2);row.append(cb,text,size);host.append(row)}document.getElementById("items").textContent=count;document.getElementById("bytes").textContent=fmt(bytes*2);if(!count)host.textContent="No local storage entries found."}document.getElementById("refresh").onclick=render;document.getElementById("delete").onclick=()=>{const keys=[...document.querySelectorAll(".keyrow input:checked")].map(c=>c.value);if(!keys.length){alert("Select one or more keys first.");return}if(confirm("Delete "+keys.length+" selected local storage key(s)? This cannot be undone.")){keys.forEach(k=>localStorage.removeItem(k));render()}};render();</script></body></html>
+</head><body>
+<header><span class="eyebrow">ORG OS · SYSTEM TOOLS</span><h1>Storage Explorer</h1><p>Inspect browser storage, search saved keys, export a backup, and clear selected entries.</p></header>
+<div class="stats"><div><strong id="items">0</strong><span>Storage keys</span></div><div><strong id="bytes">0 B</strong><span>Estimated size</span></div><div><strong id="origin">—</strong><span>Storage source</span></div></div>
+<section class="panel"><div class="rowline"><div><h2>Storage inventory</h2><p id="status" class="muted">Connecting to ORG OS storage…</p></div><div class="actions"><button id="refresh" type="button">↻ Refresh</button><button id="export" type="button">Export JSON</button></div></div>
+<div class="split"><div><label for="search">Search keys or values</label><input id="search" type="search" placeholder="Search storage…" autocomplete="off"></div><div><label for="filter">Show</label><select id="filter"><option value="all">All entries</option><option value="protected">Protected system entries</option><option value="editable">Entries safe to delete</option></select></div></div>
+<div class="actions"><button id="select-visible" type="button">Select visible</button><button id="clear-selection" type="button">Clear selection</button><button id="delete" class="danger" type="button">Delete selected</button></div>
+<div id="keylist" class="keylist" aria-live="polite"></div>
+</section>
+<section class="panel"><h2>Selected entry preview</h2><p class="muted">Select a row to inspect its value. Protected entries cannot be deleted from this tool.</p><pre id="preview">Choose a storage key to inspect its value.</pre></section>
+<p class="muted">Estimated storage sizes are approximate. Export JSON creates a local backup file; no data is uploaded.</p>
+<script>
+const $=id=>document.getElementById(id);
+let entries=[],connected=false,requestNumber=0,selectedPreview=null;
+const pending=new Map();
+function fmt(bytes){if(bytes<1024)return bytes+' B';if(bytes<1048576)return(bytes/1024).toFixed(1)+' KB';return(bytes/1048576).toFixed(2)+' MB'}
+function ask(action,extra={}){const requestId='storage-'+Date.now().toString(36)+'-'+(++requestNumber);return new Promise(resolve=>{pending.set(requestId,resolve);parent.postMessage({channel:'ORGOS_STORAGE_EXPLORER',action,requestId,...extra},'*');setTimeout(()=>{if(pending.has(requestId)){pending.delete(requestId);resolve(null)}},1800)})}
+function localEntries(){const list=[];try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key===null)continue;const value=localStorage.getItem(key)||'';list.push({key,value,bytes:(key.length+value.length)*2,protected:false})}}catch(e){}return list}
+function visibleEntries(){const q=$('search').value.trim().toLowerCase(),filter=$('filter').value;return entries.filter(e=>(filter==='all'||(filter==='protected'?e.protected:!e.protected))&&(!q||(e.key+' '+e.value).toLowerCase().includes(q))).sort((a,b)=>a.key.localeCompare(b.key))}
+function render(){
+ const host=$('keylist');host.replaceChildren();const visible=visibleEntries();
+ $('items').textContent=entries.length;$('bytes').textContent=fmt(entries.reduce((n,e)=>n+e.bytes,0));$('origin').textContent=connected?'ORG OS':'App only';
+ if(!visible.length){const p=document.createElement('p');p.className='muted';p.textContent=entries.length?'No keys match this filter.':'No storage entries found.';host.append(p);return}
+ visible.forEach(e=>{const row=document.createElement('label');row.className='keyrow';const cb=document.createElement('input');cb.type='checkbox';cb.value=e.key;cb.checked=selectedPreview===e.key&&false;cb.disabled=e.protected;cb.addEventListener('change',()=>{if(cb.checked)row.classList.add('selected');else row.classList.remove('selected')});
+ const title=document.createElement('span');title.textContent=e.key;title.title=e.key;title.onclick=()=>showPreview(e);
+ const size=document.createElement('small');size.textContent=fmt(e.bytes)+(e.protected?' · protected':'');row.append(cb,title,size);row.onclick=ev=>{if(ev.target!==cb)showPreview(e)};host.append(row);
+ });
+}
+function showPreview(entry){selectedPreview=entry.key;$('preview').textContent=entry.value;document.querySelectorAll('.keyrow').forEach(r=>r.classList.toggle('previewing',r.querySelector('span')?.textContent===entry.key))}
+async function refresh(){
+ $('status').textContent='Reading storage inventory…';const result=await ask('list');
+ if(result&&result.action==='list-result'&&Array.isArray(result.entries)){connected=true;entries=result.entries;$('status').textContent='Connected to ORG OS browser storage.';}
+ else{connected=false;entries=localEntries();$('status').textContent='Shell bridge unavailable. Showing this app’s own browser storage only.';}
+ render();
+}
+$('refresh').onclick=refresh;$('search').oninput=render;$('filter').onchange=render;
+$('select-visible').onclick=()=>{document.querySelectorAll('#keylist .keyrow input:not(:disabled)').forEach(cb=>cb.checked=true)};
+$('clear-selection').onclick=()=>{document.querySelectorAll('#keylist .keyrow input').forEach(cb=>cb.checked=false)};
+$('export').onclick=()=>{const data=JSON.stringify(entries.map(({key,value,protected:locked})=>({key,value,protected:locked})),null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='org-os-storage-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+$('delete').onclick=async()=>{const keys=[...document.querySelectorAll('#keylist .keyrow input:checked:not(:disabled)')].map(cb=>cb.value);if(!keys.length){$('status').textContent='Select at least one unprotected key first.';return}if(!confirm('Delete '+keys.length+' selected storage entr'+(keys.length===1?'y':'ies')+'? This cannot be undone. Export a backup first if needed.'))return;
+ if(connected){const result=await ask('delete',{keys});if(!result||result.action!=='delete-result'){$('status').textContent='Could not complete the delete request. Refresh and try again.';return}const blocked=result.blocked||[];$('status').textContent=result.deleted.length+' key(s) deleted'+(blocked.length?'; '+blocked.length+' protected key(s) skipped':'')+'.';}
+ else{keys.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});$('status').textContent=keys.length+' app-storage key(s) deleted.';}
+ await refresh();
+};
+window.addEventListener('message',event=>{const d=event.data;if(!d||d.channel!=='ORGOS_STORAGE_EXPLORER'||!d.requestId)return;const resolve=pending.get(d.requestId);if(resolve){pending.delete(d.requestId);resolve(d)}});
+refresh();
+</script>
+<style id="org-storage-explorer-refresh">
+body{background:radial-gradient(ellipse at 95% 0,rgba(96,165,250,.13),transparent 42%),var(--bg);padding:clamp(13px,2vw,24px)}
+header{padding-bottom:15px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stats>div{border:1px solid var(--line);background:var(--panel);border-radius:13px}
+.stats strong{font-size:clamp(16px,2.6vw,24px);overflow-wrap:anywhere}
+.rowline{align-items:flex-start;gap:10px}
+.rowline>div:first-child{min-width:0}
+.rowline h2{margin-bottom:5px}
+.actions{justify-content:flex-start}
+#keylist{max-height:350px;overflow:auto}
+.keyrow{display:flex;gap:10px;align-items:center;min-width:0}
+.keyrow input{flex:0 0 auto}
+.keyrow span{min-width:0;flex:1;overflow-wrap:anywhere;cursor:pointer}
+.keyrow small{white-space:nowrap}
+.keyrow.selected,.keyrow.previewing{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel))}
+#preview{max-height:250px;overflow:auto}
+@media(max-width:480px){.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.stats>div{padding:9px 5px}.stats span{font-size:9px}.rowline{display:block}.rowline .actions{margin-top:8px}.keyrow{gap:6px}.keyrow small{font-size:10px}}
+</style></body></html>

@@ -46,10 +46,70 @@ hr{border:0;border-top:1px solid var(--line)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head><body data-theme="light">
-<header><div class="appicon">🌤️</div><div><h1>Weather</h1><p>A clean weather dashboard with city search and a saved location.</p></div><div class="spacer"></div><label class="settings">Theme <select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
-<main><div class="toolbar"><input id="city" placeholder="Enter a city" value="Waxahachie"><button id="search" class="primary">Show dashboard</button></div><div class="weathercard"><div><p class="muted">Local dashboard</p><h2 id="place">Waxahachie</h2><p id="date"></p><h1 id="temp">--°</h1><p id="condition">Connect a weather provider for live conditions.</p></div><div class="weathericon">☀️</div></div><div class="layout"><div class="panel"><h3>Forecast</h3><div id="forecast" class="forecast"></div></div><div class="panel"><h3>Weather widget</h3><p id="widgetText">Search a city to set your dashboard location.</p><p class="muted">This starter uses illustrative forecast values, not live weather data.</p></div></div></main>
+<header><div class="appicon">🌤️</div><div><h1>Weather</h1><p>Live conditions and a seven-day forecast.</p></div><div class="spacer"></div><label class="settings">Theme <select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
+<main>
+ <div class="toolbar"><input id="city" placeholder="Search city or town" autocomplete="off" aria-label="City or town"><button id="search" class="primary">Search weather</button><button id="refresh">↻ Refresh</button></div>
+ <p id="status" class="muted" role="status">Ready to check live weather.</p>
+ <section class="weathercard" id="current-card"><div><p class="muted" id="location-meta">CURRENT CONDITIONS</p><h2 id="place">Loading location…</h2><p id="date"></p><h1 id="temp">--°</h1><p id="condition">Fetching live conditions…</p><p class="muted" id="feels">Feels like --°</p></div><div class="weathericon" id="weather-icon" aria-hidden="true">🌤️</div></section>
+ <div class="metrics" id="metrics"><div class="metric"><span>Humidity</span><strong id="humidity">--%</strong></div><div class="metric"><span>Wind</span><strong id="wind">-- mph</strong></div><div class="metric"><span>Precipitation</span><strong id="precip">--%</strong></div></div>
+ <div class="layout"><section class="panel"><div class="rowline"><h3>7-day forecast</h3><small id="forecast-meta">Highs and lows · °F</small></div><div id="forecast" class="forecast"></div></section><section class="panel"><h3>Weather at a glance</h3><p id="widgetText">Live conditions for your saved city.</p><div class="widget"><strong>Data source</strong><p>Open-Meteo forecast and geocoding services.</p></div><p class="muted">Search for a city to change your saved location. Forecasts need an internet connection.</p></section></div>
+</main>
 <script>
-const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));function setTheme(t){let v=t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t;document.body.dataset.theme=v;document.documentElement.style.colorScheme=v;try{localStorage.setItem("orgos.appTheme",t)}catch(e){}}
-let saved="system";try{saved=localStorage.getItem("orgos.appTheme")||"system"}catch(e){}theme.value=saved;setTheme(saved);theme.onchange=()=>setTheme(theme.value);matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>{if(theme.value==="system")setTheme("system")});
-function show(){let c=city.value.trim()||"Your city";place.textContent=c;date.textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});widgetText.textContent="Location: "+c;localStorage.setItem("org-weather-city",c);forecast.innerHTML=[["Now","☀️","--°"],["Later","🌤️","--°"],["Tomorrow","🌦️","--°"],["Next day","☁️","--°"]].map(x=>'<div class="forecastday"><span>'+x[0]+'</span><b>'+x[1]+'</b><strong>'+x[2]+'</strong></div>').join("")}city.value=localStorage.getItem("org-weather-city")||"Waxahachie";search.onclick=show;show();
+const $=id=>document.getElementById(id);
+const codes={0:['Clear sky','☀️'],1:['Mainly clear','🌤️'],2:['Partly cloudy','⛅'],3:['Overcast','☁️'],45:['Fog','🌫️'],48:['Depositing rime fog','🌫️'],51:['Light drizzle','🌦️'],53:['Drizzle','🌦️'],55:['Dense drizzle','🌧️'],56:['Freezing drizzle','🌧️'],57:['Heavy freezing drizzle','🌧️'],61:['Light rain','🌦️'],63:['Rain','🌧️'],65:['Heavy rain','🌧️'],66:['Freezing rain','🌧️'],67:['Heavy freezing rain','🌧️'],71:['Light snow','🌨️'],73:['Snow','🌨️'],75:['Heavy snow','❄️'],77:['Snow grains','🌨️'],80:['Rain showers','🌦️'],81:['Rain showers','🌧️'],82:['Heavy showers','⛈️'],85:['Snow showers','🌨️'],86:['Heavy snow showers','❄️'],95:['Thunderstorm','⛈️'],96:['Thunderstorm with hail','⛈️'],99:['Severe thunderstorm','⛈️']};
+function condition(code){return codes[Number(code)]||['Conditions unavailable','🌡️']}
+function setTheme(t){const v=t==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.body.dataset.theme=v;document.documentElement.style.colorScheme=v;try{localStorage.setItem('orgos.appTheme',t)}catch(e){}}
+let savedTheme='system';try{savedTheme=localStorage.getItem('orgos.appTheme')||'system'}catch(e){}$('theme').value=savedTheme;setTheme(savedTheme);$('theme').onchange=()=>setTheme($('theme').value);matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if($('theme').value==='system')setTheme('system')});
+let activeCity='Waxahachie',activeCoords=null,requestSerial=0;
+try{activeCity=localStorage.getItem('org-weather-city')||'Waxahachie'}catch(e){}
+$('city').value=activeCity;
+function setStatus(message,error=false){$('status').textContent=message;$('status').style.color=error?'#dc6262':'var(--muted)'}
+function safeText(el,value){el.textContent=String(value??'')}
+function renderForecast(daily){
+ const host=$('forecast');host.replaceChildren();
+ const days=daily.time||[];
+ days.forEach((date,i)=>{
+  const [label,icon]=condition(daily.weather_code?.[i]);
+  const card=document.createElement('div');card.className='forecastday';
+  const day=document.createElement('span');day.textContent=i===0?'Today':new Date(date+'T12:00:00').toLocaleDateString(undefined,{weekday:'short'});
+  const glyph=document.createElement('b');glyph.textContent=icon;
+  const description=document.createElement('small');description.textContent=label;
+  const temps=document.createElement('strong');temps.textContent=Math.round(daily.temperature_2m_max[i])+'° / '+Math.round(daily.temperature_2m_min[i])+'°';
+  card.append(day,glyph,description,temps);
+  if(daily.precipitation_probability_max?.[i]!=null){const rain=document.createElement('small');rain.textContent=daily.precipitation_probability_max[i]+'% chance of rain';card.append(rain)}
+  host.append(card);
+ });
+}
+async function loadWeather(query,coordsOnly=false){
+ const serial=++requestSerial;const queryText=(query||'').trim()||activeCity;
+ $('search').disabled=true;$('refresh').disabled=true;setStatus('Fetching live weather for '+queryText+'…');
+ try{
+  let placeData=coordsOnly?activeCoords:null;
+  if(!placeData){
+   const geo=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(queryText)+'&count=1&language=en&format=json');
+   if(!geo.ok)throw new Error('City lookup failed. Try another search.');
+   const gd=await geo.json();if(!gd.results?.length)throw new Error('No matching city found. Try a nearby city name.');
+   placeData=gd.results[0];
+  }
+  const api='https://api.open-meteo.com/v1/forecast?latitude='+encodeURIComponent(placeData.latitude)+'&longitude='+encodeURIComponent(placeData.longitude)+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=7';
+  const response=await fetch(api);if(!response.ok)throw new Error('Weather service is temporarily unavailable.');
+  const data=await response.json();if(serial!==requestSerial)return;
+  activeCoords=placeData;activeCity=placeData.name||queryText;
+  const region=[placeData.admin1,placeData.country].filter(Boolean).join(', ');
+  safeText($('place'),activeCity);safeText($('location-meta'),region||'CURRENT CONDITIONS');safeText($('date'),new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}));
+  const current=data.current||{},[desc,icon]=condition(current.weather_code);
+  safeText($('temp'),Math.round(current.temperature_2m)+'°F');safeText($('condition'),desc);safeText($('weather-icon'),icon);
+  safeText($('feels'),'Feels like '+Math.round(current.apparent_temperature)+'°F');
+  safeText($('humidity'),(current.relative_humidity_2m??'--')+'%');safeText($('wind'),Math.round(current.wind_speed_10m??0)+' mph');safeText($('precip'),Math.round(data.daily?.precipitation_probability_max?.[0]??0)+'%');
+  safeText($('widgetText'),'Currently '+Math.round(current.temperature_2m)+'°F and '+desc.toLowerCase()+' in '+activeCity+'.');
+  renderForecast(data.daily||{});$('city').value=activeCity;
+  try{localStorage.setItem('org-weather-city',activeCity)}catch(e){}
+  setStatus('Live weather updated at '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'.');
+ }catch(error){if(serial===requestSerial){setStatus(error.message||'Could not load weather. Check your connection and try again.',true);if(!$('forecast').children.length){$('forecast').textContent='Forecast unavailable until a city can be loaded.';}}}
+ finally{if(serial===requestSerial){$('search').disabled=false;$('refresh').disabled=false}}
+}
+$('search').onclick=()=>{activeCoords=null;loadWeather($('city').value)};
+$('city').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();activeCoords=null;loadWeather($('city').value)}});
+$('refresh').onclick=()=>loadWeather(activeCity,!!activeCoords);
+loadWeather(activeCity);
 </script></body></html>
