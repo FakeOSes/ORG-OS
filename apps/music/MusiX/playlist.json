@@ -2,5 +2,13 @@
   "name": "MusiX",
   "version": 1,
   "description": "ORG Music preloaded track list. Add audio files in this folder and list each relative path below.",
-  "tracks": []
+  "tracks": [ { "title": "Aria Math", "artist": "C418", "src": "Aria-Math-by-C418.mp3" }
+   { "title": "Bad Habits", "artist": "Steve Lacy", "src": "Bad-Habits-by-Steve-Lacy.mp3" }
+     { "title": "Bella Ciao", "artist": "UNKOWN", "src": "Bella-Ciao.mp3" }
+     { "title": "Moog City", "artist": "C418", "src": "Moog-City.mp3" }
+     { "title": "Moog City 2", "artist": "C418", "src": "Moog-City-2.mp3" }
+   { "title": "Notions", "artist": "The Rare Occasions", "src": "Notions-by-The-Rare-Occasions.mp3" }
+ { "title": "Sweden", "artist": "C418", "src": "Sweden-by-C418.mp3" }
+ { "title": "The Star-Sprangled Banner", "artist": "UNKOWN", "src": "The-Star-Spangled-Banner.mp3" }
+  ]
 }
