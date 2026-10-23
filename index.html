@@ -1076,7 +1076,7 @@ if(window.ORGCore){
   ORGCore.registerService("files",{getTree:function(){return getFilesTree()},saveTree:function(tree){saveFilesTree(tree)},getItem:function(id){return fileById(id)}},{version:"1.0.0",description:"ORG virtual file tree"});
   ORGCore.registerService("desktop",{getElement:function(id){return $(id)},getActiveApp:function(){return getTopVisibleApp()}},{version:"1.0.0",description:"Desktop shell accessors"});
 }
-function toast(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2400)}
+function toast(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2400);if(window.ORGOSNotifications&&typeof message==="string"&&!window.__orgNotificationToastGuard){window.__orgNotificationToastGuard=true;try{window.ORGOSNotifications.add("ORG OS",message,{app:"system",toast:false})}finally{window.__orgNotificationToastGuard=false}}}
 function hideSplash(){const splash=$("splash-screen");if(!splash)return;splash.classList.add("hidden");setTimeout(()=>splash.remove(),800)}
 window.addEventListener("load",()=>setTimeout(hideSplash,1650));
 
