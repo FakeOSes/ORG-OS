@@ -2634,6 +2634,99 @@ window.addEventListener('resize',render);
 .window.maximized>.titlebar .window-controls button.maximize:before{content:"❐"!important;display:block!important;font-size:15px!important;line-height:1!important;transform:translateY(0)!important}
 </style>
 
+
+<script id="org-window-restore-toggle-fix">
+(function(){
+ 'use strict';
+ function getWindow(name){return document.getElementById('win-'+name)}
+ function syncButton(win){
+  if(!win)return;
+  const maximized=win.classList.contains('maximized');
+  win.querySelectorAll('.window-controls button.maximize').forEach(button=>{
+   button.textContent=maximized?'❐':'□';
+   button.setAttribute('aria-label',maximized?'Restore window':'Maximize window');
+   button.title=maximized?'Restore window':'Maximize window';
+   button.dataset.windowState=maximized?'restore':'maximize';
+  });
+ }
+ function saveGeometry(win){
+  if(win.dataset.restoreGeometry)return;
+  win.dataset.restoreGeometry=JSON.stringify({
+   left:win.style.left||'',
+   top:win.style.top||'',
+   width:win.style.width||'',
+   height:win.style.height||'',
+   right:win.style.right||'',
+   bottom:win.style.bottom||''
+  });
+ }
+ function restoreGeometry(win){
+  let old={};
+  try{old=JSON.parse(win.dataset.restoreGeometry||win.dataset.oldStyle||'{}')||{}}catch(_){}
+  win.classList.remove('maximized');
+  win.style.inset='';
+  win.style.left=old.left||'';
+  win.style.top=old.top||'';
+  win.style.right=old.right||'';
+  win.style.bottom=old.bottom||'';
+  win.style.width=old.width||'';
+  win.style.height=old.height||'';
+  if(!old.width&&!old.height){
+   win.style.width='min(650px, calc(100vw - 24px))';
+   win.style.height='min(450px, calc(100vh - 90px))';
+   win.style.left=Math.max(8,(window.innerWidth-win.offsetWidth)/2)+'px';
+   win.style.top=Math.max(8,(window.innerHeight-win.offsetHeight)/2)+'px';
+  }
+  delete win.dataset.restoreGeometry;
+  delete win.dataset.oldStyle;
+  win.dataset.lastAction='restored';
+ }
+ window.maximizeApp=function(name){
+  const win=getWindow(name);if(!win)return;
+  if(win.classList.contains('maximized')){
+   restoreGeometry(win);
+  }else{
+   saveGeometry(win);
+   win.dataset.oldStyle=win.dataset.restoreGeometry;
+   win.classList.add('maximized');
+   win.style.left='0px';win.style.top='0px';
+   win.style.right='';win.style.bottom='';
+   win.style.width='100%';win.style.height='100%';
+   win.dataset.lastAction='maximized';
+  }
+  syncButton(win);
+  if(typeof window.syncFullscreenTaskbar==='function')window.syncFullscreenTaskbar();
+  if(typeof window.focusApp==='function')window.focusApp(name);
+ };
+ window.restoreApp=function(name){
+  const win=getWindow(name);if(!win)return;
+  if(win.classList.contains('maximized'))restoreGeometry(win);
+  syncButton(win);
+  if(typeof window.syncFullscreenTaskbar==='function')window.syncFullscreenTaskbar();
+  if(typeof window.focusApp==='function')window.focusApp(name);
+ };
+ function init(){
+  document.querySelectorAll('.window').forEach(win=>{
+   syncButton(win);
+   if(win.dataset.restoreToggleBound)return;
+   win.dataset.restoreToggleBound='true';
+   win.addEventListener('dblclick',event=>{
+    if(event.target.closest('.window-controls'))return;
+    const name=win.id.replace(/^win-/,'');
+    if(name)window.maximizeApp(name);
+   });
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+ new MutationObserver(init).observe(document.body,{subtree:true,childList:true});
+})();
+</script>
+<style id="org-window-restore-toggle-fix-css">
+.window>.titlebar .window-controls button.maximize{display:grid!important;place-items:center!important;line-height:1!important;font-size:15px!important;padding:0!important}
+.window.maximized>.titlebar .window-controls button.maximize{font-size:0!important}
+.window.maximized>.titlebar .window-controls button.maximize:before{content:"❐"!important;display:block!important;font-size:15px!important;line-height:1!important;transform:none!important}
+</style>
+
 </body>
 <style id="org-start-menu-widgets-final-fix">
 #start-menu .start-dashboard{display:grid!important;grid-template-columns:minmax(0,1.08fr) minmax(220px,.92fr)!important;min-height:0!important;flex:1 1 auto!important;overflow:hidden!important}
