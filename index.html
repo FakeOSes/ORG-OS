@@ -2085,5 +2085,52 @@ function start(){repairStart();bindLayout();fixSettings();if(typeof syncTaskbar=
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
+
+<style id="org-universal-window-titlebars">
+/* One consistent Windows-style titlebar for every built-in and installed app window. */
+.window>.titlebar{display:flex!important;align-items:center!important;gap:10px!important;min-height:44px!important;height:44px;flex:0 0 44px;padding:0 7px 0 12px!important;background:linear-gradient(180deg,var(--titlebar-bg,#202938),var(--titlebar-bg,#182232))!important;color:var(--titlebar-text,#f3f6fc)!important;border-bottom:1px solid #ffffff16!important;user-select:none;touch-action:pan-y}
+.window>.titlebar .title-icon{display:grid;place-items:center;flex:0 0 27px;width:27px;height:27px;border-radius:7px;background:#ffffff12;color:inherit;font-size:15px}
+.window>.titlebar .window-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit;font-size:13px;font-weight:600;letter-spacing:0}
+.window>.titlebar .window-controls{display:flex;align-items:stretch;align-self:stretch;gap:2px!important;margin-left:auto;flex:0 0 auto}
+.window>.titlebar .window-controls button{display:grid;place-items:center;width:44px!important;height:100%!important;min-height:0;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#e6edf7!important;font:400 17px/1 "Segoe UI",system-ui,sans-serif!important;box-shadow:none!important;transform:none!important;cursor:pointer}
+.window>.titlebar .window-controls button:hover{background:#ffffff18!important}
+.window>.titlebar .window-controls button:focus-visible{outline:2px solid #93c5fd!important;outline-offset:-3px}
+.window>.titlebar .window-controls button.close:hover{background:#c42b1c!important;color:white!important}
+.window>.titlebar .window-controls button.close{font-size:20px!important}
+.window>.titlebar .window-controls button.maximize{font-size:15px!important}
+.window>.titlebar .window-controls button.minimize{font-size:17px!important}
+.window>.titlebar .window-controls button.restore{font-size:14px!important}
+.window>.titlebar .window-controls button:active{background:#ffffff24!important}
+.window.maximized>.titlebar .window-controls button.maximize{font-size:0!important}
+.window.maximized>.titlebar .window-controls button.maximize:before{content:"❐";font-size:15px}
+.installed-app-window>.titlebar{background:linear-gradient(180deg,#202938,#182232)!important}
+.installed-app-window>.window-body{min-height:0;overflow:hidden}
+.installed-app-window .installed-app-body iframe{display:block;min-height:0}
+@media(max-width:600px){.window>.titlebar{height:42px;min-height:42px!important;flex-basis:42px;padding-left:9px!important}.window>.titlebar .window-controls button{width:38px!important}.window>.titlebar .title-icon{width:25px;height:25px;flex-basis:25px}}
+</style>
+<script id="org-universal-window-titlebar-script">
+(function(){
+ const q=(root,sel)=>root.querySelector(sel);
+ function normalize(win){
+  const bar=q(win,'.titlebar');if(!bar||bar.dataset.orgTitlebar==='true')return;bar.dataset.orgTitlebar='true';
+  const controls=q(bar,'.window-controls');
+  if(controls){
+   const buttons=[...controls.querySelectorAll('button')];
+   buttons.forEach((b,i)=>{
+    const action=b.classList.contains('close')?'close':b.classList.contains('minimize')?'minimize':b.classList.contains('maximize')?'maximize':(i===0?'minimize':i===1?'maximize':'close');
+    b.classList.add(action);b.setAttribute('aria-label',action==='close'?'Close window':action==='minimize'?'Minimize window':(win.classList.contains('maximized')?'Restore window':'Maximize window'));b.title=b.getAttribute('aria-label');
+    if(action==='minimize')b.textContent='−';else if(action==='maximize')b.textContent='□';else b.textContent='×';
+   });
+  }
+  bar.setAttribute('role','toolbar');bar.setAttribute('aria-label',(q(bar,'.window-title')?.textContent||'Application')+' window controls');
+  bar.addEventListener('dblclick',e=>{if(e.target.closest('.window-controls'))return;const key=win.id.replace(/^win-/,'');if(typeof window.maximizeApp==='function'&&key)window.maximizeApp(key)});
+ }
+ function scan(){document.querySelectorAll('.window').forEach(normalize)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan,{once:true});else scan();
+ new MutationObserver(scan).observe(document.body,{subtree:true,childList:true});
+ const oldMax=window.maximizeApp;
+ if(typeof oldMax==='function'&&!oldMax.__orgHeaderWrapped){const wrapped=function(name){oldMax(name);const w=document.getElementById('win-'+name);if(w){const b=q(w,'.window-controls .maximize');if(b){b.textContent=w.classList.contains('maximized')?'❐':'□';b.setAttribute('aria-label',w.classList.contains('maximized')?'Restore window':'Maximize window');b.title=b.getAttribute('aria-label')}}};wrapped.__orgHeaderWrapped=true;window.maximizeApp=wrapped}
+})();
+</script>
 </body>
 </html>
