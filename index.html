@@ -2495,8 +2495,7 @@ function render(){
  for(const [key,b] of existing){if(!keys.includes(key))b.remove()}
  for(const key of keys){
   if(!valid(key))continue;
-  let b=host.querySelector('.task-button[data-app="'+key.replace(/["\\]/g,'\\</html>
-')+'"]');
+  let b=[...host.querySelectorAll('.task-button[data-app]')].find(item=>item.dataset.app===key);
   if(!b){
    b=document.createElement('button');b.type='button';b.className='task-button';b.dataset.app=key;
    const icon=document.createElement('span');icon.className='task-app-icon';b.appendChild(icon);
