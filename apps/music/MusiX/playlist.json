@@ -1,47 +1,47 @@
 {
   "name": "MusiX",
   "version": 1,
-  "description": "ORG Music preloaded track list. Put the listed audio files in this folder and keep their filenames in sync with each src value.",
+  "description": "ORG Music preloaded track list. Each src matches the exact MP3 filename in this folder.",
   "tracks": [
     {
       "title": "Aria Math",
       "artist": "C418",
-      "src": "Aria-Math-by-C418.mp3"
+      "src": "Aria Math by C418.mp3"
     },
     {
       "title": "Bad Habits",
       "artist": "Steve Lacy",
-      "src": "Bad-Habits-by-Steve-Lacy.mp3"
+      "src": "Bad Habits by Steve Lacy.mp3"
     },
     {
       "title": "Bella Ciao",
       "artist": "Unknown",
-      "src": "Bella-Ciao.mp3"
+      "src": "Bella Ciao.mp3"
     },
     {
       "title": "Moog City",
       "artist": "C418",
-      "src": "Moog-City.mp3"
+      "src": "Moog City by C418.mp3"
     },
     {
       "title": "Moog City 2",
       "artist": "C418",
-      "src": "Moog-City-2.mp3"
+      "src": "Moog City 2 by C418.mp3"
     },
     {
       "title": "Notions",
       "artist": "The Rare Occasions",
-      "src": "Notions-by-The-Rare-Occasions.mp3"
+      "src": "Notions by The Rare Occasions.mp3"
     },
     {
       "title": "Sweden",
       "artist": "C418",
-      "src": "Sweden-by-C418.mp3"
+      "src": "Sweden by C418.mp3"
     },
     {
       "title": "The Star-Spangled Banner",
       "artist": "Traditional",
-      "src": "The-Star-Spangled-Banner.mp3"
+      "src": "The Star-Spangled Banner.mp3"
     }
   ]
 }
