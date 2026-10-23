@@ -2132,5 +2132,75 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  if(typeof oldMax==='function'&&!oldMax.__orgHeaderWrapped){const wrapped=function(name){oldMax(name);const w=document.getElementById('win-'+name);if(w){const b=q(w,'.window-controls .maximize');if(b){b.textContent=w.classList.contains('maximized')?'❐':'□';b.setAttribute('aria-label',w.classList.contains('maximized')?'Restore window':'Maximize window');b.title=b.getAttribute('aria-label')}}};wrapped.__orgHeaderWrapped=true;window.maximizeApp=wrapped}
 })();
 </script>
+
+<style id="org-shell-layout-repair-v2">
+/* Taskbar sizing: reserve space for Start and the tray, let app buttons scroll instead of collide. */
+#taskbar{display:flex!important;align-items:center;gap:8px!important;padding:6px 12px!important;min-width:0;overflow:visible}
+#start-button{flex:0 0 43px!important;width:43px!important;min-width:43px!important}
+#task-search{flex:0 1 190px!important;width:190px!important;min-width:88px!important;max-width:190px!important}
+#task-apps{flex:1 1 0!important;width:0;min-width:0!important;max-width:none!important;overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-x:contain}
+#task-apps .task-button{flex:0 0 42px!important;width:42px!important;min-width:42px!important}
+#taskbar .tray{position:relative!important;inset:auto!important;right:auto!important;flex:0 0 auto!important;margin-left:0!important;padding-left:8px!important;gap:5px!important}
+#clock{min-width:65px!important;white-space:nowrap}
+#start-menu{z-index:9000!important;display:none;flex-direction:column}
+#start-menu.open{display:flex!important}
+#start-menu .start-dashboard{min-height:0;flex:1 1 auto;overflow:auto}
+#start-menu .start-left-pane,#start-menu .start-right-pane{min-width:0}
+.desktop-icons .desktop-icon{order:var(--org-home-order,0)}
+#desktop-widgets .desktop-widget{order:var(--org-home-order,0)}
+@media(max-width:760px){#taskbar{gap:5px!important;padding-inline:7px!important}#task-search{flex-basis:125px!important;width:125px!important;max-width:125px!important}#task-apps .task-button{flex-basis:37px!important;width:37px!important;min-width:37px!important}#taskbar .tray{gap:2px!important;padding-left:4px!important}#clock{min-width:58px!important;font-size:10px!important}}
+@media(max-width:510px){#task-search{display:none!important}#taskbar{gap:4px!important;padding-inline:5px!important}#task-apps .task-button{flex-basis:35px!important;width:35px!important;min-width:35px!important}#taskbar .tray button{padding:5px!important}#clock{min-width:53px!important;font-size:9px!important}#start-menu{left:5px!important;right:5px!important;bottom:64px!important;width:auto!important;max-width:none!important;max-height:calc(100dvh - 75px)!important}}
+</style>
+<script id="org-shell-layout-repair-v2-script">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const key='desktop.shellLayout.v3';
+const read=()=>{try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e){return {}}};
+function items(){return [...document.querySelectorAll('#desktop-icons .desktop-icon,#desktop-widgets .desktop-widget')]}
+function save(){
+ const data={icons:{},widgets:{}};
+ document.querySelectorAll('#desktop-icons .desktop-icon').forEach((el,i)=>{const id=el.dataset.open||el.dataset.app||el.dataset.desktopId||el.textContent.trim();data.icons[id]={order:i,left:el.style.left||'',top:el.style.top||''}});
+ document.querySelectorAll('#desktop-widgets .desktop-widget').forEach((el,i)=>{const id=el.dataset.widgetId||el.dataset.desktopId||el.id||String(i);data.widgets[id]={order:i,left:el.style.left||'',top:el.style.top||'',width:el.style.width||'',height:el.style.height||''}});
+ try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}
+}
+function restore(){
+ const d=read();
+ document.querySelectorAll('#desktop-icons .desktop-icon').forEach((el,i)=>{const id=el.dataset.open||el.dataset.app||el.dataset.desktopId||el.textContent.trim(),v=d.icons&&d.icons[id];el.style.setProperty('--org-home-order',String(v&&Number.isFinite(v.order)?v.order:i));if(v){if(v.left)el.style.left=v.left;if(v.top)el.style.top=v.top}});
+ document.querySelectorAll('#desktop-widgets .desktop-widget').forEach((el,i)=>{const id=el.dataset.widgetId||el.dataset.desktopId||el.id||String(i),v=d.widgets&&d.widgets[id];el.style.setProperty('--org-home-order',String(v&&Number.isFinite(v.order)?v.order:i));if(v)['left','top','width','height'].forEach(k=>{if(v[k])el.style[k]=v[k]})});
+}
+function setupStart(){
+ const menu=$('start-menu'),button=$('start-button');if(!menu||!button)return;
+ const toggle=()=>{const opening=!menu.classList.contains('open');menu.classList.toggle('open',opening);button.classList.toggle('active',opening);button.setAttribute('aria-expanded',String(opening));$('notifications')?.classList.remove('open');if(opening){if(typeof window.renderPinned==='function')window.renderPinned();if(typeof window.updateStartClock==='function')window.updateStartClock();const search=$('start-search');if(search){search.value='';setTimeout(()=>search.focus(),20)}}};
+ button.onclick=toggle;window.toggleStart=toggle;button.setAttribute('aria-haspopup','true');button.setAttribute('aria-expanded',String(menu.classList.contains('open')));
+ document.addEventListener('pointerdown',e=>{if(menu.classList.contains('open')&&!menu.contains(e.target)&&!button.contains(e.target)){menu.classList.remove('open');button.classList.remove('active');button.setAttribute('aria-expanded','false')}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.classList.contains('open')){menu.classList.remove('open');button.classList.remove('active');button.setAttribute('aria-expanded','false');button.focus()}});
+ menu.querySelectorAll('.start-close').forEach(b=>b.onclick=()=>{menu.classList.remove('open');button.classList.remove('active');button.setAttribute('aria-expanded','false')});
+}
+function setupSettings(){
+ const sidebar=document.querySelector('#win-settings .settings-sidebar'),main=document.querySelector('#win-settings .settings-main');if(!sidebar||!main||$('settings-pane-shell'))return;
+ const tab=document.createElement('button');tab.className='settings-tab';tab.dataset.settingsTab='shell';tab.innerHTML='<span>▤</span> Shell & taskbar';const footer=sidebar.querySelector('.settings-sidebar-footer');sidebar.insertBefore(tab,footer||null);
+ const pane=document.createElement('div');pane.className='settings-pane';pane.id='settings-pane-shell';
+ pane.innerHTML='<div class="settings-page-head"><div class="settings-eyebrow">DESKTOP EXPERIENCE</div><h2>Shell & taskbar</h2><p>Fine-tune your home screen, taskbar, and Start menu.</p></div><div class="settings-card settings-option-row"><div><strong>Show taskbar search</strong><small>Keep the app search field beside Start.</small></div><label class="org-shell-switch"><input id="org-setting-task-search" type="checkbox"><span>Enabled</span></label></div><div class="settings-card settings-option-row"><div><strong>Compact taskbar</strong><small>Use smaller app buttons to fit more pinned apps.</small></div><label class="org-shell-switch"><input id="org-setting-compact-taskbar" type="checkbox"><span>Enabled</span></label></div><div class="settings-card"><strong>Home screen organization</strong><p class="settings-help">Save your app shortcut and widget order, position, and size in this browser.</p><div class="settings-system-actions"><button class="soft-button" id="org-save-layout" type="button">Save layout now</button><button class="soft-button" id="org-reset-layout" type="button">Reset saved layout</button></div></div><div class="settings-card"><strong>Start menu</strong><p class="settings-help">Start opens from the taskbar, closes when you click outside it, and responds to Escape.</p><div class="settings-system-actions"><button class="soft-button" id="org-test-start" type="button">Open Start menu</button></div></div>';
+ main.append(pane);
+ const load=(id,fallback)=>{try{return localStorage.getItem(id)===null?fallback:localStorage.getItem(id)==='true'}catch(e){return fallback}};
+ const search=$('org-setting-task-search'),compact=$('org-setting-compact-taskbar');
+ search.checked=load('orgos.settings.taskSearch',true);compact.checked=load('orgos.settings.compactTaskbar',false);
+ const applySearch=()=>{const el=$('task-search');if(el)el.style.display=search.checked?'':'none';try{localStorage.setItem('orgos.settings.taskSearch',String(search.checked))}catch(e){}};
+ const applyCompact=()=>{document.body.classList.toggle('org-compact-taskbar',compact.checked);try{localStorage.setItem('orgos.settings.compactTaskbar',String(compact.checked))}catch(e){}};
+ search.onchange=applySearch;compact.onchange=applyCompact;applySearch();applyCompact();
+ tab.onclick=()=>{document.querySelectorAll('#win-settings .settings-tab').forEach(b=>b.classList.toggle('active',b===tab));document.querySelectorAll('#win-settings .settings-pane').forEach(p=>p.classList.toggle('active',p===pane))};
+ $('org-save-layout').onclick=()=>{save();if(typeof window.toast==='function')toast('Home screen layout saved.')};
+ $('org-reset-layout').onclick=async()=>{let yes=typeof window.orgConfirm==='function'?await orgConfirm('Reset the saved app and widget arrangement?',{title:'Reset home screen layout',confirmText:'Reset'}):false;if(!yes)return;try{localStorage.removeItem(key)}catch(e){}document.querySelectorAll('#desktop-icons .desktop-icon,#desktop-widgets .desktop-widget').forEach((el,i)=>{el.style.removeProperty('--org-home-order');el.style.left='';el.style.top='';if(el.classList.contains('desktop-widget')){el.style.width='';el.style.height=''}});if(typeof window.toast==='function')toast('Saved home screen arrangement reset.')};
+ $('org-test-start').onclick=()=>{if(typeof window.toggleStart==='function')window.toggleStart()};
+}
+function boot(){restore();setupStart();setupSettings();save();let timer;const desk=$('desktop');if(desk)new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>{restore();save()},220)}).observe(desk,{subtree:true,childList:true});document.addEventListener('pointerup',()=>setTimeout(save,120));window.addEventListener('beforeunload',save);window.addEventListener('resize',()=>{document.querySelectorAll('#desktop-icons .desktop-icon').forEach(el=>{if(el.style.left)el.style.left=Math.max(0,Math.min(parseFloat(el.style.left)||0,innerWidth-el.offsetWidth))+'px'})});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+<style id="org-shell-settings-switch-style">
+.org-shell-switch{display:flex;align-items:center;gap:8px;font-size:12px}.org-shell-switch input{accent-color:var(--accent);width:17px;height:17px}.org-compact-taskbar #task-apps .task-button{flex-basis:34px!important;width:34px!important;min-width:34px!important;height:36px!important}
+</style>
+
 </body>
 </html>
