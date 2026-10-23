@@ -777,7 +777,7 @@ html,body{margin:0!important;padding:0!important;width:100%!important;min-height
     </span>
   </button>
   <input id="task-search" placeholder="Search apps..." aria-label="Search apps">
-  <div class="task-apps" id="task-apps" aria-hidden="true"></div><div class="task-apps org-taskbar-v2-apps" id="taskbar-v2-apps" aria-label="Pinned and running apps"></div>
+  <div class="task-apps" id="task-apps" aria-label="Pinned and running apps"></div>
   <div class="tray">
     <button id="notify-button" title="Notifications">◔</button>
     <div id="clock"></div>
@@ -2540,7 +2540,7 @@ function makeButton(key,pins){
  return b;
 }
 function render(){
- const host=$('taskbar-v2-apps');if(!host)return;
+ const host=$('task-apps');if(!host)return;
  if(typeof registerInstalledApps==='function')try{registerInstalledApps()}catch(e){}
  const pins=readPins(),keys=[...pins];
  Object.keys(names()).forEach(key=>{if(valid(key)&&running(key)&&!keys.includes(key))keys.push(key)});
@@ -2572,16 +2572,15 @@ window.addEventListener('resize',render);
 })();
 </script>
 <style id="org-taskbar-v2-styles">
-#taskbar #task-apps{display:none!important}
-#taskbar .org-taskbar-v2-apps{display:flex!important;align-items:center!important;gap:5px!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;visibility:visible!important;opacity:1!important}
-#taskbar .org-taskbar-v2-apps::-webkit-scrollbar{display:none}
-#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button{position:relative!important;display:grid!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;padding:0!important;place-items:center!important;visibility:visible!important;opacity:1!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;font-size:21px!important}
-#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button:hover{background:#ffffff12!important;border-color:#ffffff16!important}
-#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button.active{background:var(--accent-soft)!important;border-color:#ffffff24!important}
-#taskbar .org-taskbar-v2-apps .org-taskbar-v2-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important;line-height:1}
+#taskbar #task-apps{display:flex!important;align-items:center!important;gap:5px!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;visibility:visible!important;opacity:1!important}
+#taskbar #task-apps::-webkit-scrollbar{display:none}
+#taskbar #task-apps .org-taskbar-v2-button{position:relative!important;display:grid!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;padding:0!important;place-items:center!important;visibility:visible!important;opacity:1!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;font-size:21px!important}
+#taskbar #task-apps .org-taskbar-v2-button:hover{background:#ffffff12!important;border-color:#ffffff16!important}
+#taskbar #task-apps .org-taskbar-v2-button.active{background:var(--accent-soft)!important;border-color:#ffffff24!important}
+#taskbar #task-apps .org-taskbar-v2-button .task-app-icon{display:block!important;visibility:visible!important;opacity:1!important;line-height:1}
 #taskbar .org-taskbar-v2-dot{position:absolute;bottom:2px;left:50%;width:5px;height:5px;border-radius:50%;background:#cbd5e1;transform:translateX(-50%);opacity:0}
-#taskbar .org-taskbar-v2-button.running .org-taskbar-v2-dot{opacity:1}
-#taskbar .org-taskbar-v2-button.active .org-taskbar-v2-dot{width:17px;height:3px;border-radius:5px;background:var(--accent);opacity:1}
+#taskbar #task-apps .org-taskbar-v2-button.running .org-taskbar-v2-dot{opacity:1}
+#taskbar #task-apps .org-taskbar-v2-button.active .org-taskbar-v2-dot{width:17px;height:3px;border-radius:5px;background:var(--accent);opacity:1}
 .org-app-of-week{position:relative;display:grid;grid-template-columns:minmax(115px,.52fr) minmax(0,1fr);gap:18px;align-items:center;margin:14px 0 18px;padding:20px;border:1px solid #8b5cf64d;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 8% 15%,#8b5cf629,transparent 50%),linear-gradient(120deg,#172039,#111827 70%);color:#f8fafc}
 .org-app-week-art{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;min-height:118px;border:1px solid #ffffff12;border-radius:13px;background:linear-gradient(145deg,#7c3aed55,#2563eb30);font-size:40px;color:#ddd6fe;overflow:hidden}
 .org-app-week-art span{position:relative;z-index:1;display:grid;place-items:center;width:66px;height:66px;border:1px solid #ffffff30;border-radius:20px;background:#ffffff12;box-shadow:0 10px 28px #0003}
@@ -2590,6 +2589,49 @@ window.addEventListener('resize',render);
 .org-app-week-copy{min-width:0}.org-app-week-copy h2{margin:7px 0;font-size:clamp(20px,3vw,27px);letter-spacing:-.04em}.org-app-week-copy p{margin:0;color:#c4cde0;font-size:12px;line-height:1.65}.org-app-week-meta{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0;color:#cbd5e1;font-size:10px}.org-app-week-meta span{padding:5px 8px;border:1px solid #ffffff14;border-radius:7px;background:#ffffff08}
 #win-orgstore[data-store-theme="light"] .org-app-of-week{background:linear-gradient(120deg,#f1edff,#fff 75%);color:#172033;border-color:#d7c9ff}#win-orgstore[data-store-theme="light"] .org-app-week-copy p,#win-orgstore[data-store-theme="light"] .org-app-week-meta{color:#536078}#win-orgstore[data-store-theme="light"] .org-app-week-meta span{border-color:#dce2ed;background:#fff}
 @media(max-width:560px){.org-app-of-week{grid-template-columns:1fr;gap:12px;padding:14px}.org-app-week-art{min-height:75px}.org-app-week-art span{width:54px;height:54px}.org-app-week-copy h2{font-size:22px}#taskbar{gap:5px;padding:5px 7px}#task-search{width:115px;flex-basis:115px}}
+</style>
+
+
+<script id="org-window-restore-v2">
+(function(){
+ function restoreButtonState(win){
+  if(!win)return;
+  win.querySelectorAll('.window-controls button.maximize').forEach(button=>{
+   const maximized=win.classList.contains('maximized');
+   button.textContent=maximized?'❐':'□';
+   button.setAttribute('aria-label',maximized?'Restore window':'Maximize window');
+   button.title=maximized?'Restore window':'Maximize window';
+   button.dataset.windowState=maximized?'restore':'maximize';
+  });
+ }
+ const originalMaximize=window.maximizeApp;
+ window.maximizeApp=function(name){
+  if(typeof originalMaximize==='function')originalMaximize(name);
+  const win=document.getElementById('win-'+name);
+  restoreButtonState(win);
+ };
+ const originalRestore=window.restoreApp;
+ window.restoreApp=function(name){
+  if(typeof originalRestore==='function')originalRestore(name);
+  restoreButtonState(document.getElementById('win-'+name));
+ };
+ function init(){
+  document.querySelectorAll('.window').forEach(win=>{
+   restoreButtonState(win);
+   if(win.dataset.restoreV2Observed)return;
+   win.dataset.restoreV2Observed='true';
+   new MutationObserver(()=>restoreButtonState(win)).observe(win,{attributes:true,attributeFilter:['class']});
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+ const observer=new MutationObserver(init);
+ if(document.body)observer.observe(document.body,{subtree:true,childList:true});
+})();
+</script>
+<style id="org-window-restore-v2-css">
+.window>.titlebar .window-controls button.maximize{display:grid!important;place-items:center!important;line-height:1!important;font-family:"Segoe UI Symbol","Apple Symbols",system-ui,sans-serif!important;font-size:15px!important;padding:0!important}
+.window.maximized>.titlebar .window-controls button.maximize{font-size:0!important}
+.window.maximized>.titlebar .window-controls button.maximize:before{content:"❐"!important;display:block!important;font-size:15px!important;line-height:1!important;transform:translateY(0)!important}
 </style>
 
 </body>
