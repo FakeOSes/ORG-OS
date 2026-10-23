@@ -2025,5 +2025,65 @@ window.addEventListener("load",()=>{setTimeout(()=>{refreshSystemOverview();cons
 .files-app .files-path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 @media(max-width:640px){.window{max-width:calc(100vw - 8px)!important;max-height:calc(100vh - 66px)!important}.titlebar{min-height:38px}.window-controls button{width:34px}}
 </style>
+
+<style id="org-shell-repair">
+/* Shell repair: keep taskbar controls measurable and Start above every window. */
+#taskbar{display:flex!important;align-items:center!important;gap:8px!important;padding:6px 10px!important;min-width:0;isolation:isolate}
+#start-button{flex:0 0 44px!important}
+#task-search{flex:0 1 190px;min-width:70px;width:clamp(80px,16vw,190px)}
+#task-apps{flex:1 1 auto!important;min-width:0!important;max-width:none!important;overflow-x:auto!important;overscroll-behavior-x:contain}
+#task-apps .task-button{flex:0 0 42px!important}
+#taskbar .tray{flex:0 0 auto!important;margin-left:auto;display:flex;align-items:center;gap:6px}
+#clock{white-space:nowrap}
+#start-menu{z-index:8500!important;max-height:min(780px,calc(100dvh - 76px));overflow:hidden}
+#start-menu.open{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+#start-menu .start-dashboard{min-height:0;overflow:auto}
+#start-menu .start-left-pane,#start-menu .start-right-pane{min-height:0;overflow:auto}
+#start-menu input{min-width:0}
+#desktop-widgets{position:absolute;inset:0;pointer-events:none}
+#desktop-widgets .desktop-widget{pointer-events:auto}
+#desktop .desktop-icons{touch-action:pan-y}
+.org-dialog-backdrop{position:fixed;inset:0;z-index:20000;background:#07101fc4;backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px}
+.org-dialog{width:min(440px,100%);border:1px solid #ffffff24;border-radius:18px;background:var(--panel,#182235);color:var(--text,#edf4ff);box-shadow:0 28px 90px #0008;padding:22px;animation:org-window-enter .15s ease-out}
+.org-dialog h2{font-size:18px;margin:0 0 8px}.org-dialog p{color:var(--muted,#aab7cc);margin:0 0 15px;white-space:pre-wrap}
+.org-dialog input{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#ffffff20);border-radius:10px;background:#ffffff09;color:inherit;outline-color:var(--accent,#60a5fa)}
+.org-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.org-dialog-actions button{padding:9px 14px;border-radius:9px;border:1px solid #ffffff20;background:#ffffff0b;color:inherit}.org-dialog-actions .org-dialog-primary{background:var(--accent,#3b82f6);border-color:transparent;color:white}
+@media(max-width:600px){#task-search{width:86px;flex-basis:86px}#taskbar{gap:4px!important;padding-inline:5px!important}#task-apps .task-button{flex-basis:36px!important;width:36px!important;min-width:36px!important;height:38px!important}#clock{font-size:11px}#start-menu{left:5px!important;right:5px!important;bottom:64px!important;width:auto!important;max-width:none!important;max-height:calc(100dvh - 75px)}}
+</style>
+<script id="org-shell-repair-script">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+function orgDialog({title='ORG OS',message='',value='',placeholder='',confirmText='Continue',cancelText='Cancel',input=false,danger=false}={}){
+ return new Promise(resolve=>{
+  const back=document.createElement('div');back.className='org-dialog-backdrop';
+  const panel=document.createElement('section');panel.className='org-dialog';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
+  const h=document.createElement('h2');h.textContent=title;
+  const p=document.createElement('p');p.textContent=message;
+  panel.append(h,p);
+  let field=null;if(input){field=document.createElement('input');field.value=value;field.placeholder=placeholder;field.setAttribute('aria-label',title);panel.append(field);}
+  const actions=document.createElement('div');actions.className='org-dialog-actions';
+  const cancel=document.createElement('button');cancel.textContent=cancelText;
+  const yes=document.createElement('button');yes.textContent=confirmText;yes.className='org-dialog-primary';if(danger)yes.style.background='#dc3545';
+  actions.append(cancel,yes);panel.append(actions);back.append(panel);document.body.append(back);
+  let done=false;const finish=result=>{if(done)return;done=true;back.remove();document.removeEventListener('keydown',keys);resolve(result)};
+  const keys=e=>{if(e.key==='Escape'){e.preventDefault();finish(input?null:false)}if(e.key==='Enter'&&input){e.preventDefault();finish(field.value)}};
+  cancel.onclick=()=>finish(input?null:false);yes.onclick=()=>finish(input?field.value:true);back.addEventListener('click',e=>{if(e.target===back)finish(input?null:false)});document.addEventListener('keydown',keys);(field||yes).focus();if(field)field.select();
+ });
+}
+window.orgPrompt=(message,initial='')=>orgDialog({title:'ORG OS · Input',message,value:initial,input:true,confirmText:'Save'});
+window.orgConfirm=(message,options={})=>orgDialog({title:options.title||'ORG OS · Confirm',message,confirmText:options.confirmText||'Confirm',danger:!!options.danger});
+/* Persist desktop icon and widget placement without overwriting app settings. */
+const layoutKey='desktop.shellLayout.v2';
+function readLayout(){try{return JSON.parse(localStorage.getItem(layoutKey)||'{}')}catch(e){return {}}}
+function saveLayout(){const data={icons:{},widgets:{}};document.querySelectorAll('#desktop-icons .desktop-icon').forEach((el,i)=>{const key=el.dataset.open||el.dataset.app||el.textContent.trim();data.icons[key]={left:el.style.left||'',top:el.style.top||'',order:i};});document.querySelectorAll('#desktop-widgets .desktop-widget').forEach((el,i)=>{const key=el.dataset.widgetId||el.id||String(i);data.widgets[key]={left:el.style.left||'',top:el.style.top||'',width:el.style.width||'',height:el.style.height||'',order:i};});try{localStorage.setItem(layoutKey,JSON.stringify(data));}catch(e){}}
+function restoreLayout(){const data=readLayout();document.querySelectorAll('#desktop-icons .desktop-icon').forEach((el,i)=>{const key=el.dataset.open||el.dataset.app||el.textContent.trim(),v=data.icons&&data.icons[key];if(v){if(v.left)el.style.left=v.left;if(v.top)el.style.top=v.top;}});document.querySelectorAll('#desktop-widgets .desktop-widget').forEach((el,i)=>{const key=el.dataset.widgetId||el.id||String(i),v=data.widgets&&data.widgets[key];if(v){['left','top','width','height'].forEach(k=>{if(v[k])el.style[k]=v[k]});}});}
+function bindLayout(){const desktop=$('desktop');if(!desktop)return;restoreLayout();let timer;new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>{restoreLayout();saveLayout()},180)}).observe(desktop,{subtree:true,childList:true});desktop.addEventListener('pointerup',()=>setTimeout(saveLayout,80));desktop.addEventListener('mouseup',()=>setTimeout(saveLayout,80));window.addEventListener('beforeunload',saveLayout);}
+function repairStart(){const menu=$('start-menu'),button=$('start-button');if(!menu||!button)return;button.setAttribute('aria-haspopup','true');button.setAttribute('aria-expanded','false');const old=window.toggleStart;window.toggleStart=function(){const opening=!menu.classList.contains('open');menu.classList.toggle('open',opening);button.setAttribute('aria-expanded',String(opening));$('notifications')?.classList.remove('open');if(opening){if(typeof renderPinned==='function')renderPinned();if(typeof updateStartClock==='function')updateStartClock();setTimeout(()=>$('start-search')?.focus(),30)}};button.onclick=window.toggleStart;document.addEventListener('pointerdown',e=>{if(menu.classList.contains('open')&&!menu.contains(e.target)&&!button.contains(e.target)){menu.classList.remove('open');button.setAttribute('aria-expanded','false')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.classList.contains('open')){menu.classList.remove('open');button.setAttribute('aria-expanded','false');button.focus()}});menu.querySelectorAll('button').forEach(b=>{if(b.getAttribute('onclick')==='toggleStart()')b.addEventListener('click',()=>{menu.classList.remove('open');button.setAttribute('aria-expanded','false')})});}
+function fixSettings(){document.querySelectorAll('[data-settings-tab]').forEach(btn=>{btn.addEventListener('click',()=>{const key=btn.dataset.settingsTab;if(typeof selectSettingsTab==='function')selectSettingsTab(key==='appearance'?'personalize':key);});});const quick=document.querySelectorAll('.settings-quick-card');quick.forEach(btn=>{if((btn.textContent||'').includes('Appearance'))btn.onclick=()=>typeof selectSettingsTab==='function'&&selectSettingsTab('personalize')});}
+function start(){repairStart();bindLayout();fixSettings();if(typeof syncTaskbar==='function')syncTaskbar('');}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
 </body>
 </html>
