@@ -44,7 +44,33 @@ audio.onplay=()=>{$('play').textContent='Ⅱ';$('hero-play').textContent='Ⅱ Pa
 $('search').oninput=renderList;
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));refreshTracks()});
 $('add-files').onclick=()=>$('files').click();$('files').onchange=()=>{const added=[...$('files').files].filter(f=>f.type.startsWith('audio/')).map((f,i)=>({id:'local-'+Date.now()+'-'+i,title:f.name.replace(/\.[^.]+$/,''),artist:'On this device',url:URL.createObjectURL(f),source:'local'}));localTracks.push(...added);if(view==='musix')view='all';document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===view));refreshTracks();if(added.length){playById(added[added.length-1].id);$('status').textContent=added.length+' audio file'+(added.length===1?'':'s')+' added for this session.'}$('files').value=''};
-async function loadMusiX(){try{const res=await fetch(new URL('playlist.json',musixBase),{cache:'no-store'});if(!res.ok)throw new Error('playlist not found');const data=await res.json();manifestTracks=(Array.isArray(data.tracks)?data.tracks:[]).filter(t=>t&&typeof t.src==='string').map((t,i)=>({id:'musix-'+i+'-'+t.src,title:t.title||t.name||t.src.split('/').pop(),artist:t.artist||'MusiX',url:/^(https?:|blob:|data:)/i.test(t.src)?t.src:new URL(t.src,musixBase).href,source:'musix'}));$('status').textContent=manifestTracks.length?'Loaded '+manifestTracks.length+' track'+(manifestTracks.length===1?'':'s')+' from MusiX/playlist.json.':'MusiX folder found. Add audio files there and list them in playlist.json to preload them.'}catch(e){manifestTracks=[];$('status').textContent='MusiX folder is ready; playlist.json could not be loaded from this hosting path.'}refreshTracks()}
+const fallbackMusiXTracks=[
+ {title:'Aria Math',artist:'C418',src:'Aria Math by C418.mp3'},
+ {title:'Bad Habits',artist:'Steve Lacy',src:'Bad Habits by Steve Lacy.mp3'},
+ {title:'Bella Ciao',artist:'Unknown',src:'Bella Ciao.mp3'},
+ {title:'Moog City',artist:'C418',src:'Moog City by C418.mp3'},
+ {title:'Moog City 2',artist:'C418',src:'Moog City 2 by C418.mp3'},
+ {title:'Notions',artist:'The Rare Occasions',src:'Notions by The Rare Occasions.mp3'},
+ {title:'Sweden',artist:'C418',src:'Sweden by C418.mp3'},
+ {title:'The Star-Spangled Banner',artist:'Traditional',src:'The Star-Spangled Banner.mp3'}
+];
+function normalizeMusiXTracks(items){return items.filter(t=>t&&typeof t.src==='string').map((t,i)=>({id:'musix-'+i+'-'+t.src,title:t.title||t.name||t.src.split('/').pop(),artist:t.artist||'MusiX',url:/^(https?:|blob:|data:)/i.test(t.src)?t.src:new URL(t.src,musixBase).href,source:'musix'}))}
+async function loadMusiX(){
+ try{
+  const res=await fetch(new URL('playlist.json',musixBase),{cache:'no-store'});
+  if(!res.ok)throw new Error('playlist not found');
+  const data=await res.json();
+  manifestTracks=normalizeMusiXTracks(Array.isArray(data.tracks)?data.tracks:[]);
+  if(!manifestTracks.length)throw new Error('empty playlist');
+  $('status').textContent='Loaded '+manifestTracks.length+' tracks from MusiX/playlist.json.';
+ }catch(e){
+  // file:// pages and some static hosts block fetch() for JSON; keep the bundled playlist usable.
+  manifestTracks=normalizeMusiXTracks(fallbackMusiXTracks);
+  $('status').textContent='Loaded '+manifestTracks.length+' built-in MusiX tracks. If you edited playlist.json, run ORG OS through a web server to load that file.';
+ }
+ refreshTracks();
+}
+loadMusiX();
 loadMusiX();
 })();
 </script></body></html>
