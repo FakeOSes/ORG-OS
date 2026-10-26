@@ -1,16 +1,18 @@
 {
   "id": "music",
-  "name": "ORG Music",
-  "version": "1.0.0",
-  "minimumOSVersion": "1.0.0",
-  "compatibleOS": "ORG OS 1+",
+  "name": "ORG Music (BETA)",
+  "version": "BETA 0.94.294B",
+  "minimumOSVersion": "1.1.0",
+  "compatibleOS": "ORG OS 1.1+",
   "description": "Play audio files locally with a queue and playback controls.",
   "entry": "index.html",
   "category": "Media",
   "icon": "🎵",
   "features": [
     "light-dark-theme",
-    "widgets"
+    "widgets",
+    "Plays Audio and Music",
+    "mp3, WAV, AIFF, and more"
   ],
   "widgets": [
     {
