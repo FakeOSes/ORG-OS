@@ -38,28 +38,28 @@
       "artist": "C418",
       "src": "Sweden by C418.mp3"
     },
-     {
+    {
       "title": "Taswell",
       "artist": "C418",
       "src": "Taswell by C418.mp3"
     },
-        {
+    {
       "title": "Mice on Venus",
       "artist": "C418",
       "src": "Mice on Venus by C418.mp3"
     },
-        {
+    {
       "title": "Thunder",
       "artist": "Imagine Dragons",
       "src": "Thunder by Imagine Dragons.mp3"
     },
-     {
+    {
       "title": "Demons",
       "artist": "Imagine Dragons",
       "src": "Demons by Imagine Dragons.mp3"
     },
     {
-      "title": "Ememy",
+      "title": "Enemy",
       "artist": "Imagine Dragons & JID",
       "src": "Enemy by Imagine Dragons & JID.mp3"
     },
@@ -68,7 +68,7 @@
       "artist": "Pupsies",
       "src": "shit1.mp3"
     },
-     {
+    {
       "title": "Christmas Kids",
       "artist": "Roar",
       "src": "Christmas Kids by Roar.mp3"
@@ -87,11 +87,11 @@
       "title": "The Star-Spangled Banner",
       "artist": "Traditional",
       "src": "The Star-Spangled Banner.mp3"
-      },
-      {
+    },
+    {
       "title": "Never Ending Story",
-      "artist": "Gaten Matarazzo & Gabriella Pizzolo.mp3",
+      "artist": "Gaten Matarazzo & Gabriella Pizzolo",
       "src": "Never Ending Story by Gaten Matarazzo & Gabriella Pizzolo.mp3"
-      }
+    }
   ]
 }
