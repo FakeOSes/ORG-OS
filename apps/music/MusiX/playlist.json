@@ -121,7 +121,12 @@
     {
       "title": "Bohemian Rhapsody",
       "artist": "Queen",
-      "src": "Queen - Bohemian Rhapsody (Lyrics).mp3"
+      "src": "Queen - Bohemian Rhapsody (Lyrics).mp3",
+      {
+      "title": "End Of Beginning",
+      "artist": "Djo",
+      "src": "EOB.mp3"
+    }
     }
   ]
 }
