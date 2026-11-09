@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Box Reviews</title>
+    <style>
+      :root {
+        --bg: #f7f1ea;
+        --panel: rgba(255,255,255,0.82);
+        --card: #fff;
+        --ink: #1d201f;
+        --muted: #6e625a;
+        --line: #e7d9ca;
+        --accent: #d96b45;
+        --accent-soft: #fff0ea;
+        --gold: #f5c76a;
+        --shadow: 0 18px 38px rgba(43, 28, 20, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: linear-gradient(180deg, #f7f1ea 0%, #fdfaf5 100%);
+        color: var(--ink);
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 42px 20px 80px;
+      }
+
+      .header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.4rem, 4vw, 4rem);
+        letter-spacing: -0.06em;
+        line-height: 0.92;
+      }
+
+      .summary-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-weight: 700;
+        color: var(--muted);
+        box-shadow: var(--shadow);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1.05fr 1.45fr;
+        gap: 22px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+      }
+
+      .form-panel,
+      .reviews-panel {
+        padding: 22px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        font: inherit;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.8);
+        color: var(--ink);
+        padding: 12px 14px;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(217, 107, 69, 0.14);
+      }
+
+      .stars {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+
+      .star-btn {
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--line);
+        background: white;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        color: #c0b8b1;
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+      }
+
+      .star-btn:hover,
+      .star-btn:focus-visible {
+        transform: translateY(-1px);
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+
+      .star-btn.is-selected {
+        background: var(--accent-soft);
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+
+      .review-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .primary-btn,
+      .ghost-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .primary-btn {
+        background: var(--ink);
+        color: white;
+        box-shadow: var(--shadow);
+      }
+
+      .ghost-btn {
+        background: var(--accent-soft);
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .form-status {
+        min-height: 20px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: 6px;
+      }
+
+      .reviews-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .reviews-header h2 {
+        margin: 0;
+        font-size: clamp(1.6rem, 2vw, 2.2rem);
+        letter-spacing: -0.05em;
+      }
+
+      .rating-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        border: 1px solid var(--line);
+        font-weight: 700;
+      }
+
+      .reviews-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 14px;
+      }
+
+      .review-item {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.7);
+        border-radius: 18px;
+        padding: 16px;
+      }
+
+      .review-user-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+
+      .review-user {
+        font-weight: 700;
+      }
+
+      .review-stars {
+        color: var(--gold);
+        letter-spacing: 0.04em;
+      }
+
+      .review-text {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .empty-state {
+        border: 1px dashed var(--line);
+        border-radius: 18px;
+        padding: 20px;
+        color: var(--muted);
+        background: rgba(255,255,255,0.35);
+      }
+
+      @media (max-width: 860px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <p class="eyebrow">Kitchen Collection</p>
+          <h1>Recipe Reviews</h1>
+        </div>
+        <div class="summary-badge" id="reviewSummary">0 reviews</div>
+      </header>
+
+      <div class="layout">
+        <section class="panel form-panel">
+          <form id="reviewForm">
+            <div class="field">
+              <label for="recipeSelect">Recipe</label>
+              <select id="recipeSelect" name="recipe">
+                <option value="citrus-salmon-bowl">Citrus Salmon Bowl</option>
+                <option value="berry-overnight-oats">Berry Overnight Oats</option>
+                <option value="chickpea-coconut-curry">Chickpea Coconut Curry</option>
+                <option value="lemon-herb-chicken">Lemon Herb Chicken</option>
+                <option value="mushroom-spinach-pasta">Mushroom Spinach Pasta</option>
+                <option value="chocolate-chip-cookies">Chocolate Chip Cookies</option>
+                <option value="sheet-pan-salmon">Sheet Pan Salmon</option>
+                <option value="avocado-toast-bowl">Avocado Toast Bowl</option>
+                <option value="garden-wrap">Garden Veggie Wrap</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="usernameInput">Username</label>
+              <input id="usernameInput" name="username" type="text" maxlength="30" placeholder="Enter your username" required />
+            </div>
+
+            <div class="field">
+              <label>Your rating</label>
+              <div class="stars" id="starGroup" aria-label="Rating selection">
+                <button class="star-btn" type="button" data-value="1" aria-label="1 star">★</button>
+                <button class="star-btn" type="button" data-value="2" aria-label="2 stars">★</button>
+                <button class="star-btn" type="button" data-value="3" aria-label="3 stars">★</button>
+                <button class="star-btn" type="button" data-value="4" aria-label="4 stars">★</button>
+                <button class="star-btn" type="button" data-value="5" aria-label="5 stars">★</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="reviewText">Review</label>
+              <textarea id="reviewText" name="review" maxlength="500" placeholder="Tell others what you thought about this recipe..." required></textarea>
+            </div>
+
+            <div class="review-actions">
+              <button class="primary-btn" type="submit">Post review</button>
+              <button class="ghost-btn" type="button" id="clearFormBtn">Clear</button>
+            </div>
+
+            <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+          </form>
+        </section>
+
+        <section class="panel reviews-panel">
+          <div class="reviews-header">
+            <h2>Community reviews</h2>
+            <div class="rating-pill" id="averageRating">★ 0.0</div>
+          </div>
+          <ul class="reviews-list" id="reviewsList"></ul>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'recipe-box-reviews';
+      const DEFAULT_RECIPE = 'citrus-salmon-bowl';
+      const recipeLabelMap = {
+        'citrus-salmon-bowl': 'Citrus Salmon Bowl',
+        'berry-overnight-oats': 'Berry Overnight Oats',
+        'chickpea-coconut-curry': 'Chickpea Coconut Curry',
+        'lemon-herb-chicken': 'Lemon Herb Chicken',
+        'mushroom-spinach-pasta': 'Mushroom Spinach Pasta',
+        'chocolate-chip-cookies': 'Chocolate Chip Cookies',
+        'sheet-pan-salmon': 'Sheet Pan Salmon',
+        'avocado-toast-bowl': 'Avocado Toast Bowl',
+        'garden-wrap': 'Garden Veggie Wrap'
+      };
+
+      const recipeSelect = document.getElementById('recipeSelect');
+      const reviewForm = document.getElementById('reviewForm');
+      const reviewsList = document.getElementById('reviewsList');
+      const reviewSummary = document.getElementById('reviewSummary');
+      const averageRating = document.getElementById('averageRating');
+      const usernameInput = document.getElementById('usernameInput');
+      const reviewText = document.getElementById('reviewText');
+      const formStatus = document.getElementById('formStatus');
+      const clearFormBtn = document.getElementById('clearFormBtn');
+      const starButtons = [...document.querySelectorAll('.star-btn')];
+
+      let selectedRating = 0;
+
+      function safeReadReviews() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : {};
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function saveReviews(allReviews) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allReviews));
+      }
+
+      function getReviewsForRecipe(recipeId) {
+        const allReviews = safeReadReviews();
+        return Array.isArray(allReviews[recipeId]) ? allReviews[recipeId] : [];
+      }
+
+      function setRating(value) {
+        selectedRating = value;
+        starButtons.forEach((button) => {
+          const isSelected = Number(button.dataset.value) <= value;
+          button.classList.toggle('is-selected', isSelected);
+          button.setAttribute('aria-pressed', String(isSelected));
+        });
+      }
+
+      function renderReviews() {
+        const selectedRecipe = recipeSelect.value;
+        const recipeReviews = getReviewsForRecipe(selectedRecipe);
+        const total = recipeReviews.length;
+
+        reviewSummary.textContent = `${total} review${total === 1 ? '' : 's'}`;
+
+        if (!total) {
+          averageRating.textContent = '★ 0.0';
+          reviewsList.innerHTML = `
+            <li class="empty-state">
+              No reviews yet for ${recipeLabelMap[selectedRecipe] || 'this recipe'}. Be the first to share your thoughts.
+            </li>
+          `;
+          return;
+        }
+
+        const average = recipeReviews.reduce((sum, review) => sum + Number(review.rating), 0) / total;
+        averageRating.textContent = `★ ${average.toFixed(1)}`;
+
+        reviewsList.innerHTML = recipeReviews
+          .slice()
+          .reverse()
+          .map((review) => {
+            const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+            return `
+              <li class="review-item">
+                <div class="review-user-row">
+                  <div class="review-user">${escapeHtml(review.username)}</div>
+                  <div class="review-stars" aria-label="${review.rating} out of 5 stars">${stars}</div>
+                </div>
+                <p class="review-text">${escapeHtml(review.text)}</p>
+              </li>
+            `;
+          })
+          .join('');
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      starButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          setRating(Number(button.dataset.value));
+        });
+      });
+
+      recipeSelect.addEventListener('change', () => {
+        renderReviews();
+      });
+
+      reviewForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const recipeId = recipeSelect.value;
+        const username = usernameInput.value.trim();
+        const text = reviewText.value.trim();
+
+        if (!username) {
+          formStatus.textContent = 'Please enter your username.';
+          usernameInput.focus();
+          return;
+        }
+
+        if (!selectedRating) {
+          formStatus.textContent = 'Please choose a star rating.';
+          return;
+        }
+
+        if (!text) {
+          formStatus.textContent = 'Please write a short review.';
+          reviewText.focus();
+          return;
+        }
+
+        const allReviews = safeReadReviews();
+        const currentReviews = Array.isArray(allReviews[recipeId]) ? allReviews[recipeId] : [];
+
+        currentReviews.push({
+          username,
+          rating: selectedRating,
+          text,
+          createdAt: new Date().toISOString()
+        });
+
+        allReviews[recipeId] = currentReviews;
+        saveReviews(allReviews);
+
+        formStatus.textContent = 'Review saved successfully.';
+        reviewForm.reset();
+        setRating(0);
+        renderReviews();
+      });
+
+      clearFormBtn.addEventListener('click', () => {
+        reviewForm.reset();
+        setRating(0);
+        formStatus.textContent = '';
+      });
+
+      setRating(0);
+      renderReviews();
+    </script>
+  </body>
+</html>
