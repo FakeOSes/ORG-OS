@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101323">
+  <title>Neon Snake — Recipe Box Arcade</title>
+  <style>
+    :root{color-scheme:dark;--bg:#101323;--panel:#1a2037;--line:#303a5d;--ink:#f3f5ff;--muted:#aab3d2;--cyan:#62f5d0;--pink:#ff68ad;--yellow:#ffe27a}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:24px;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 0,#29345e 0,transparent 58%),var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+    button{font:inherit;color:inherit;cursor:pointer}.shell{width:min(720px,100%)}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.back{display:inline-flex;align-items:center;gap:8px;color:var(--muted);text-decoration:none;font-weight:700}.back:hover{color:var(--cyan)}.badge{border:1px solid var(--line);border-radius:99px;padding:6px 11px;color:var(--muted);font-size:.8rem}
+    .panel{padding:clamp(18px,4vw,32px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(31,39,68,.96),rgba(22,27,48,.96));box-shadow:0 24px 70px #05071199}.heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.kicker{margin:0;color:var(--cyan);font-size:.75rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{margin:4px 0 0;font-size:clamp(2rem,7vw,3rem);line-height:1;letter-spacing:-.06em}.lede{margin:12px 0 20px;color:var(--muted)}.scores{display:flex;gap:10px}.score{min-width:76px;padding:8px 12px;text-align:center;border:1px solid var(--line);border-radius:14px;background:#11162a}.score strong{display:block;font-size:1.35rem;line-height:1.2}.score span{font-size:.68rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+    .board-wrap{position:relative;width:min(100%,520px);margin:0 auto;border:1px solid #46537b;border-radius:16px;overflow:hidden;background:#0d1222;box-shadow:inset 0 0 40px #0008}.board{display:block;width:100%;height:auto;aspect-ratio:1}.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:20px;background:#0b1020b8;text-align:center}.overlay[hidden]{display:none}.overlay-card{max-width:320px}.overlay h2{margin:0 0 8px;font-size:2rem}.overlay p{margin:0 0 16px;color:var(--muted)}.actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{border:1px solid var(--line);border-radius:12px;padding:10px 16px;background:#252e4d;font-weight:750}.btn:hover{border-color:var(--cyan);transform:translateY(-1px)}.btn.primary{border:0;background:linear-gradient(135deg,#50e7c1,#45a9eb);color:#08151e}.help{display:flex;justify-content:space-between;gap:18px;margin-top:18px;color:var(--muted);font-size:.85rem}.keys{display:flex;gap:5px}.keys kbd{padding:2px 6px;border:1px solid var(--line);border-radius:5px;background:#11162a;color:var(--ink);font:inherit;font-size:.75rem}.mobile-controls{display:none;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,44px);justify-content:center;gap:6px;margin-top:15px}.mobile-controls button{border:1px solid var(--line);border-radius:10px;background:#252e4d;font-size:1.1rem}.mobile-controls button:nth-child(1){grid-column:2}.mobile-controls button:nth-child(2){grid-column:1;grid-row:2}.mobile-controls button:nth-child(3){grid-column:2;grid-row:2}.mobile-controls button:nth-child(4){grid-column:3;grid-row:2}.note{text-align:center;color:#818bab;font-size:.75rem;margin:14px 0 0}
+    @media(max-width:560px){body{padding:14px}.heading{display:block}.scores{margin-top:14px}.help{justify-content:center}.help span:first-child{display:none}.mobile-controls{display:grid}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="top"><a class="back" href="index.html">← Back to Recipe Box</a><span class="badge">SECRET ARCADE · 0000</span></div>
+    <section class="panel" aria-label="Neon Snake game">
+      <div class="heading"><div><p class="kicker">Recipe Box Arcade</p><h1>Neon Snake</h1></div><div class="scores"><div class="score"><strong id="score">0</strong><span>Score</span></div><div class="score"><strong id="best">0</strong><span>Best</span></div></div></div>
+      <p class="lede">Snack on the glowing berries, grow your snake, and don't run into yourself!</p>
+      <div class="board-wrap"><canvas id="board" class="board" width="480" height="480" aria-label="Snake game board"></canvas><div id="overlay" class="overlay"><div class="overlay-card"><h2 id="overlayTitle">Ready to play?</h2><p id="overlayText">Use the arrow keys or WASD to move. Grab the berries to score.</p><button id="startBtn" class="btn primary">Start game</button></div></div></div>
+      <div class="actions"><button id="pauseBtn" class="btn" type="button">Pause</button><button id="restartBtn" class="btn" type="button">Restart</button></div>
+      <div class="help"><span>Move with <span class="keys"><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></span> or WASD</span><span>Pause with <kbd>Space</kbd></span></div>
+      <div class="mobile-controls" aria-label="Touch controls"><button type="button" data-dir="up" aria-label="Up">▲</button><button type="button" data-dir="left" aria-label="Left">◀</button><button type="button" data-dir="down" aria-label="Down">▼</button><button type="button" data-dir="right" aria-label="Right">▶</button></div>
+      <p class="note">Tip: the snake wraps around the edges. Your best score is saved on this device.</p>
+    </section>
+  </main>
+<script>
+(() => {
+  const canvas = document.getElementById('board'), ctx = canvas.getContext('2d');
+  const scoreEl = document.getElementById('score'), bestEl = document.getElementById('best');
+  const overlay = document.getElementById('overlay'), title = document.getElementById('overlayTitle'), text = document.getElementById('overlayText');
+  const startBtn = document.getElementById('startBtn'), size = 20, cell = canvas.width / size;
+  let snake, berry, direction, nextDirection, score = 0, timer = null, running = false, started = false;
+  let best = Number(localStorage.getItem('neonSnakeBest') || 0); bestEl.textContent = best;
+  const randomBerry = () => { let p; do { p = {x:Math.floor(Math.random()*size), y:Math.floor(Math.random()*size)}; } while (snake.some(s => s.x===p.x && s.y===p.y)); return p; };
+  function draw(){
+    ctx.fillStyle='#0d1222'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='rgba(113,132,190,.09)'; ctx.lineWidth=1;
+    for(let i=1;i<size;i++){ctx.beginPath();ctx.moveTo(i*cell,0);ctx.lineTo(i*cell,canvas.height);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*cell);ctx.lineTo(canvas.width,i*cell);ctx.stroke();}
+    ctx.save();ctx.shadowColor='#ff68ad';ctx.shadowBlur=18;ctx.fillStyle='#ff68ad';ctx.beginPath();ctx.arc((berry.x+.5)*cell,(berry.y+.5)*cell,cell*.34,0,Math.PI*2);ctx.fill();ctx.restore();
+    snake.forEach((part,i)=>{const inset=2;ctx.fillStyle=i===0?'#62f5d0':'#36bda8';ctx.shadowColor=i===0?'#62f5d0':'transparent';ctx.shadowBlur=i===0?12:0;ctx.beginPath();ctx.roundRect(part.x*cell+inset,part.y*cell+inset,cell-inset*2,cell-inset*2,6);ctx.fill();});ctx.shadowBlur=0;
+  }
+  function reset(){clearInterval(timer);snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];direction={x:1,y:0};nextDirection={x:1,y:0};score=0;scoreEl.textContent='0';berry=randomBerry();running=false;started=false;draw();show('Ready to play?','Use the arrow keys or WASD to move. Grab the berries to score.','Start game');}
+  function show(h,p,b){title.textContent=h;text.textContent=p;startBtn.textContent=b;overlay.hidden=false;}
+  function begin(){if(running)return;if(!started)started=true;overlay.hidden=true;running=true;clearInterval(timer);timer=setInterval(tick,125);}
+  function pause(){if(!running)return;running=false;clearInterval(timer);show('Paused','Take a breather. Your snake is waiting.','Resume');}
+  function end(){running=false;clearInterval(timer);if(score>best){best=score;bestEl.textContent=best;localStorage.setItem('neonSnakeBest',String(best));}show('Game over!',`You scored ${score}. Want another round?`,'Play again');}
+  function tick(){direction=nextDirection;const head={x:(snake[0].x+direction.x+size)%size,y:(snake[0].y+direction.y+size)%size};const eating=head.x===berry.x&&head.y===berry.y;if(snake.slice(0,eating?undefined:-1).some(s=>s.x===head.x&&s.y===head.y)){end();return;}snake.unshift(head);if(eating){score+=10;scoreEl.textContent=score;berry=randomBerry();}else snake.pop();draw();}
+  function steer(d){if(!running)return;const dirs={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};const v=dirs[d];if(v&&!(v.x===-direction.x&&v.y===-direction.y))nextDirection=v;}
+  document.addEventListener('keydown',e=>{const k=e.key.toLowerCase(),map={arrowup:'up',w:'up',arrowdown:'down',s:'down',arrowleft:'left',a:'left',arrowright:'right',d:'right'};if(map[k]){e.preventDefault();steer(map[k]);}if(k===' '){e.preventDefault();running?pause():begin();}});
+  document.querySelectorAll('[data-dir]').forEach(b=>b.addEventListener('click',()=>steer(b.dataset.dir)));
+  startBtn.addEventListener('click',begin);document.getElementById('pauseBtn').addEventListener('click',pause);document.getElementById('restartBtn').addEventListener('click',reset);
+  reset();
+})();
+</script>
+</body>
+</html>
