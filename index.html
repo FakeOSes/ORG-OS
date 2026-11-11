@@ -14,13 +14,16 @@
 
 body {
     min-height: 100vh;
+    min-height: 100svh;
+    padding: 36px 20px 20px;
     background: #000;
     color: #fff;
     font-family: Arial, Helvetica, sans-serif;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    overflow: hidden;
+    gap: 30px;
+    overflow-x: hidden;
     text-align: center;
 }
 
@@ -29,83 +32,80 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background:
-        radial-gradient(ellipse at center,
-        #292929 0%,
-        #101010 38%,
-        #000 78%);
+    background: radial-gradient(ellipse at center, #292929 0%, #101010 38%, #000 78%);
     animation: atmosphere 8s ease-in-out infinite alternate;
     z-index: -2;
 }
 
-/* Film grain */
+/* Subtle animated film grain */
 body::after {
     content: "";
     position: fixed;
-    inset: -50%;
-    width: 200%;
-    height: 200%;
+    inset: 0;
     pointer-events: none;
-    opacity: .09;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+    opacity: .08;
+    background-image: repeating-radial-gradient(circle at 0 0, #fff 0, #fff 1px, transparent 1px, transparent 4px);
+    background-size: 7px 7px;
     animation: grain .2s steps(2) infinite;
     z-index: 5;
 }
 
 .container {
-    width: 90%;
-    max-width: 850px;
+    width: min(100%, 850px);
     position: relative;
     z-index: 2;
+    margin: auto;
     animation: reveal 2s ease forwards;
 }
 
 .label {
     font-size: 11px;
-    letter-spacing: 8px;
+    letter-spacing: clamp(3px, 1vw, 8px);
     color: #aaa;
-    margin-bottom: 35px;
+    margin-bottom: clamp(22px, 5vh, 35px);
     text-transform: uppercase;
 }
 
 h1 {
-    font-size: clamp(38px, 8vw, 88px);
+    font-size: clamp(36px, 8vw, 88px);
     font-weight: 900;
-    letter-spacing: -3px;
-    line-height: .98;
+    letter-spacing: clamp(-3px, -.3vw, -1px);
+    line-height: 1.08;
     text-transform: uppercase;
     text-shadow: 0 0 35px #ffffff30;
 }
 
 h1 span {
     display: block;
-    margin-top: 14px;
+    margin-top: 12px;
     color: #fff;
-    letter-spacing: 5px;
+    font-size: .82em;
+    letter-spacing: clamp(2px, 1vw, 5px);
 }
 
 .line {
     width: 0;
     height: 1px;
     background: #fff;
-    margin: 35px auto;
+    margin: 28px auto;
     animation: lineReveal 2s ease 1s forwards;
 }
 
 .description {
     color: #aaa;
-    font-size: 14px;
-    letter-spacing: 3px;
-    line-height: 2;
+    font-size: clamp(12px, 2.5vw, 14px);
+    letter-spacing: clamp(1px, .5vw, 3px);
+    line-height: 1.9;
     text-transform: uppercase;
     opacity: 0;
     animation: fadeIn 2s ease 1.5s forwards;
 }
 
 .signature {
-    margin-top: 55px;
+    margin-top: 32px;
     font-size: 11px;
-    letter-spacing: 5px;
+    letter-spacing: clamp(1px, .7vw, 5px);
+    line-height: 1.7;
     color: #777;
     opacity: 0;
     animation: fadeIn 2s ease 2s forwards;
@@ -113,13 +113,14 @@ h1 span {
 
 .button {
     display: inline-block;
-    margin-top: 35px;
+    margin-top: 28px;
     padding: 15px 28px;
     border: 1px solid #777;
     color: white;
     text-decoration: none;
     font-size: 11px;
     letter-spacing: 3px;
+    line-height: 1.4;
     text-transform: uppercase;
     transition: .3s ease;
     opacity: 0;
@@ -134,15 +135,16 @@ h1 span {
 }
 
 footer {
-    position: fixed;
-    bottom: 25px;
-    left: 0;
-    right: 0;
+    position: relative;
+    width: min(100%, 850px);
+    margin: 0 auto;
     font-size: 9px;
-    letter-spacing: 4px;
-    color: #555;
+    letter-spacing: clamp(1px, .5vw, 4px);
+    line-height: 1.8;
+    color: #777;
     z-index: 2;
 }
+
 audio {
     display: block;
     width: 260px;
@@ -152,7 +154,7 @@ audio {
     animation: fadeIn 2s ease 2.2s forwards;
     filter: grayscale(1);
 }
-    
+
 @keyframes reveal {
     from { opacity: 0; transform: scale(1.04); filter: blur(8px); }
     to { opacity: 1; transform: scale(1); filter: blur(0); }
@@ -179,6 +181,25 @@ audio {
     100% { transform: translate(-2%, -1%); }
 }
 
+@media (max-width: 480px) {
+    body {
+        padding: 28px 16px 18px;
+        gap: 24px;
+    }
+
+    .line {
+        margin: 22px auto;
+    }
+
+    .signature {
+        margin-top: 24px;
+    }
+
+    .button {
+        margin-top: 24px;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation: none !important;
@@ -195,7 +216,7 @@ audio {
 
     <h1>
         GET READY FOR<br>
-        A HUGE UPDATE.
+        A HUGE UPDATE.<br>
         ORG OS 1.2
         <span>THUNDER.</span>
     </h1>
@@ -204,17 +225,19 @@ audio {
 
     <p class="description">
         A new era is approaching.<br>
-        Prepare for something extraordinary.
+        Prepare for something extraordinary.<br>
         1 WHOLE MONTH OF WORK.
     </p>
 
     <div class="signature">
         — The Org OS Team and Avinstudios
     </div>
-<audio id="announcementMusic" controls autoplay loop>
-    <source src="AC%20DC%20-%20Thunderstruck%20(Official%20Video).mp3" type="audio/mpeg">
-    Your browser does not support audio.
-</audio> 
+
+    <audio id="announcementMusic" controls autoplay loop>
+        <source src="AC%20DC%20-%20Thunderstruck%20(Official%20Video).mp3" type="audio/mpeg">
+        Your browser does not support audio.
+    </audio>
+
     <a class="button"
        href="https://org-os-website.vercel.app"
        target="_blank"
@@ -224,7 +247,7 @@ audio {
 </main>
 
 <footer>
-    The OS well be unavailable for now. For more info go to https://org-os-website.vercel.app
+    The OS will be unavailable for now. For more info, go to https://org-os-website.vercel.app<br>
     ORG OS 2026 · A PEAK OS
 </footer>
 
