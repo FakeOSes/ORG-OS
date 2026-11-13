@@ -134,19 +134,6 @@ h1 span {
     box-shadow: 0 0 25px #ffffff35;
 }
 
-.secret-button {
-    animation: none;
-    opacity: .08;
-    font-size: 8px;
-    letter-spacing: 1px;
-    padding: 5px 10px;
-}
-
-.secret-button:hover,
-.secret-button:focus-visible {
-    opacity: 1;
-}
-
 footer {
     position: relative;
     width: min(100%, 850px);
@@ -258,13 +245,27 @@ audio {
        OFFICIAL WEBSITE
     </a>
     <a class="button" href="apps/music/index.html">open ORG Music</a>
-    <a class="button secret-button" href="Indev.html">Demo</a>
 </main>
 
 <footer>
     The OS will be unavailable for now. For more info, go to https://org-os-website.vercel.app<br>
     ORG OS 2026 · A PEAK OS
 </footer>
+
+<script>
+let demoCode = '';
+document.addEventListener('keydown', (event) => {
+    if (!/^[0-9]$/.test(event.key)) {
+        demoCode = '';
+        return;
+    }
+
+    demoCode = (demoCode + event.key).slice(-4);
+    if (demoCode === '1289') {
+        window.location.href = 'Indev.html';
+    }
+});
+</script>
 
 </body>
 </html>
