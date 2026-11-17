@@ -8,21 +8,17 @@
     :root {
       color-scheme: light;
       --bg: #f4f7ff;
-      --panel: #ffffff;
+      --panel: #fff;
       --panel-alt: #edf3ff;
       --line: #dfe5ef;
       --muted: #5d6b85;
       --text: #1a2a3d;
       --accent: #4f7cff;
-      --accent-2: #354fba;
-      --soft: #eaf0ff;
-      --shadow: 0 12px 32px rgba(24, 39, 75, 0.08);
-      --canvas-start: #ffffff;
-      --canvas-end: #f4f7ff;
-      --input-bg: #ffffff;
-      --secondary-bg: #ffffff;
+      --accent-strong: #354fba;
+      --shadow: 0 12px 32px rgba(24,39,75,.08);
+      --stage: #fff;
+      --input: #fff;
     }
-
     body[data-theme="dark"] {
       color-scheme: dark;
       --bg: #0b1220;
@@ -32,383 +28,375 @@
       --muted: #9caec7;
       --text: #edf3ff;
       --accent: #7aa2ff;
-      --accent-2: #4f7cff;
-      --soft: #dfe9ff;
-      --shadow: 0 18px 45px rgba(2, 6, 23, 0.35);
-      --canvas-start: #121c2d;
-      --canvas-end: #0b1220;
-      --input-bg: #131d2c;
-      --secondary-bg: rgba(255,255,255,0.03);
+      --accent-strong: #4f7cff;
+      --shadow: 0 18px 45px rgba(2,6,23,.35);
+      --stage: #101a2a;
+      --input: #131d2c;
     }
-
     * { box-sizing: border-box; }
-
-    html, body {
+    body {
       margin: 0;
-      min-height: 100%;
-      font-family: Inter, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 30%),
-        var(--bg);
+      min-height: 100vh;
+      padding: clamp(14px,2vw,28px);
       color: var(--text);
-      transition: background-color .18s ease, color .18s ease;
+      font: 14px/1.5 Inter, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 0 0,color-mix(in srgb,var(--accent) 10%,transparent),transparent 36%),var(--bg);
+      transition: background-color .18s ease,color .18s ease;
     }
-
-    body { padding: clamp(14px, 2vw, 28px); }
-    main { max-width: 980px; margin: 0 auto; }
-
-    header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 0 0 18px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .glyph {
-      width: 52px;
-      height: 52px;
-      flex: 0 0 auto;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(145deg, var(--soft), var(--panel));
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      color: var(--accent);
-      font-size: 24px;
-      font-weight: 800;
-    }
-
-    .heading { flex: 1; }
-    h1 { margin: 0 0 4px; font-size: clamp(22px, 2.2vw, 28px); letter-spacing: -0.04em; }
-    p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 14px;
-      align-items: end;
-      margin-bottom: 18px;
-    }
-
-    .control {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      padding: 10px 12px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-    }
-
-    label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    input, select, button { font: inherit; }
-
-    input[type="text"], select {
-      width: 100%;
-      min-height: 38px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 7px 10px;
-      background: var(--input-bg);
-      color: var(--text);
-    }
-
-    input[type="range"] { width: 100%; accent-color: var(--accent); }
-
-    input[type="color"] {
-      width: 100%;
-      min-height: 38px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--input-bg);
-      padding: 4px;
-      cursor: pointer;
-    }
-
-    .check-row {
-      min-height: 38px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .check-row input { width: 17px; height: 17px; accent-color: var(--accent); }
-
-    .canvas-panel {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      overflow: hidden;
-      background: linear-gradient(180deg, var(--canvas-start), var(--canvas-end));
-      box-shadow: var(--shadow);
-      min-height: 420px;
-      display: grid;
-      place-items: center;
-      padding: 18px;
-    }
-
-    svg { width: min(100%, 700px); height: auto; display: block; border-radius: 16px; }
-
-    .meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-
-    .size-badge {
-      min-width: 72px;
-      text-align: center;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: var(--soft);
-      border: 1px solid var(--line);
-      color: var(--accent-2);
-      font-weight: 700;
-    }
-
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    button {
-      appearance: none;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      padding: 10px 16px;
-      background: var(--soft);
-      color: var(--text);
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
-      box-shadow: 0 1px 2px rgba(20,35,60,.08);
-    }
-
-    button:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
-    button.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
-    button.secondary { background: var(--secondary-bg); border-color: var(--line); color: var(--text); }
-    #themeToggle { padding: 9px 13px; white-space: nowrap; }
-
-    @media (max-width: 600px) {
-      body { padding: 14px; }
-      header { align-items: flex-start; flex-wrap: wrap; }
-      #themeToggle { margin-left: 66px; }
-      .canvas-panel { min-height: 300px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { transition-duration: .01ms !important; }
-    }
+    main { max-width: 1160px; margin: 0 auto; }
+    header { display:flex; align-items:center; gap:14px; padding-bottom:17px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+    .glyph { width:48px; height:48px; flex:none; display:grid; place-items:center; border-radius:15px; color:var(--accent); background:var(--panel-alt); border:1px solid var(--line); font-size:24px; font-weight:800; }
+    .heading { flex:1; min-width:0; }
+    h1 { margin:0 0 3px; font-size:clamp(21px,2.4vw,27px); letter-spacing:-.04em; }
+    p { margin:0; color:var(--muted); font-size:12px; }
+    button,input,select { font:inherit; }
+    button { min-height:36px; border:1px solid var(--line); border-radius:9px; padding:7px 12px; color:var(--text); background:var(--panel); font-weight:650; cursor:pointer; transition:transform .14s,box-shadow .14s,border-color .14s,background .14s; }
+    button:hover { transform:translateY(-1px); box-shadow:var(--shadow); }
+    button:active { transform:scale(.98); }
+    button:focus-visible,input:focus-visible,select:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 42%,transparent); outline-offset:2px; }
+    button.primary { color:#fff; border-color:transparent; background:linear-gradient(135deg,var(--accent),var(--accent-strong)); }
+    button.active { color:var(--accent-strong); border-color:var(--accent); background:var(--panel-alt); }
+    .workspace { display:grid; grid-template-columns:minmax(230px,280px) minmax(0,1fr); gap:16px; align-items:start; }
+    .sidebar,.editor { min-width:0; border:1px solid var(--line); border-radius:15px; background:var(--panel); box-shadow:var(--shadow); }
+    .sidebar { padding:15px; }
+    .editor { padding:14px; }
+    .section-title { margin:0 0 10px; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    .field { display:grid; gap:6px; margin-bottom:12px; }
+    label { color:var(--muted); font-size:11px; font-weight:750; letter-spacing:.04em; text-transform:uppercase; }
+    input[type="text"],select { width:100%; min-height:36px; padding:7px 9px; color:var(--text); background:var(--input); border:1px solid var(--line); border-radius:9px; }
+    input[type="range"] { width:100%; accent-color:var(--accent); }
+    input[type="color"] { width:100%; height:36px; padding:3px; border:1px solid var(--line); border-radius:9px; background:var(--input); cursor:pointer; }
+    .color-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .range-line { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:11px; }
+    .checkline { display:flex; align-items:center; gap:8px; color:var(--text); font-size:12px; font-weight:600; }
+    .checkline input { accent-color:var(--accent); }
+    .button-row { display:flex; flex-wrap:wrap; gap:8px; margin:9px 0 15px; }
+    .button-row button { flex:1; }
+    .divider { height:1px; border:0; background:var(--line); margin:15px 0; }
+    .hint { margin-top:9px; font-size:11px; color:var(--muted); }
+    .stage-top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .tools { display:flex; gap:7px; flex-wrap:wrap; }
+    .tools button { min-height:33px; padding:6px 10px; font-size:12px; }
+    .stage-wrap { overflow:auto; border:1px solid var(--line); border-radius:12px; background-color:var(--stage); background-image:linear-gradient(45deg,color-mix(in srgb,var(--line) 45%,transparent) 25%,transparent 25%),linear-gradient(-45deg,color-mix(in srgb,var(--line) 45%,transparent) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,color-mix(in srgb,var(--line) 45%,transparent) 75%),linear-gradient(-45deg,transparent 75%,color-mix(in srgb,var(--line) 45%,transparent) 75%); background-size:20px 20px; background-position:0 0,0 10px,10px -10px,-10px 0; }
+    #canvas { display:block; width:100%; min-width:440px; height:auto; touch-action:none; }
+    #canvas[data-mode="draw"] { cursor:crosshair; }
+    #canvas[data-mode="select"] { cursor:default; }
+    .object.selected { filter:drop-shadow(0 0 5px var(--accent)); }
+    .bottom-row { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .status { color:var(--muted); font-size:11px; }
+    .file-input { display:none; }
+    @media(max-width:760px) { .workspace { grid-template-columns:1fr; } .sidebar { order:2; } .editor { order:1; } }
+    @media(max-width:500px) { header { flex-wrap:wrap; } #themeToggle { margin-left:62px; } .editor { padding:9px; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms!important; } }
   </style>
 </head>
 <body>
   <main>
     <header>
       <div class="glyph" aria-hidden="true">◇</div>
-      <div class="heading">
-        <h1>SVG Workshop</h1>
-        <p>Build simple vector artwork with editable shapes, colors, and export-ready SVG output.</p>
-      </div>
-      <button id="themeToggle" class="secondary" type="button" aria-pressed="false">Use dark mode</button>
+      <div class="heading"><h1>SVG Workshop</h1><p>Draw, build, import, and export your own vector artwork.</p></div>
+      <button id="themeToggle" type="button" aria-pressed="false">Use dark mode</button>
     </header>
 
-    <section class="toolbar" aria-label="Shape controls">
-      <div class="control">
-        <label for="shape">Shape</label>
-        <select id="shape">
-          <option value="circle">Circle</option>
-          <option value="rect">Rounded rectangle</option>
-          <option value="star">Star</option>
-          <option value="triangle">Triangle</option>
-          <option value="diamond">Diamond</option>
-        </select>
-      </div>
+    <div class="workspace">
+      <aside class="sidebar" aria-label="Design tools">
+        <h2 class="section-title">Add to canvas</h2>
+        <div class="field">
+          <label for="shape">Shape library</label>
+          <select id="shape">
+            <option value="circle">Circle</option>
+            <option value="ellipse">Ellipse</option>
+            <option value="rect">Rectangle</option>
+            <option value="roundRect">Rounded rectangle</option>
+            <option value="triangle">Triangle</option>
+            <option value="diamond">Diamond</option>
+            <option value="star">Five-point star</option>
+            <option value="hexagon">Hexagon</option>
+            <option value="heart">Heart</option>
+            <option value="line">Line</option>
+            <option value="arrow">Arrow</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="size">Shape size <span id="sizeValue">120</span></label>
+          <input id="size" type="range" min="30" max="260" value="120">
+        </div>
+        <div class="color-grid">
+          <div class="field"><label for="fill">Fill</label><input id="fill" type="color" value="#4f7cff"></div>
+          <div class="field"><label for="stroke">Stroke</label><input id="stroke" type="color" value="#233b6d"></div>
+        </div>
+        <div class="field">
+          <label for="strokeWidth">Stroke width <span id="strokeValue">4</span></label>
+          <input id="strokeWidth" type="range" min="0" max="20" value="4">
+        </div>
+        <button id="addShape" class="primary" type="button" style="width:100%">＋ Add shape</button>
 
-      <div class="control">
-        <label for="size">Size</label>
-        <input id="size" type="range" min="40" max="220" value="120">
-      </div>
+        <hr class="divider">
+        <h2 class="section-title">Freehand</h2>
+        <div class="button-row">
+          <button id="selectTool" class="active" type="button" aria-pressed="true">Select</button>
+          <button id="drawTool" type="button" aria-pressed="false">✎ Draw</button>
+        </div>
+        <p class="hint">Choose Draw, then drag on the canvas. Choose Select to pick or remove an object.</p>
 
-      <div class="control">
-        <label for="color">Fill</label>
-        <input id="color" type="color" value="#4f7cff">
-      </div>
+        <hr class="divider">
+        <h2 class="section-title">Optional caption</h2>
+        <div class="field">
+          <label for="caption">Text (leave blank to omit)</label>
+          <input id="caption" type="text" maxlength="24" placeholder="Type a caption…">
+          <label class="checkline" for="showCaption"><input id="showCaption" type="checkbox" checked> Show caption</label>
+        </div>
+        <div class="button-row">
+          <button id="importButton" type="button">Import SVG</button>
+          <button id="deleteSelected" type="button">Delete selected</button>
+        </div>
+        <input id="importFile" class="file-input" type="file" accept=".svg,image/svg+xml">
+        <p class="hint">SVG imports are cleaned of scripts and external links before being added.</p>
+      </aside>
 
-      <div class="control">
-        <label for="background">Artwork background</label>
-        <input id="background" type="color" value="#eef3ff">
-      </div>
-
-      <div class="control">
-        <label for="stroke">Stroke</label>
-        <input id="stroke" type="color" value="#233b6d">
-      </div>
-
-      <div class="control">
-        <label for="strokeWidth">Stroke width</label>
-        <input id="strokeWidth" type="range" min="0" max="18" value="4">
-      </div>
-
-      <div class="control">
-        <label for="caption">Caption (optional)</label>
-        <input id="caption" type="text" value="ORG" maxlength="12" placeholder="Leave blank for no text">
-        <label class="check-row" for="showCaption"><input id="showCaption" type="checkbox" checked> Show caption</label>
-      </div>
-    </section>
-
-    <div class="canvas-panel">
-      <svg id="canvas" viewBox="-200 -180 400 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SVG artwork preview">
-        <rect x="-200" y="-180" width="400" height="360" rx="28" id="bg" fill="#eef3ff"></rect>
-        <g id="art"></g>
-        <text id="captionText" x="0" y="130" text-anchor="middle" font-family="Segoe UI, sans-serif" font-weight="800" font-size="36" letter-spacing="1.5">ORG</text>
-      </svg>
-    </div>
-
-    <div class="meta">
-      <div class="size-badge">Size: <span id="size-label">120</span></div>
-      <div class="actions">
-        <button id="randomize" class="secondary" type="button">Randomize</button>
-        <button id="export" class="primary" type="button">Export SVG</button>
-      </div>
+      <section class="editor" aria-label="Artwork editor">
+        <div class="stage-top">
+          <h2 class="section-title" style="margin:0">Canvas · 800 × 520</h2>
+          <div class="tools"><button id="clearCanvas" type="button">Clear artwork</button></div>
+        </div>
+        <div class="stage-wrap">
+          <svg id="canvas" viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg" data-mode="select" role="img" aria-label="Editable SVG design canvas">
+            <rect id="canvasBackground" x="0" y="0" width="800" height="520" fill="#ffffff" pointer-events="none"></rect>
+            <g id="art"></g>
+          </svg>
+        </div>
+        <div class="bottom-row">
+          <span id="status" class="status" role="status" aria-live="polite">Ready — add a shape, draw, or import an SVG.</span>
+          <button id="export" class="primary" type="button">Export SVG</button>
+        </div>
+      </section>
     </div>
   </main>
 
   <script>
     const $ = (id) => document.getElementById(id);
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const art = $('art');
+    let mode = 'select';
+    let drawingPath = null;
+    let selectedObject = null;
+    let objectCount = 0;
 
     function setTheme(theme) {
       const dark = theme === 'dark';
       document.body.dataset.theme = dark ? 'dark' : 'light';
       $('themeToggle').textContent = dark ? 'Use light mode' : 'Use dark mode';
       $('themeToggle').setAttribute('aria-pressed', String(dark));
-      try { localStorage.setItem('svg-workshop-theme', dark ? 'dark' : 'light'); } catch (_) { /* Storage may be disabled. */ }
+      try { localStorage.setItem('svg-workshop-theme', dark ? 'dark' : 'light'); } catch (_) {}
     }
+    try { if (localStorage.getItem('svg-workshop-theme') === 'dark') setTheme('dark'); } catch (_) {}
+    $('themeToggle').addEventListener('click', () => setTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark'));
 
-    try {
-      if (localStorage.getItem('svg-workshop-theme') === 'dark') setTheme('dark');
-    } catch (_) { /* Keep light mode when storage is unavailable. */ }
-
-    $('themeToggle').addEventListener('click', () => {
-      setTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
-    });
-
-    function starPoints(cx, cy, outer, inner, points = 5) {
-      const result = [];
-      for (let i = 0; i < points * 2; i++) {
-        const angle = (Math.PI / points) * i - Math.PI / 2;
-        const radius = i % 2 === 0 ? outer : inner;
-        result.push(`${(cx + Math.cos(angle) * radius).toFixed(2)},${(cy + Math.sin(angle) * radius).toFixed(2)}`);
-      }
-      return result.join(' ');
+    function setStatus(message) { $('status').textContent = message; }
+    function setMode(nextMode) {
+      mode = nextMode;
+      $('canvas').dataset.mode = mode;
+      $('selectTool').classList.toggle('active', mode === 'select');
+      $('drawTool').classList.toggle('active', mode === 'draw');
+      $('selectTool').setAttribute('aria-pressed', String(mode === 'select'));
+      $('drawTool').setAttribute('aria-pressed', String(mode === 'draw'));
+      setStatus(mode === 'draw' ? 'Draw mode — drag on the canvas to sketch.' : 'Select mode — click an object to select it.');
     }
+    $('selectTool').addEventListener('click', () => setMode('select'));
+    $('drawTool').addEventListener('click', () => setMode('draw'));
 
-    function trianglePoints(cx, cy, size) {
-      const h = size * 0.9;
-      return `${cx},${cy - h / 2} ${cx - size / 2},${cy + h / 2} ${cx + size / 2},${cy + h / 2}`;
+    function element(tag, attrs = {}) {
+      const node = document.createElementNS(SVG_NS, tag);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, String(value)));
+      return node;
     }
-
-    function diamondPoints(cx, cy, size) {
-      return `${cx},${cy - size / 2} ${cx + size / 2},${cy} ${cx},${cy + size / 2} ${cx - size / 2},${cy}`;
+    function makeObject() {
+      const group = element('g', { class: 'object', 'data-object': String(++objectCount) });
+      group.addEventListener('pointerdown', (event) => {
+        if (mode === 'select') {
+          event.stopPropagation();
+          selectObject(group);
+        }
+      });
+      return group;
     }
-
-    function contrastColor(hex) {
-      const value = hex.slice(1);
-      const r = parseInt(value.slice(0, 2), 16);
-      const g = parseInt(value.slice(2, 4), 16);
-      const b = parseInt(value.slice(4, 6), 16);
-      return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.66 ? '#1a2a3d' : '#f7fbff';
+    function selectObject(object) {
+      if (selectedObject) selectedObject.classList.remove('selected');
+      selectedObject = object;
+      if (selectedObject) selectedObject.classList.add('selected');
+      setStatus(selectedObject ? `Selected object ${selectedObject.dataset.object || ''}.` : 'Nothing selected.');
     }
+    function polygonPoints(points) { return points.map(([x,y]) => `${x},${y}`).join(' '); }
 
-    function draw() {
-      const shape = $('shape').value;
-      const size = Number($('size').value);
-      const color = $('color').value;
-      const bg = $('background').value;
-      const stroke = $('stroke').value;
-      const strokeWidth = Number($('strokeWidth').value);
-      const caption = $('caption').value.trim();
-      const art = $('art');
-      const captionText = $('captionText');
-
-      $('size-label').textContent = size;
-      $('bg').setAttribute('fill', bg);
-      captionText.textContent = caption.toUpperCase();
-      captionText.setAttribute('fill', contrastColor(bg));
-      captionText.setAttribute('font-size', String(Math.max(22, size * 0.26)));
-      captionText.style.display = $('showCaption').checked && caption ? '' : 'none';
-
+    function shapeNode(type, cx, cy, size) {
       const radius = size / 2;
-      let markup = '';
-      switch (shape) {
-        case 'circle':
-          markup = `<circle cx="0" cy="0" r="${radius}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
-          break;
-        case 'rect':
-          markup = `<rect x="${-radius}" y="${-radius}" width="${size}" height="${size}" rx="${size * 0.22}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
-          break;
-        case 'star':
-          markup = `<polygon points="${starPoints(0, 0, radius, radius * 0.46)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
-          break;
-        case 'triangle':
-          markup = `<polygon points="${trianglePoints(0, 0, size)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
-          break;
-        case 'diamond':
-          markup = `<polygon points="${diamondPoints(0, 0, size)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
-          break;
+      const fill = $('fill').value;
+      const stroke = $('stroke').value;
+      const width = Number($('strokeWidth').value);
+      const common = { fill, stroke, 'stroke-width': width, 'stroke-linejoin': 'round' };
+      switch (type) {
+        case 'circle': return element('circle', { ...common, cx, cy, r: radius });
+        case 'ellipse': return element('ellipse', { ...common, cx, cy, rx: radius, ry: radius * .65 });
+        case 'rect': return element('rect', { ...common, x: cx-radius, y: cy-radius*.72, width: size, height: size*1.44 });
+        case 'roundRect': return element('rect', { ...common, x: cx-radius, y: cy-radius*.72, width: size, height: size*1.44, rx: size*.16 });
+        case 'triangle': return element('polygon', { ...common, points: polygonPoints([[cx,cy-radius],[cx-radius,cy+radius*.75],[cx+radius,cy+radius*.75]]) });
+        case 'diamond': return element('polygon', { ...common, points: polygonPoints([[cx,cy-radius],[cx+radius,cy],[cx,cy+radius],[cx-radius,cy]]) });
+        case 'star': {
+          const points = [];
+          for (let i=0;i<10;i++) { const angle = i*Math.PI/5-Math.PI/2; const r = i%2 ? radius*.46 : radius; points.push([cx+Math.cos(angle)*r,cy+Math.sin(angle)*r]); }
+          return element('polygon', { ...common, points: polygonPoints(points) });
+        }
+        case 'hexagon': {
+          const points = Array.from({length:6},(_,i)=>{const a=i*Math.PI/3;return [cx+Math.cos(a)*radius,cy+Math.sin(a)*radius];});
+          return element('polygon', { ...common, points: polygonPoints(points) });
+        }
+        case 'heart':
+          return element('path', { ...common, d: `M ${cx} ${cy+radius*.78} C ${cx-radius*1.3} ${cy+radius*.05}, ${cx-radius*.9} ${cy-radius*.8}, ${cx} ${cy-radius*.25} C ${cx+radius*.9} ${cy-radius*.8}, ${cx+radius*1.3} ${cy+radius*.05}, ${cx} ${cy+radius*.78} Z` });
+        case 'line': return element('line', { x1:cx-radius, y1:cy, x2:cx+radius, y2:cy, fill:'none', stroke, 'stroke-width':Math.max(width,2), 'stroke-linecap':'round' });
+        case 'arrow': return element('path', { d:`M ${cx-radius} ${cy} H ${cx+radius*.62} M ${cx+radius*.18} ${cy-radius*.42} L ${cx+radius*.62} ${cy} L ${cx+radius*.18} ${cy+radius*.42}`, fill:'none', stroke, 'stroke-width':Math.max(width,2), 'stroke-linecap':'round', 'stroke-linejoin':'round' });
+        default: return null;
       }
-      art.innerHTML = markup;
     }
 
-    const controls = ['shape', 'size', 'color', 'background', 'stroke', 'strokeWidth', 'caption', 'showCaption'];
-    controls.forEach((id) => {
-      $(id).addEventListener('input', draw);
-      $(id).addEventListener('change', draw);
+    $('size').addEventListener('input', () => $('sizeValue').textContent = $('size').value);
+    $('strokeWidth').addEventListener('input', () => $('strokeValue').textContent = $('strokeWidth').value);
+    $('addShape').addEventListener('click', () => {
+      const group = makeObject();
+      const node = shapeNode($('shape').value, 400, 245, Number($('size').value));
+      if (!node) return;
+      group.appendChild(node);
+      art.appendChild(group);
+      selectObject(group);
+      setMode('select');
+      setStatus(`${$('shape').selectedOptions[0].text} added. Click and drag in Draw mode to sketch.`);
     });
 
-    $('randomize').addEventListener('click', () => {
-      const shapes = ['circle', 'rect', 'star', 'triangle', 'diamond'];
-      const palette = ['#7aa2ff', '#fb7185', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4'];
-      $('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
-      $('size').value = String(Math.floor(80 + Math.random() * 100));
-      $('color').value = palette[Math.floor(Math.random() * palette.length)];
-      $('background').value = ['#eef3ff', '#fff3e8', '#eefaf2', '#f8f2ff', '#fff0f2'][Math.floor(Math.random() * 5)];
-      $('stroke').value = ['#233b6d', '#3d2f76', '#214c3b', '#7a3e09', '#5e1d38'][Math.floor(Math.random() * 5)];
-      $('strokeWidth').value = String(Math.floor(Math.random() * 8) + 2);
-      $('caption').value = ['ORG', 'A', 'NOVA', 'SVG', 'BLOOM', 'PIX'][Math.floor(Math.random() * 6)];
-      $('showCaption').checked = true;
-      draw();
+    function svgPoint(event) {
+      const point = $('canvas').createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
+      return point.matrixTransform($('canvas').getScreenCTM().inverse());
+    }
+    $('canvas').addEventListener('pointerdown', (event) => {
+      if (mode !== 'draw' || event.target.closest('.object')) return;
+      event.preventDefault();
+      $('canvas').setPointerCapture(event.pointerId);
+      const point = svgPoint(event);
+      drawingPath = element('path', { d:`M ${point.x.toFixed(1)} ${point.y.toFixed(1)}`, fill:'none', stroke:$('stroke').value, 'stroke-width':Math.max(1,Number($('strokeWidth').value)), 'stroke-linecap':'round', 'stroke-linejoin':'round' });
+      const group = makeObject();
+      group.appendChild(drawingPath);
+      art.appendChild(group);
+      selectObject(group);
     });
+    $('canvas').addEventListener('pointermove', (event) => {
+      if (!drawingPath || mode !== 'draw') return;
+      const point = svgPoint(event);
+      drawingPath.setAttribute('d', `${drawingPath.getAttribute('d')} L ${point.x.toFixed(1)} ${point.y.toFixed(1)}`);
+    });
+    function stopDrawing() {
+      if (drawingPath) setStatus('Sketch added. Select an object or keep drawing.');
+      drawingPath = null;
+    }
+    $('canvas').addEventListener('pointerup', stopDrawing);
+    $('canvas').addEventListener('pointercancel', stopDrawing);
+    $('canvas').addEventListener('click', (event) => {
+      if (mode === 'select' && !event.target.closest('.object')) selectObject(null);
+    });
+
+    $('deleteSelected').addEventListener('click', () => {
+      if (!selectedObject) { setStatus('Select an object first, then choose Delete selected.'); return; }
+      selectedObject.remove();
+      selectedObject = null;
+      setStatus('Selected object deleted.');
+    });
+    $('clearCanvas').addEventListener('click', () => {
+      art.replaceChildren();
+      selectedObject = null;
+      drawingPath = null;
+      setStatus('Artwork cleared. The canvas is ready for a new design.');
+    });
+
+    function safeImportSvg(source) {
+      const parsed = new DOMParser().parseFromString(source, 'image/svg+xml');
+      if (parsed.querySelector('parsererror')) throw new Error('That file is not valid SVG.');
+      const root = parsed.documentElement;
+      if (!root || root.localName.toLowerCase() !== 'svg') throw new Error('Choose an SVG file to import.');
+      const allowed = new Set(['svg','g','path','rect','circle','ellipse','line','polyline','polygon','text','tspan','defs','linearGradient','radialGradient','stop','clipPath','mask','title','desc']);
+      const viewBox = (root.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+      let x=0,y=0,w=Number(root.getAttribute('width'))||300,h=Number(root.getAttribute('height'))||200;
+      if (viewBox.length===4 && viewBox.every(Number.isFinite) && viewBox[2]>0 && viewBox[3]>0) { [x,y,w,h]=viewBox; }
+      const wrapper = element('svg', { x:250, y:160, width:300, height:200, viewBox:`${x} ${y} ${w} ${h}`, preserveAspectRatio:'xMidYMid meet', overflow:'hidden' });
+      const copySafe = (node) => {
+        if (node.nodeType === Node.TEXT_NODE) return document.createTextNode(node.nodeValue);
+        if (node.nodeType !== Node.ELEMENT_NODE || !allowed.has(node.localName)) return null;
+        const copy = document.createElementNS(SVG_NS,node.localName);
+        for (const attr of Array.from(node.attributes)) {
+          const name=attr.name.toLowerCase(), value=attr.value.trim();
+          if (name.startsWith('on') || name === 'style' || name === 'src') continue;
+          if ((name === 'href' || name.endsWith(':href')) && !value.startsWith('#')) continue;
+          if (/url\s*\(\s*['"]?(?!#)/i.test(value)) continue;
+          copy.setAttribute(attr.name,attr.value);
+        }
+        for (const child of Array.from(node.childNodes)) { const safe=copySafe(child); if (safe) copy.appendChild(safe); }
+        return copy;
+      };
+      for (const child of Array.from(root.childNodes)) { const safe=copySafe(child); if (safe) wrapper.appendChild(safe); }
+      if (!wrapper.childNodes.length) throw new Error('No supported SVG artwork was found in that file.');
+      return wrapper;
+    }
+    $('importButton').addEventListener('click', () => $('importFile').click());
+    $('importFile').addEventListener('change', async (event) => {
+      const file=event.target.files && event.target.files[0];
+      if (!file) return;
+      try {
+        const imported=safeImportSvg(await file.text());
+        const group=makeObject();
+        group.appendChild(imported);
+        art.appendChild(group);
+        selectObject(group);
+        setMode('select');
+        setStatus(`Imported ${file.name}.`);
+      } catch (error) {
+        setStatus(error.message || 'Could not import that SVG.');
+      } finally { event.target.value=''; }
+    });
+
+    let captionObject=null;
+    function updateCaption() {
+      const text=$('caption').value.trim();
+      const visible=$('showCaption').checked && Boolean(text);
+      if (!visible) {
+        if (captionObject) captionObject.remove();
+        captionObject=null;
+        return;
+      }
+      if (!captionObject) {
+        captionObject=makeObject();
+        const textNode=element('text',{x:400,y:485,'text-anchor':'middle','font-family':'Segoe UI, sans-serif','font-size':30,'font-weight':700,fill:$('fill').value});
+        captionObject.appendChild(textNode);
+        art.appendChild(captionObject);
+      }
+      captionObject.firstElementChild.textContent=text;
+    }
+    $('caption').addEventListener('input',updateCaption);
+    $('showCaption').addEventListener('change',updateCaption);
 
     $('export').addEventListener('click', () => {
-      const svg = $('canvas').cloneNode(true);
-      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      const source = new XMLSerializer().serializeToString(svg);
-      const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `org-svg-${$('shape').value}.svg`;
+      const svg=$('canvas').cloneNode(true);
+      svg.setAttribute('xmlns',SVG_NS);
+      svg.removeAttribute('data-mode');
+      svg.querySelectorAll('.selected').forEach(node=>node.classList.remove('selected'));
+      const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml;charset=utf-8'});
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement('a');
+      link.href=url;
+      link.download='svg-workshop-design.svg';
       document.body.appendChild(link);
       link.click();
       link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 0);
+      setTimeout(()=>URL.revokeObjectURL(url),0);
+      setStatus('SVG exported.');
     });
-
-    draw();
   </script>
 </body>
 </html>
