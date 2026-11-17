@@ -6,6 +6,24 @@
   <title>SVG Workshop · ORG OS</title>
   <style>
     :root {
+      color-scheme: light;
+      --bg: #f4f7ff;
+      --panel: #ffffff;
+      --panel-alt: #edf3ff;
+      --line: #dfe5ef;
+      --muted: #5d6b85;
+      --text: #1a2a3d;
+      --accent: #4f7cff;
+      --accent-2: #354fba;
+      --soft: #eaf0ff;
+      --shadow: 0 12px 32px rgba(24, 39, 75, 0.08);
+      --canvas-start: #ffffff;
+      --canvas-end: #f4f7ff;
+      --input-bg: #ffffff;
+      --secondary-bg: #ffffff;
+    }
+
+    body[data-theme="dark"] {
       color-scheme: dark;
       --bg: #0b1220;
       --panel: #111c2d;
@@ -16,7 +34,11 @@
       --accent: #7aa2ff;
       --accent-2: #4f7cff;
       --soft: #dfe9ff;
-      --shadow: 0 18px 45px rgba(2, 6, 23, 0.42);
+      --shadow: 0 18px 45px rgba(2, 6, 23, 0.35);
+      --canvas-start: #121c2d;
+      --canvas-end: #0b1220;
+      --input-bg: #131d2c;
+      --secondary-bg: rgba(255,255,255,0.03);
     }
 
     * { box-sizing: border-box; }
@@ -26,20 +48,14 @@
       min-height: 100%;
       font-family: Inter, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(122, 162, 255, 0.16), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(79, 124, 255, 0.12), transparent 25%),
+        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 30%),
         var(--bg);
       color: var(--text);
+      transition: background-color .18s ease, color .18s ease;
     }
 
-    body {
-      padding: clamp(14px, 2vw, 28px);
-    }
-
-    main {
-      max-width: 980px;
-      margin: 0 auto;
-    }
+    body { padding: clamp(14px, 2vw, 28px); }
+    main { max-width: 980px; margin: 0 auto; }
 
     header {
       display: flex;
@@ -53,30 +69,21 @@
     .glyph {
       width: 52px;
       height: 52px;
+      flex: 0 0 auto;
       border-radius: 16px;
       display: grid;
       place-items: center;
-      background: linear-gradient(145deg, rgba(122,162,255,0.2), rgba(18,28,45,1));
-      border: 1px solid rgba(122, 162, 255, 0.35);
-      box-shadow: 0 10px 22px rgba(79,124,255,0.18);
-      color: var(--soft);
+      background: linear-gradient(145deg, var(--soft), var(--panel));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      color: var(--accent);
       font-size: 24px;
       font-weight: 800;
     }
 
-    h1 {
-      margin: 0 0 4px;
-      font-size: clamp(22px, 2.2vw, 28px);
-      letter-spacing: -0.04em;
-      color: var(--text);
-    }
-
-    p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
+    .heading { flex: 1; }
+    h1 { margin: 0 0 4px; font-size: clamp(22px, 2.2vw, 28px); letter-spacing: -0.04em; }
+    p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
     .toolbar {
       display: grid;
@@ -91,7 +98,7 @@
       flex-direction: column;
       gap: 7px;
       padding: 10px 12px;
-      background: rgba(17, 28, 45, 0.82);
+      background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 12px;
       box-shadow: var(--shadow);
@@ -105,42 +112,47 @@
       color: var(--muted);
     }
 
-    input, select, button {
-      font: inherit;
-    }
+    input, select, button { font: inherit; }
 
-    input[type="text"],
-    select {
+    input[type="text"], select {
       width: 100%;
       min-height: 38px;
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 7px 10px;
-      background: rgba(19, 29, 44, 0.95);
+      background: var(--input-bg);
       color: var(--text);
     }
 
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent);
-    }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
 
     input[type="color"] {
       width: 100%;
       min-height: 38px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: rgba(19, 29, 44, 0.95);
+      background: var(--input-bg);
       padding: 4px;
       cursor: pointer;
     }
+
+    .check-row {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .check-row input { width: 17px; height: 17px; accent-color: var(--accent); }
 
     .canvas-panel {
       border: 1px solid var(--line);
       border-radius: 18px;
       overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(18, 28, 45, 0.96), rgba(11, 18, 32, 0.96));
+      background: linear-gradient(180deg, var(--canvas-start), var(--canvas-end));
       box-shadow: var(--shadow);
       min-height: 420px;
       display: grid;
@@ -148,13 +160,7 @@
       padding: 18px;
     }
 
-    svg {
-      width: min(100%, 700px);
-      height: auto;
-      display: block;
-      border-radius: 16px;
-      background: transparent;
-    }
+    svg { width: min(100%, 700px); height: auto; display: block; border-radius: 16px; }
 
     .meta {
       display: flex;
@@ -170,63 +176,54 @@
       text-align: center;
       padding: 7px 12px;
       border-radius: 999px;
-      background: rgba(122,162,255,0.12);
-      border: 1px solid rgba(122,162,255,0.28);
-      color: var(--soft);
+      background: var(--soft);
+      border: 1px solid var(--line);
+      color: var(--accent-2);
       font-weight: 700;
     }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 0;
-    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
     button {
       appearance: none;
       border: 1px solid transparent;
       border-radius: 10px;
       padding: 10px 16px;
-      background: rgba(122, 162, 255, 0.12);
+      background: var(--soft);
       color: var(--text);
       font-weight: 700;
       cursor: pointer;
       transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
-      box-shadow: 0 1px 2px rgba(2, 6, 23, 0.35);
+      box-shadow: 0 1px 2px rgba(20,35,60,.08);
     }
 
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(28, 45, 80, 0.35);
-    }
-
-    button.primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      border-color: rgba(122, 162, 255, 0.38);
-    }
-
-    button.secondary {
-      background: rgba(255,255,255,0.03);
-      border-color: var(--line);
-      color: var(--text);
-    }
+    button:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
+    button.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+    button.secondary { background: var(--secondary-bg); border-color: var(--line); color: var(--text); }
+    #themeToggle { padding: 9px 13px; white-space: nowrap; }
 
     @media (max-width: 600px) {
       body { padding: 14px; }
+      header { align-items: flex-start; flex-wrap: wrap; }
+      #themeToggle { margin-left: 66px; }
       .canvas-panel { min-height: 300px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
   <main>
     <header>
-      <div class="glyph">◇</div>
-      <div>
+      <div class="glyph" aria-hidden="true">◇</div>
+      <div class="heading">
         <h1>SVG Workshop</h1>
         <p>Build simple vector artwork with editable shapes, colors, and export-ready SVG output.</p>
       </div>
+      <button id="themeToggle" class="secondary" type="button" aria-pressed="false">Use dark mode</button>
     </header>
 
     <section class="toolbar" aria-label="Shape controls">
@@ -248,17 +245,17 @@
 
       <div class="control">
         <label for="color">Fill</label>
-        <input id="color" type="color" value="#7aa2ff">
+        <input id="color" type="color" value="#4f7cff">
       </div>
 
       <div class="control">
-        <label for="background">Background</label>
-        <input id="background" type="color" value="#17253d">
+        <label for="background">Artwork background</label>
+        <input id="background" type="color" value="#eef3ff">
       </div>
 
       <div class="control">
         <label for="stroke">Stroke</label>
-        <input id="stroke" type="color" value="#dfe9ff">
+        <input id="stroke" type="color" value="#233b6d">
       </div>
 
       <div class="control">
@@ -267,14 +264,15 @@
       </div>
 
       <div class="control">
-        <label for="caption">Caption</label>
-        <input id="caption" type="text" value="ORG" maxlength="12">
+        <label for="caption">Caption (optional)</label>
+        <input id="caption" type="text" value="ORG" maxlength="12" placeholder="Leave blank for no text">
+        <label class="check-row" for="showCaption"><input id="showCaption" type="checkbox" checked> Show caption</label>
       </div>
     </section>
 
     <div class="canvas-panel">
       <svg id="canvas" viewBox="-200 -180 400 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SVG artwork preview">
-        <rect x="-200" y="-180" width="400" height="360" rx="28" id="bg" fill="#17253d"></rect>
+        <rect x="-200" y="-180" width="400" height="360" rx="28" id="bg" fill="#eef3ff"></rect>
         <g id="art"></g>
         <text id="captionText" x="0" y="130" text-anchor="middle" font-family="Segoe UI, sans-serif" font-weight="800" font-size="36" letter-spacing="1.5">ORG</text>
       </svg>
@@ -292,14 +290,28 @@
   <script>
     const $ = (id) => document.getElementById(id);
 
+    function setTheme(theme) {
+      const dark = theme === 'dark';
+      document.body.dataset.theme = dark ? 'dark' : 'light';
+      $('themeToggle').textContent = dark ? 'Use light mode' : 'Use dark mode';
+      $('themeToggle').setAttribute('aria-pressed', String(dark));
+      try { localStorage.setItem('svg-workshop-theme', dark ? 'dark' : 'light'); } catch (_) { /* Storage may be disabled. */ }
+    }
+
+    try {
+      if (localStorage.getItem('svg-workshop-theme') === 'dark') setTheme('dark');
+    } catch (_) { /* Keep light mode when storage is unavailable. */ }
+
+    $('themeToggle').addEventListener('click', () => {
+      setTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
+    });
+
     function starPoints(cx, cy, outer, inner, points = 5) {
       const result = [];
       for (let i = 0; i < points * 2; i++) {
         const angle = (Math.PI / points) * i - Math.PI / 2;
         const radius = i % 2 === 0 ? outer : inner;
-        const x = cx + Math.cos(angle) * radius;
-        const y = cy + Math.sin(angle) * radius;
-        result.push(`${x.toFixed(2)},${y.toFixed(2)}`);
+        result.push(`${(cx + Math.cos(angle) * radius).toFixed(2)},${(cy + Math.sin(angle) * radius).toFixed(2)}`);
       }
       return result.join(' ');
     }
@@ -314,12 +326,11 @@
     }
 
     function contrastColor(hex) {
-      const value = hex.replace('#', '');
-      const r = parseInt(value.substr(0, 2), 16);
-      const g = parseInt(value.substr(2, 2), 16);
-      const b = parseInt(value.substr(4, 2), 16);
-      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      return luminance > 0.66 ? '#0b1220' : '#f7fbff';
+      const value = hex.slice(1);
+      const r = parseInt(value.slice(0, 2), 16);
+      const g = parseInt(value.slice(2, 4), 16);
+      const b = parseInt(value.slice(4, 6), 16);
+      return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.66 ? '#1a2a3d' : '#f7fbff';
     }
 
     function draw() {
@@ -329,44 +340,44 @@
       const bg = $('background').value;
       const stroke = $('stroke').value;
       const strokeWidth = Number($('strokeWidth').value);
-      const caption = ($('caption').value || 'ORG').trim() || 'ORG';
+      const caption = $('caption').value.trim();
       const art = $('art');
+      const captionText = $('captionText');
 
       $('size-label').textContent = size;
       $('bg').setAttribute('fill', bg);
-      $('captionText').textContent = caption.toUpperCase();
-      $('captionText').setAttribute('fill', contrastColor(bg));
-      $('captionText').setAttribute('font-size', `${Math.max(22, size * 0.26)}`);
+      captionText.textContent = caption.toUpperCase();
+      captionText.setAttribute('fill', contrastColor(bg));
+      captionText.setAttribute('font-size', String(Math.max(22, size * 0.26)));
+      captionText.style.display = $('showCaption').checked && caption ? '' : 'none';
 
-      let markup = '';
-      const cx = 0;
-      const cy = 0;
       const radius = size / 2;
-
+      let markup = '';
       switch (shape) {
         case 'circle':
-          markup = `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
+          markup = `<circle cx="0" cy="0" r="${radius}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
           break;
         case 'rect':
           markup = `<rect x="${-radius}" y="${-radius}" width="${size}" height="${size}" rx="${size * 0.22}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
           break;
         case 'star':
-          markup = `<polygon points="${starPoints(cx, cy, radius, radius * 0.46, 5)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
+          markup = `<polygon points="${starPoints(0, 0, radius, radius * 0.46)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
           break;
         case 'triangle':
-          markup = `<polygon points="${trianglePoints(cx, cy, size)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
+          markup = `<polygon points="${trianglePoints(0, 0, size)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
           break;
         case 'diamond':
-          markup = `<polygon points="${diamondPoints(cx, cy, size)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
+          markup = `<polygon points="${diamondPoints(0, 0, size)}" fill="${color}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
           break;
       }
-
       art.innerHTML = markup;
     }
 
-    const controls = ['shape', 'size', 'color', 'background', 'stroke', 'strokeWidth', 'caption'];
-    controls.forEach((id) => $(id).addEventListener('input', draw));
-    controls.forEach((id) => $(id).addEventListener('change', draw));
+    const controls = ['shape', 'size', 'color', 'background', 'stroke', 'strokeWidth', 'caption', 'showCaption'];
+    controls.forEach((id) => {
+      $(id).addEventListener('input', draw);
+      $(id).addEventListener('change', draw);
+    });
 
     $('randomize').addEventListener('click', () => {
       const shapes = ['circle', 'rect', 'star', 'triangle', 'diamond'];
@@ -374,18 +385,18 @@
       $('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
       $('size').value = String(Math.floor(80 + Math.random() * 100));
       $('color').value = palette[Math.floor(Math.random() * palette.length)];
-      $('background').value = ['#17253d', '#1d2e44', '#293938', '#372a46', '#3d1f2a'][Math.floor(Math.random() * 5)];
-      $('stroke').value = ['#dfe9ff', '#f9d6a5', '#c5ffda', '#f7c2d2', '#d8d0ff'][Math.floor(Math.random() * 5)];
+      $('background').value = ['#eef3ff', '#fff3e8', '#eefaf2', '#f8f2ff', '#fff0f2'][Math.floor(Math.random() * 5)];
+      $('stroke').value = ['#233b6d', '#3d2f76', '#214c3b', '#7a3e09', '#5e1d38'][Math.floor(Math.random() * 5)];
       $('strokeWidth').value = String(Math.floor(Math.random() * 8) + 2);
       $('caption').value = ['ORG', 'A', 'NOVA', 'SVG', 'BLOOM', 'PIX'][Math.floor(Math.random() * 6)];
+      $('showCaption').checked = true;
       draw();
     });
 
     $('export').addEventListener('click', () => {
       const svg = $('canvas').cloneNode(true);
       svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      const serializer = new XMLSerializer();
-      const source = serializer.serializeToString(svg);
+      const source = new XMLSerializer().serializeToString(svg);
       const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -394,7 +405,7 @@
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 0);
     });
 
     draw();
