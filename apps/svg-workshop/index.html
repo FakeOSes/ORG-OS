@@ -6,13 +6,17 @@
   <title>SVG Workshop · ORG OS</title>
   <style>
     :root {
-      --bg: #f4f7ff;
-      --panel: #ffffff;
-      --line: #dfe5ef;
-      --muted: #5d6b85;
-      --text: #1a2a3d;
-      --accent: #4f7cff;
-      --shadow: 0 12px 32px rgba(24, 39, 75, 0.08);
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: #111c2d;
+      --panel-alt: #17253d;
+      --line: #2a3d5d;
+      --muted: #9caec7;
+      --text: #edf3ff;
+      --accent: #7aa2ff;
+      --accent-2: #4f7cff;
+      --soft: #dfe9ff;
+      --shadow: 0 18px 45px rgba(2, 6, 23, 0.42);
     }
 
     * { box-sizing: border-box; }
@@ -21,7 +25,10 @@
       margin: 0;
       min-height: 100%;
       font-family: Inter, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, rgba(79,124,255,.08), transparent 36%), var(--bg);
+      background:
+        radial-gradient(circle at top left, rgba(122, 162, 255, 0.16), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(79, 124, 255, 0.12), transparent 25%),
+        var(--bg);
       color: var(--text);
     }
 
@@ -49,10 +56,10 @@
       border-radius: 16px;
       display: grid;
       place-items: center;
-      background: linear-gradient(145deg, #edf3ff, #ffffff);
-      border: 1px solid var(--line);
-      box-shadow: 0 8px 18px rgba(79, 124, 255, 0.12);
-      color: var(--accent);
+      background: linear-gradient(145deg, rgba(122,162,255,0.2), rgba(18,28,45,1));
+      border: 1px solid rgba(122, 162, 255, 0.35);
+      box-shadow: 0 10px 22px rgba(79,124,255,0.18);
+      color: var(--soft);
       font-size: 24px;
       font-weight: 800;
     }
@@ -61,6 +68,7 @@
       margin: 0 0 4px;
       font-size: clamp(22px, 2.2vw, 28px);
       letter-spacing: -0.04em;
+      color: var(--text);
     }
 
     p {
@@ -83,7 +91,7 @@
       flex-direction: column;
       gap: 7px;
       padding: 10px 12px;
-      background: rgba(255,255,255,.7);
+      background: rgba(17, 28, 45, 0.82);
       border: 1px solid var(--line);
       border-radius: 12px;
       box-shadow: var(--shadow);
@@ -108,7 +116,7 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 7px 10px;
-      background: #fff;
+      background: rgba(19, 29, 44, 0.95);
       color: var(--text);
     }
 
@@ -122,7 +130,7 @@
       min-height: 38px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #fff;
+      background: rgba(19, 29, 44, 0.95);
       padding: 4px;
       cursor: pointer;
     }
@@ -131,7 +139,8 @@
       border: 1px solid var(--line);
       border-radius: 18px;
       overflow: hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(244,247,255,.7));
+      background:
+        linear-gradient(180deg, rgba(18, 28, 45, 0.96), rgba(11, 18, 32, 0.96));
       box-shadow: var(--shadow);
       min-height: 420px;
       display: grid;
@@ -161,9 +170,9 @@
       text-align: center;
       padding: 7px 12px;
       border-radius: 999px;
-      background: #edf3ff;
-      border: 1px solid #dfe8ff;
-      color: var(--accent);
+      background: rgba(122,162,255,0.12);
+      border: 1px solid rgba(122,162,255,0.28);
+      color: var(--soft);
       font-weight: 700;
     }
 
@@ -171,7 +180,7 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 16px;
+      margin-top: 0;
     }
 
     button {
@@ -179,27 +188,27 @@
       border: 1px solid transparent;
       border-radius: 10px;
       padding: 10px 16px;
-      background: #e9eefb;
+      background: rgba(122, 162, 255, 0.12);
       color: var(--text);
       font-weight: 700;
       cursor: pointer;
-      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
-      box-shadow: 0 1px 2px rgba(20,35,60,.05);
+      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+      box-shadow: 0 1px 2px rgba(2, 6, 23, 0.35);
     }
 
     button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(38, 66, 120, 0.08);
+      box-shadow: 0 8px 18px rgba(28, 45, 80, 0.35);
     }
 
     button.primary {
-      background: linear-gradient(135deg, var(--accent), #354fba);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: white;
-      border-color: rgba(79,124,255, .35);
+      border-color: rgba(122, 162, 255, 0.38);
     }
 
     button.secondary {
-      background: #fff;
+      background: rgba(255,255,255,0.03);
       border-color: var(--line);
       color: var(--text);
     }
@@ -239,17 +248,17 @@
 
       <div class="control">
         <label for="color">Fill</label>
-        <input id="color" type="color" value="#4f7cff">
+        <input id="color" type="color" value="#7aa2ff">
       </div>
 
       <div class="control">
         <label for="background">Background</label>
-        <input id="background" type="color" value="#eef3ff">
+        <input id="background" type="color" value="#17253d">
       </div>
 
       <div class="control">
         <label for="stroke">Stroke</label>
-        <input id="stroke" type="color" value="#233b6d">
+        <input id="stroke" type="color" value="#dfe9ff">
       </div>
 
       <div class="control">
@@ -265,7 +274,7 @@
 
     <div class="canvas-panel">
       <svg id="canvas" viewBox="-200 -180 400 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SVG artwork preview">
-        <rect x="-200" y="-180" width="400" height="360" rx="28" id="bg" fill="#eef3ff"></rect>
+        <rect x="-200" y="-180" width="400" height="360" rx="28" id="bg" fill="#17253d"></rect>
         <g id="art"></g>
         <text id="captionText" x="0" y="130" text-anchor="middle" font-family="Segoe UI, sans-serif" font-weight="800" font-size="36" letter-spacing="1.5">ORG</text>
       </svg>
@@ -310,7 +319,7 @@
       const g = parseInt(value.substr(2, 2), 16);
       const b = parseInt(value.substr(4, 2), 16);
       const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      return luminance > 0.66 ? '#1a2a3d' : '#f7fbff';
+      return luminance > 0.66 ? '#0b1220' : '#f7fbff';
     }
 
     function draw() {
@@ -361,12 +370,12 @@
 
     $('randomize').addEventListener('click', () => {
       const shapes = ['circle', 'rect', 'star', 'triangle', 'diamond'];
-      const palette = ['#4f7cff', '#fb7185', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4'];
+      const palette = ['#7aa2ff', '#fb7185', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4'];
       $('shape').value = shapes[Math.floor(Math.random() * shapes.length)];
       $('size').value = String(Math.floor(80 + Math.random() * 100));
       $('color').value = palette[Math.floor(Math.random() * palette.length)];
-      $('background').value = ['#eef3ff', '#fff3e8', '#eefaf2', '#f8f2ff', '#fff0f2'][Math.floor(Math.random() * 5)];
-      $('stroke').value = ['#233b6d', '#3d2f76', '#214c3b', '#7a3e09', '#5e1d38'][Math.floor(Math.random() * 5)];
+      $('background').value = ['#17253d', '#1d2e44', '#293938', '#372a46', '#3d1f2a'][Math.floor(Math.random() * 5)];
+      $('stroke').value = ['#dfe9ff', '#f9d6a5', '#c5ffda', '#f7c2d2', '#d8d0ff'][Math.floor(Math.random() * 5)];
       $('strokeWidth').value = String(Math.floor(Math.random() * 8) + 2);
       $('caption').value = ['ORG', 'A', 'NOVA', 'SVG', 'BLOOM', 'PIX'][Math.floor(Math.random() * 6)];
       draw();
