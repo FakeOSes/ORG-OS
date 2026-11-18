@@ -2,6 +2,11 @@
 
 A browser-based desktop environment built with HTML, CSS, and JavaScript. ORG OS brings a familiar desktop experience to your browser, with draggable desktop icons, app windows, a taskbar, settings, and an app store.
 
+Don't forget to check out all our links we have
+
+[Our Main Website](https://org-os-website.vercel.app)
+
+[The OS](https://org-os-qwerty.vercel.app)
 
 ## Features
 
@@ -24,6 +29,7 @@ A browser-based desktop environment built with HTML, CSS, and JavaScript. ORG OS
 | ORG Photos | Browse and preview local images |
 | Weather | City-search weather dashboard |
 | System Monitor | View browser capabilities, open app windows, and runtime status |
+| Veloce Browser| Org OS's browser that works |
 
 These apps declare **ORG OS 1.0.0** as their minimum version and **ORG OS 1+** compatibility in their manifests. Some features rely on browser capabilities and local browser storage. Weather currently uses illustrative forecast information rather than a connected live weather service, and System Monitor cannot access all underlying device-level CPU or memory metrics from a regular browser page.
 
